@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+release/
+out/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
+# Electron builder
+*.dmg
+*.AppImage
+*.deb
+*.rpm
+*.blockmap
+builder-debug.yml
+builder-effective-config.yaml
+
+# Coverage
+coverage/

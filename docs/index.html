@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forca — Deep Focus Sessions</title>
+  <meta name="description" content="Your calendar knows when you're free. Forca makes sure you actually use that time." />
+  <link rel="icon" type="image/png" href="https://github.com/3iiik/forca/raw/main/assets/icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      line-height: 1.6;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .hero-logo { width: 96px; height: 96px; margin-bottom: 24px; border-radius: 24px; }
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: #a1a1aa;
+      margin-top: 16px;
+      max-width: 480px;
+    }
+
+    /* Download buttons */
+    .downloads {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 48px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      background: #18181b;
+      color: #e4e4e7;
+      border: 1px solid #27272a;
+    }
+    .btn:hover {
+      background: #27272a;
+      border-color: #6366f1;
+      transform: translateY(-2px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      opacity: 0.9;
+      border: none;
+    }
+
+    /* Sections */
+    section { padding: 80px 0; }
+    section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    /* Features grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 16px;
+      padding: 32px 24px;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: #6366f1; }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+    .feature-card p { font-size: 0.9rem; color: #a1a1aa; }
+
+    /* How it works */
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      counter-reset: step;
+    }
+    .step {
+      flex: 1 1 240px;
+      max-width: 280px;
+      text-align: center;
+      padding: 32px 16px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 16px;
+      position: relative;
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .step h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+    .step p { font-size: 0.9rem; color: #a1a1aa; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 48px 24px;
+      color: #52525b;
+      font-size: 0.85rem;
+    }
+    footer a { color: #a1a1aa; text-decoration: none; }
+    footer a:hover { color: #e4e4e7; }
+
+    .badge { margin-top: 64px; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1rem; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <img class="hero-logo" src="https://github.com/3iiik/forca/raw/main/assets/icons/icon.png" alt="Forca" />
+  <h1>Forca</h1>
+  <p>Your calendar knows when you're free. Forca makes sure you actually use that time.</p>
+
+  <div class="downloads">
+    <a class="btn btn-primary" href="https://github.com/3iiik/forca/releases/latest/download/Forca-Setup-x64.exe">
+      Download for Windows (Installer)
+    </a>
+    <a class="btn" href="https://github.com/3iiik/forca/releases/latest/download/Forca-Portable-x64.exe">
+      Download for Windows (Portable)
+    </a>
+    <a class="btn" href="https://github.com/3iiik/forca/releases/latest/download/Forca-x64.dmg">
+      Download for Mac (Intel)
+    </a>
+    <a class="btn" href="https://github.com/3iiik/forca/releases/latest/download/Forca-arm64.dmg">
+      Download for Mac (Apple Silicon)
+    </a>
+    <a class="btn" href="https://github.com/3iiik/forca/releases/latest/download/Forca-x64.AppImage">
+      Download for Linux (AppImage)
+    </a>
+  </div>
+
+  <div class="badge">
+    <a href="https://github.com/3iiik/forca" target="_blank" rel="noopener">
+      <img alt="GitHub" src="https://img.shields.io/github/stars/3iiik/forca?style=social" />
+    </a>
+  </div>
+</section>
+
+<!-- Features -->
+<section>
+  <div class="container">
+    <h2>Features</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3>Calendar Sync</h3>
+        <p>Connect Google Calendar or iCal feeds. Forca knows when your meetings end.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Focus Zones</h3>
+        <p>Named focus sessions with timers, triggers, and auto-start after meetings.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚫</div>
+        <h3>Block Distractions</h3>
+        <p>Block apps and websites during focus sessions. Restored automatically when done.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Smart Suggestions</h3>
+        <p>Calendar pattern analysis finds optimal focus windows between meetings.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌧️</div>
+        <h3>Ambient Sounds</h3>
+        <p>Rain, white noise, lo-fi, and forest sounds to help you concentrate.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Focus Score</h3>
+        <p>Daily, weekly, and monthly productivity scoring with beautiful charts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section>
+  <div class="container">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <h3>Connect Your Calendar</h3>
+        <p>Link Google Calendar or any iCal feed. Forca reads your schedule.</p>
+      </div>
+      <div class="step">
+        <h3>Forca Detects Free Time</h3>
+        <p>When a meeting ends, Forca automatically detects the gap in your calendar.</p>
+      </div>
+      <div class="step">
+        <h3>Focus Zone Starts</h3>
+        <p>A focus session begins automatically. Apps are blocked, DND is enabled, and you work distraction-free.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <a href="https://github.com/3iiik/forca">GitHub</a> &middot;
+    <a href="https://github.com/3iiik/forca/blob/main/LICENSE">MIT License</a>
+  </p>
+  <p>&copy; 2025 Forca</p>
+</footer>
+
+</body>
+</html>
