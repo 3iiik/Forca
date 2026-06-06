@@ -67,8 +67,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/*.dmg
-            dist/*.zip
+            release/*.dmg
+            release/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -99,15 +99,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: List dist folder
-        run: Get-ChildItem -Recurse dist/
+      - name: List release folder
+        run: Get-ChildItem -Recurse release/
         shell: powershell
 
       - name: Upload Windows artifacts
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/*.exe
+            release/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -145,8 +145,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/*.AppImage
-            dist/*.deb
-            dist/*.rpm
+            release/*.AppImage
+            release/*.deb
+            release/*.rpm
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
