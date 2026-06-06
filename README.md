@@ -7,10 +7,10 @@
   </p>
   <br />
 
-  [![Build Status](https://img.shields.io/github/actions/workflow/status/3iiik/forca/release.yml?branch=main&style=flat-square)](https://github.com/3iiik/forca/actions)
+  [![Build](https://img.shields.io/github/actions/workflow/status/3iiik/forca/release.yml?branch=main&style=flat-square&logo=github)](https://github.com/3iiik/forca/actions)
   [![License](https://img.shields.io/github/license/3iiik/forca?style=flat-square)](LICENSE)
-  [![Latest Release](https://img.shields.io/github/v/release/3iiik/forca?style=flat-square)](https://github.com/3iiik/forca/releases/latest)
-  [![Downloads](https://img.shields.io/github/downloads/3iiik/forca/total?style=flat-square)](https://github.com/3iiik/forca/releases)
+  [![Release](https://img.shields.io/github/v/release/3iiik/forca?sort=semver&style=flat-square&logo=github)](https://github.com/3iiik/forca/releases/latest)
+  [![Downloads](https://img.shields.io/github/downloads/3iiik/forca/total?style=flat-square&logo=github)](https://github.com/3iiik/forca/releases)
 
   <br />
 </div>
