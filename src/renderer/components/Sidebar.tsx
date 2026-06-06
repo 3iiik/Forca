@@ -23,7 +23,7 @@ const Sidebar = memo(function Sidebar() {
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
         {sidebarOpen && (
           <div className="flex items-center gap-2">
-            <img src="/forca-icon.png" alt="Forca" className="w-8 h-8" />
+            <img src="./forca-icon.png" alt="Forca" className="w-8 h-8" />
             <span className="font-bold text-base">Forca</span>
           </div>
         )}
