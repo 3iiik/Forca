@@ -100,7 +100,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: List dist folder
-        run: ls -la dist/
+        run: Get-ChildItem -Recurse dist/
+        shell: powershell
 
       - name: Upload Windows artifacts
         uses: softprops/action-gh-release@v1
