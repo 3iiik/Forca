@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useAppStore } from '../stores/appStore';
 
 const navItems = [
@@ -9,7 +10,7 @@ const navItems = [
   { id: 'settings', label: 'Settings', icon: '⚙' },
 ];
 
-export default function Sidebar() {
+const Sidebar = memo(function Sidebar() {
   const { currentView, setCurrentView, sidebarOpen, setSidebarOpen, activeZone } = useAppStore();
 
   return (
@@ -22,9 +23,8 @@ export default function Sidebar() {
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
         {sidebarOpen && (
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary-500" />
+            <img src="/forca-icon.png" alt="Forca" className="w-8 h-8" />
             <span className="font-bold text-base">Forca</span>
-          
           </div>
         )}
         <button
@@ -66,23 +66,8 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Bottom section */}
-      <div className="p-3 border-t border-gray-200 dark:border-gray-800">
-        {sidebarOpen && (
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-bold">
-              FZ
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
-                Forca v1.0
-              
-              </div>
-              <div className="text-xs text-gray-400">Ready to focus</div>
-            </div>
-          </div>
-        )}
-      </div>
     </aside>
   );
-}
+});
+
+export default Sidebar;

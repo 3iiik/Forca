@@ -5,7 +5,6 @@ import { AmbientSoundType } from '../types';
 const sounds: { id: AmbientSoundType; label: string; icon: string }[] = [
   { id: 'rain', label: 'Rain', icon: '🌧' },
   { id: 'white-noise', label: 'White Noise', icon: '📡' },
-  { id: 'lofi', label: 'Lo-fi', icon: '🎵' },
   { id: 'forest', label: 'Forest', icon: '🌲' },
 ];
 

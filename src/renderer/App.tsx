@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { useAppStore } from './stores/appStore';
 import Layout from './components/Layout';
-import TodayView from './components/TodayView';
-import CalendarView from './components/CalendarView';
-import BlockRules from './components/BlockRules';
-import StatsPage from './components/StatsPage';
-import SettingsPage from './components/SettingsPage';
-import ZoneProfiles from './components/ZoneProfiles';
 import { useAudio } from './hooks/useAudio';
-import { ActiveZone, BreakTimer } from './types';
+
+const TodayView = lazy(() => import('./components/TodayView'));
+const CalendarView = lazy(() => import('./components/CalendarView'));
+const BlockRules = lazy(() => import('./components/BlockRules'));
+const StatsPage = lazy(() => import('./components/StatsPage'));
+const SettingsPage = lazy(() => import('./components/SettingsPage'));
+const ZoneProfiles = lazy(() => import('./components/ZoneProfiles'));
 
 function App() {
   useAudio();
@@ -17,11 +17,18 @@ function App() {
     setNotification, setUpdateAvailable, setSettings, setZones, setProfiles,
     darkMode, setDarkMode,
   } = useAppStore();
+  const notifyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    const api = window.electronAPI;
+    if (!api) {
+      console.warn('Forca is running outside Electron — electronAPI not available');
+      return;
+    }
+
     const loadSettings = async () => {
       try {
-        const settings = await window.electronAPI.settings.get();
+        const settings = await api.settings.get();
         setSettings(settings);
 
         if (settings.general.darkMode === 'dark') {
@@ -33,8 +40,8 @@ function App() {
           setDarkMode(prefersDark);
         }
         const [zones, profiles] = await Promise.all([
-          window.electronAPI.zone.list(),
-          window.electronAPI.profiles.list(),
+          api.zone.list(),
+          api.profiles.list(),
         ]);
         setZones(zones);
         setProfiles(profiles);
@@ -44,24 +51,25 @@ function App() {
     };
     loadSettings();
 
-    const unsubZone = window.electronAPI.on('zone:updated', (zone: ActiveZone | null) => {
+    const unsubZone = api.on('zone:updated', (zone: any) => {
       setActiveZone(zone);
     });
 
-    const unsubBreak = window.electronAPI.on('break:update', (data: BreakTimer) => {
+    const unsubBreak = api.on('break:update', (data: any) => {
       setBreakTimer(data);
     });
 
-    const unsubNotify = window.electronAPI.on('notification:show', (data: { title: string; body: string }) => {
+    const unsubNotify = api.on('notification:show', (data: { title: string; body: string }) => {
       setNotification(data);
-      setTimeout(() => setNotification(null), 5000);
+      if (notifyTimeoutRef.current) clearTimeout(notifyTimeoutRef.current);
+      notifyTimeoutRef.current = setTimeout(() => setNotification(null), 5000);
     });
 
-    const unsubUpdate = window.electronAPI.on('update:available', (data: { version: string }) => {
+    const unsubUpdate = api.on('update:available', (data: { version: string }) => {
       setUpdateAvailable(data);
     });
 
-    const unsubTray = window.electronAPI.on('tray:action', (action: string) => {
+    const unsubTray = api.on('tray:action', (action: string) => {
       switch (action) {
         case 'start-focus':
           setCurrentView('today');
@@ -81,37 +89,26 @@ function App() {
       unsubNotify();
       unsubUpdate();
       unsubTray();
-      window.electronAPI.removeAllListeners('zone:updated');
-      window.electronAPI.removeAllListeners('break:update');
+      if (notifyTimeoutRef.current) clearTimeout(notifyTimeoutRef.current);
+      api.removeAllListeners('zone:updated');
+      api.removeAllListeners('break:update');
     };
-  }, []);
+  }, [setActiveZone, setBreakTimer, setCurrentView, setDarkMode, setNotification, setProfiles, setSettings, setUpdateAvailable, setZones]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
 
-  const renderView = () => {
-    switch (currentView) {
-      case 'today':
-        return <TodayView />;
-      case 'calendar':
-        return <CalendarView />;
-      case 'block-rules':
-        return <BlockRules />;
-      case 'stats':
-        return <StatsPage />;
-      case 'settings':
-        return <SettingsPage />;
-      case 'profiles':
-        return <ZoneProfiles />;
-      default:
-        return <TodayView />;
-    }
-  };
-
   return (
     <Layout>
-      {renderView()}
+      <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" /></div>}>
+        {currentView === 'today' && <TodayView />}
+        {currentView === 'calendar' && <CalendarView />}
+        {currentView === 'block-rules' && <BlockRules />}
+        {currentView === 'stats' && <StatsPage />}
+        {currentView === 'settings' && <SettingsPage />}
+        {currentView === 'profiles' && <ZoneProfiles />}
+      </Suspense>
     </Layout>
   );
 }

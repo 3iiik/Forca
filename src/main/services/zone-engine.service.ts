@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron';
 import store from '../store/store';
-import { FocusZone, ActiveZone, FocusSession, ZoneProfile, TrayState } from '../../shared/types';
+import { FocusZone, ActiveZone, FocusSession, ZoneProfile } from '../../shared/types';
 import { ScoreService } from './score.service';
 import { BlockingService } from './blocker.service';
 import { TrayService } from './tray.service';
@@ -275,8 +275,11 @@ export class ZoneEngine {
     return this.activeZone;
   }
 
+  private tickCount = 0;
+
   private startTimer(): void {
     this.stopTimer();
+    this.tickCount = 0;
     this.timerInterval = setInterval(() => {
       if (!this.activeZone) return;
 
@@ -302,11 +305,15 @@ export class ZoneEngine {
           }
         }
 
-        this.tray.updateState({
-          status: 'active',
-          activeZoneName: this.activeZone.zoneName,
-          remaining: this.activeZone.remaining,
-        });
+        // Throttle tray updates to every 30 seconds
+        this.tickCount++;
+        if (this.tickCount % 30 === 0) {
+          this.tray.updateState({
+            status: 'active',
+            activeZoneName: this.activeZone.zoneName,
+            remaining: this.activeZone.remaining,
+          });
+        }
       }
 
       this.onUpdate?.(this.activeZone);

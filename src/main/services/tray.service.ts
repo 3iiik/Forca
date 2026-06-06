@@ -1,4 +1,4 @@
-import { Tray, Menu, nativeImage, BrowserWindow, app, Notification } from 'electron';
+import { Tray, Menu, nativeImage, BrowserWindow, app } from 'electron';
 import * as path from 'path';
 import { TrayState } from '../../shared/types';
 

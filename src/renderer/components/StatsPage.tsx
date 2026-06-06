@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, CartesianGrid,
@@ -174,7 +174,7 @@ export default function StatsPage() {
   );
 }
 
-function ScoreCard({ label, value }: { label: string; value: number }) {
+const ScoreCard = memo(function ScoreCard({ label, value }: { label: string; value: number }) {
   const color = value >= 80 ? 'text-green-600' : value >= 50 ? 'text-amber-600' : 'text-red-600';
   return (
     <div className="focus-card text-center">
@@ -182,18 +182,18 @@ function ScoreCard({ label, value }: { label: string; value: number }) {
       <div className={`text-2xl font-bold ${color}`}>{value}</div>
     </div>
   );
-}
+});
 
-function SummaryItem({ label, value }: { label: string; value: string }) {
+const SummaryItem = memo(function SummaryItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
       <div className="text-2xl font-bold text-primary-600">{value}</div>
       <div className="text-xs text-gray-400 mt-1">{label}</div>
     </div>
   );
-}
+});
 
-function MilestoneCard({ title, value, icon, unlocked }: {
+const MilestoneCard = memo(function MilestoneCard({ title, value, icon, unlocked }: {
   title: string; value: string; icon: string; unlocked: boolean;
 }) {
   return (
@@ -203,4 +203,4 @@ function MilestoneCard({ title, value, icon, unlocked }: {
       <div className="text-xs text-gray-400">{title}</div>
     </div>
   );
-}
+});

@@ -7,7 +7,6 @@ const soundOptions: { id: AmbientSoundType; label: string }[] = [
   { id: 'none', label: 'None' },
   { id: 'rain', label: 'Rain' },
   { id: 'white-noise', label: 'White Noise' },
-  { id: 'lofi', label: 'Lo-fi' },
   { id: 'forest', label: 'Forest' },
 ];
 
@@ -132,11 +131,11 @@ export default function ZoneProfiles() {
             </div>
             <div>
               <label className="text-sm font-medium block mb-1">Ambient Sound</label>
-              <select
-                value={newProfile.ambientSound}
-                onChange={(e) => setNewProfile({ ...newProfile, ambientSound: e.target.value as AmbientSoundType })}
-                className="input-field"
-              >
+                <select
+                  value={newProfile.ambientSound ?? 'none'}
+                  onChange={(e) => setNewProfile({ ...newProfile, ambientSound: e.target.value as AmbientSoundType })}
+                  className="input-field"
+                >
                 {soundOptions.map((s) => (
                   <option key={s.id} value={s.id}>{s.label}</option>
                 ))}

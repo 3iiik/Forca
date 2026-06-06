@@ -27,6 +27,7 @@ npm-debug.log*
 .env
 .env.local
 .env.*
+!.env.example
 
 # Electron builder
 *.dmg

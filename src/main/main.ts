@@ -1,5 +1,6 @@
 import { app, BrowserWindow, Notification } from 'electron';
 import * as path from 'path';
+import * as os from 'os';
 import { autoUpdater } from 'electron-updater';
 
 import store from './store/store';
@@ -55,6 +56,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
+      backgroundThrottling: true,
     },
   });
 
@@ -69,6 +71,14 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
+  });
+
+  // Lower power when hidden
+  mainWindow.on('hide', () => {
+    mainWindow?.webContents.setBackgroundThrottling(true);
+  });
+  mainWindow.on('show', () => {
+    mainWindow?.webContents.setBackgroundThrottling(false);
   });
 
   mainWindow.on('close', (event) => {
@@ -119,6 +129,9 @@ function createWindow() {
     },
   });
 
+  // Load always-allowed apps into blocker
+  blockerService.setAlwaysAllowedApps(store.get('alwaysAllowedApps'));
+
   // Register all IPC handlers
   registerCalendarIpc(calendarService);
   registerZoneIpc(zoneEngine);
@@ -142,12 +155,14 @@ function createWindow() {
   // ── Auto-updater ──────────────────────────────
   autoUpdater.autoDownload = false;
 
+  const isProd = process.env.NODE_ENV === 'production' && !process.env.VITE_DEV_SERVER_URL;
+
   autoUpdater.on('checking-for-update', () => {
-    console.log('[updater] checking for updates');
+    if (!isProd) console.log('[updater] checking for updates');
   });
 
   autoUpdater.on('update-available', (info) => {
-    console.log(`[updater] update available: v${info.version}`);
+    if (!isProd) console.log(`[updater] update available: v${info.version}`);
     mainWindow?.webContents.send('update:available', {
       version: info.version,
       releaseDate: info.releaseDate,
@@ -155,7 +170,7 @@ function createWindow() {
   });
 
   autoUpdater.on('update-not-available', () => {
-    console.log('[updater] no update available');
+    if (!isProd) console.log('[updater] no update available');
   });
 
   autoUpdater.on('download-progress', (progress) => {
@@ -166,7 +181,7 @@ function createWindow() {
   });
 
   autoUpdater.on('update-downloaded', () => {
-    console.log('[updater] update downloaded');
+    if (!isProd) console.log('[updater] update downloaded');
     mainWindow?.webContents.send('update:downloaded');
 
     // Show native notification prompting restart
@@ -234,6 +249,25 @@ function setupAutoLaunch() {
     });
   }
 }
+
+// ── Optimizations ──────────────────────────
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-renderer-backgrounding');
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=256 --code-cache');
+
+// Lower process priority so Forca never competes with user's main apps
+function lowerProcessPriority() {
+  try {
+    if (process.platform === 'win32') {
+      os.setPriority(0, 19);
+    } else if (process.platform === 'darwin' || process.platform === 'linux') {
+      os.setPriority(0, 10);
+    }
+  } catch {
+    // May not have permission, that's fine
+  }
+}
+lowerProcessPriority();
 
 // macOS: hide dock icon by default (menu bar app)
 if (process.platform === 'darwin') {

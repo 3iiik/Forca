@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import { CalendarEvent } from '../types';
 
 interface TimelineProps {
   events: CalendarEvent[];
 }
 
-export default function Timeline({ events }: TimelineProps) {
+const Timeline = memo(function Timeline({ events }: TimelineProps) {
   const now = new Date();
   const hours = Array.from({ length: 16 }, (_, i) => i + 6); // 6 AM to 10 PM
 
@@ -93,4 +94,6 @@ export default function Timeline({ events }: TimelineProps) {
       </div>
     </div>
   );
-}
+});
+
+export default Timeline;

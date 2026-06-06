@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { memo, ReactNode } from 'react';
 import Sidebar from './Sidebar';
 import { useAppStore } from '../stores/appStore';
 
@@ -6,7 +6,7 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+const Layout = memo(function Layout({ children }: LayoutProps) {
   const { sidebarOpen } = useAppStore();
 
   return (
@@ -23,4 +23,6 @@ export default function Layout({ children }: LayoutProps) {
       </main>
     </div>
   );
-}
+});
+
+export default Layout;

@@ -43,8 +43,11 @@ export class UpdaterService {
           version: result.updateInfo.version,
         };
       }
-    } catch {
+    } catch (err) {
       // Not published yet, that's fine
+      if (process.env.NODE_ENV !== 'production') {
+        console.debug('Update check failed:', err);
+      }
     }
     return { available: false };
   }

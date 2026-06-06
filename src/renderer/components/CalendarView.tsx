@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { CalendarEvent } from '../types';
 
@@ -126,7 +126,7 @@ export default function CalendarView() {
   );
 }
 
-function EventRow({ event }: { event: CalendarEvent }) {
+const EventRow = memo(function EventRow({ event }: { event: CalendarEvent }) {
   const isPast = new Date() > event.end;
   const isOngoing = new Date() >= event.start && new Date() <= event.end;
 
@@ -157,4 +157,4 @@ function EventRow({ event }: { event: CalendarEvent }) {
       <div className="text-xs text-gray-400 capitalize">{event.source}</div>
     </div>
   );
-}
+});

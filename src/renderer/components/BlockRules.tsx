@@ -1,20 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAppStore } from '../stores/appStore';
-import { FocusZone } from '../types';
 
 export default function BlockRules() {
   const { zones, setZones } = useAppStore();
   const [newApp, setNewApp] = useState('');
   const [newSite, setNewSite] = useState('');
+  const [allowedApps, setAllowedApps] = useState<string[]>([]);
+  const [newAllowedApp, setNewAllowedApp] = useState('');
 
   useEffect(() => {
     loadZones();
+    loadAllowedApps();
   }, []);
 
   const loadZones = async () => {
     const z = await window.electronAPI.zone.list();
     setZones(z);
   };
+
+  const loadAllowedApps = async () => {
+    const apps = await window.electronAPI.blocker.getAllowedApps();
+    setAllowedApps(apps);
+  };
+
+  const handleAddAllowedApp = useCallback(async () => {
+    if (newAllowedApp.trim()) {
+      const updated = [...allowedApps, newAllowedApp.trim()];
+      await window.electronAPI.blocker.setAllowedApps(updated);
+      setAllowedApps(updated);
+      setNewAllowedApp('');
+    }
+  }, [newAllowedApp, allowedApps]);
+
+  const handleRemoveAllowedApp = useCallback(async (app: string) => {
+    const updated = allowedApps.filter(a => a !== app);
+    await window.electronAPI.blocker.setAllowedApps(updated);
+    setAllowedApps(updated);
+  }, [allowedApps]);
 
   return (
     <div className="space-y-6">
@@ -156,15 +178,37 @@ export default function BlockRules() {
         <p className="text-xs text-gray-400 mb-3">
           These apps will never be blocked, even during Forca zones.
         </p>
+        <div className="flex gap-2 mb-3">
+          <input
+            type="text"
+            value={newAllowedApp}
+            onChange={(e) => setNewAllowedApp(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleAddAllowedApp(); }}
+            placeholder="e.g. Slack, Spotify"
+            className="input-field flex-1 text-sm"
+          />
+          <button
+            onClick={handleAddAllowedApp}
+            className="btn-primary text-sm"
+          >Add</button>
+        </div>
         <div className="flex flex-wrap gap-2">
-          {['Code', 'Figma', 'GitHub Desktop', 'Notion', 'Spotify'].map((app) => (
-            <span
-              key={app}
-              className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-full text-xs font-medium border border-green-200 dark:border-green-800"
-            >
-              {app} ✓
-            </span>
-          ))}
+          {allowedApps.length > 0 ? (
+            allowedApps.map((app) => (
+              <span
+                key={app}
+                className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-full text-xs font-medium border border-green-200 dark:border-green-800"
+              >
+                {app}
+                <button
+                  onClick={() => handleRemoveAllowedApp(app)}
+                  className="text-green-400 hover:text-red-500 ml-1"
+                >✕</button>
+              </span>
+            ))
+          ) : (
+            <p className="text-xs text-gray-400">No always-allowed apps configured.</p>
+          )}
         </div>
       </div>
     </div>

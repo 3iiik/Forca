@@ -2,10 +2,9 @@ import { useEffect, useRef, useCallback } from 'react';
 import { AmbientSoundType } from '../types';
 
 const soundFiles: Record<AmbientSoundType, string> = {
-  'rain': '/sounds/rain.mp3',
-  'white-noise': '/sounds/white-noise.mp3',
-  'lofi': '/sounds/lofi.mp3',
-  'forest': '/sounds/forest.mp3',
+  'rain': '/sounds/rain.wav',
+  'white-noise': '/sounds/white-noise.wav',
+  'forest': '/sounds/forest.wav',
   'none': '',
 };
 
@@ -76,12 +75,15 @@ export function useAudio() {
   }, [stop]);
 
   useEffect(() => {
-    const unsubPlay = window.electronAPI.on('sound:play', (sound: AmbientSoundType, volume: number) => {
+    const api = window.electronAPI;
+    if (!api) return;
+
+    const unsubPlay = api.on('sound:play', (sound: AmbientSoundType, volume: number) => {
       play(sound, volume);
     });
-    const unsubStop = window.electronAPI.on('sound:stop', stop);
-    const unsubVolume = window.electronAPI.on('sound:volume', setVolume);
-    const unsubFade = window.electronAPI.on('sound:fade-out', (duration: number) => fadeOut(duration));
+    const unsubStop = api.on('sound:stop', stop);
+    const unsubVolume = api.on('sound:volume', setVolume);
+    const unsubFade = api.on('sound:fade-out', (duration: number) => fadeOut(duration));
 
     return () => {
       unsubPlay();

@@ -42,7 +42,7 @@ export interface ZoneProfile {
   defaultDuration: number;
 }
 
-export type AmbientSoundType = 'rain' | 'white-noise' | 'lofi' | 'forest' | 'none';
+export type AmbientSoundType = 'rain' | 'white-noise' | 'forest' | 'none';
 
 export interface ActiveZone {
   zoneId: string;
@@ -216,6 +216,8 @@ export interface IpcChannels {
   'blocker:block-sites': (sites: string[]) => Promise<void>;
   'blocker:unblock-sites': () => Promise<void>;
   'blocker:get-blocked-apps': () => Promise<string[]>;
+  'blocker:get-allowed-apps': () => Promise<string[]>;
+  'blocker:set-allowed-apps': (apps: string[]) => Promise<void>;
   'tray:update': (state: TrayState) => Promise<void>;
   'tray:get-state': () => Promise<TrayState>;
   'settings:get': () => Promise<AppSettings>;

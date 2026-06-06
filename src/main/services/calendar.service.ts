@@ -3,8 +3,11 @@ import ical from 'node-ical';
 import { CalendarEvent } from '../../shared/types';
 import store from '../store/store';
 import { BrowserWindow } from 'electron';
+import * as http from 'http';
+import { AddressInfo } from 'net';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+const REDIRECT_PATH = '/oauth/callback';
 
 export class CalendarService {
   private window: BrowserWindow | null = null;
@@ -35,28 +38,96 @@ export class CalendarService {
         return true;
       }
 
-      // In production, you'd open the OAuth URL in a browser window
-      // and handle the redirect callback
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        'http://localhost:5173/oauth/callback'
-      );
-
-      const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: SCOPES,
-      });
-
-      if (this.window) {
-        await this.window.webContents.loadURL(authUrl);
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+      if (!clientId || !clientSecret) {
+        console.warn('Google OAuth: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set');
+        return false;
       }
 
-      return false;
+      // Start a local server to receive the OAuth redirect
+      const code = await this.getOAuthCode(clientId, clientSecret);
+      if (!code) return false;
+
+      const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, 'http://localhost');
+      const { tokens } = await oauth2Client.getToken(code);
+
+      // Save tokens
+      const currentSettings = store.get('settings');
+      store.set('settings', {
+        ...currentSettings,
+        calendar: {
+          ...currentSettings.calendar,
+          googleAccessToken: tokens.access_token || '',
+          googleRefreshToken: tokens.refresh_token || '',
+        },
+      });
+
+      return true;
     } catch (err) {
       console.error('Google auth failed:', err);
       return false;
     }
+  }
+
+  private getOAuthCode(clientId: string, clientSecret: string): Promise<string | null> {
+    return new Promise((resolve) => {
+      // Start local server to catch the redirect
+      const server = http.createServer();
+      let authWindow: BrowserWindow | null = null;
+
+      server.on('request', (req, res) => {
+        const url = new URL(req.url || '', `http://${req.headers.host}`);
+        if (url.pathname === REDIRECT_PATH) {
+          const code = url.searchParams.get('code');
+          const error = url.searchParams.get('error');
+
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          if (error) {
+            res.end('<html><body><h2>Authorization denied</h2><p>You can close this window.</p></body></html>');
+            resolve(null);
+          } else if (code) {
+            res.end('<html><body><h2>Authorization successful!</h2><p>You can close this window and return to Forca.</p></body></html>');
+            resolve(code);
+          } else {
+            res.end('<html><body><h2>No authorization code received</h2></body></html>');
+            resolve(null);
+          }
+
+          if (authWindow && !authWindow.isDestroyed()) {
+            authWindow.close();
+          }
+          server.close();
+        }
+      });
+
+      server.listen(0, '127.0.0.1', () => {
+        const port = (server.address() as AddressInfo).port;
+        const redirectUri = `http://127.0.0.1:${port}${REDIRECT_PATH}`;
+
+        const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+        const authUrl = oauth2Client.generateAuthUrl({
+          access_type: 'offline',
+          scope: SCOPES,
+          prompt: 'consent',
+        });
+
+        authWindow = new BrowserWindow({
+          width: 600,
+          height: 700,
+          title: 'Forca — Google Calendar Authorization',
+          webPreferences: { nodeIntegration: false, contextIsolation: true },
+        });
+
+        authWindow.loadURL(authUrl);
+
+        authWindow.on('closed', () => {
+          authWindow = null;
+          server.close();
+          resolve(null);
+        });
+      });
+    });
   }
 
   async getEvents(date: string): Promise<CalendarEvent[]> {
@@ -80,6 +151,21 @@ export class CalendarService {
       oauth2Client.setCredentials({
         access_token: settings.calendar.googleAccessToken,
         refresh_token: settings.calendar.googleRefreshToken,
+      });
+
+      // Auto-refresh if token expired
+      oauth2Client.on('tokens', (tokens) => {
+        if (tokens.access_token || tokens.refresh_token) {
+          const currentSettings = store.get('settings');
+          store.set('settings', {
+            ...currentSettings,
+            calendar: {
+              ...currentSettings.calendar,
+              ...(tokens.access_token ? { googleAccessToken: tokens.access_token } : {}),
+              ...(tokens.refresh_token ? { googleRefreshToken: tokens.refresh_token } : {}),
+            },
+          });
+        }
       });
 
       const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
@@ -172,7 +258,7 @@ export class CalendarService {
   startMeetingMonitor(): void {
     this.checkInterval = setInterval(() => {
       this.checkMeetingEnded();
-    }, 10000);
+    }, 300000);
   }
 
   stopMeetingMonitor(): void {

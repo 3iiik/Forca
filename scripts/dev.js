@@ -45,17 +45,16 @@ function main() {
     fs.copyFileSync(iconPath, path.join(iconsDir, 'icon-yellow.png'));
   }
 
-  // Create placeholder sound files in public/sounds (served by Vite)
+  // Generate ambient sound files if missing
   const publicSoundsDir = path.join(__dirname, '..', 'public', 'sounds');
   fs.mkdirSync(publicSoundsDir, { recursive: true });
-  const sounds = ['rain', 'white-noise', 'lofi', 'forest'];
+  const sounds = ['rain', 'white-noise', 'forest'];
   for (const sound of sounds) {
-    const soundPath = path.join(publicSoundsDir, `${sound}.mp3`);
+    const soundPath = path.join(publicSoundsDir, `${sound}.wav`);
     if (!fs.existsSync(soundPath)) {
-      console.log(`🎵 Creating placeholder ${sound}.mp3...`);
-      const mp3Frame = Buffer.alloc(417, 0xFF);
-      mp3Frame[1] = 0xFB;
-      fs.writeFileSync(soundPath, mp3Frame);
+      console.log(`🎵 Generating ${sound}.wav...`);
+      require('./generate-sounds');
+      break;
     }
   }
 

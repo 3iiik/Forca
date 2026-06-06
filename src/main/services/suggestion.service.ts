@@ -1,12 +1,10 @@
 import { Suggestion, FocusSession, CalendarEvent, FocusZone } from '../../shared/types';
-import store from '../store/store';
 
 export class SuggestionService {
   generateSuggestions(events: CalendarEvent[], zones: FocusZone[], sessions: FocusSession[]): Suggestion[] {
     const suggestions: Suggestion[] = [];
 
     // Analyze calendar patterns
-    const busyBlocks = this.findBusyBlocks(events);
     const freeBlocks = this.findFreeBlocks(events);
 
     // Suggest focus times in free blocks

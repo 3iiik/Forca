@@ -28,6 +28,8 @@ const api = {
     blockSites: (sites: string[]) => ipcRenderer.invoke('blocker:block-sites', sites),
     unblockSites: () => ipcRenderer.invoke('blocker:unblock-sites'),
     getBlockedApps: () => ipcRenderer.invoke('blocker:get-blocked-apps'),
+    getAllowedApps: () => ipcRenderer.invoke('blocker:get-allowed-apps'),
+    setAllowedApps: (apps: string[]) => ipcRenderer.invoke('blocker:set-allowed-apps', apps),
   },
 
   // Settings

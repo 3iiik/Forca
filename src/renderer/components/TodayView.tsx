@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import ActiveZoneCard from './ActiveZoneCard';
 import Timeline from './Timeline';
 import StreakCounter from './StreakCounter';
 import AmbientSoundControl from './AmbientSoundControl';
 import BreakReminder from './BreakReminder';
-import { CalendarEvent, Suggestion } from '../types';
 
 export default function TodayView() {
   const {
     activeZone, zones, events, setEvents, suggestions, setSuggestions,
     streak, setStreak, focusScore, setFocusScore,
-    settings, notification,
+    notification,
   } = useAppStore();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -26,12 +25,11 @@ export default function TodayView() {
     try {
       const today = new Date().toISOString().split('T')[0];
 
-      const [evts, suggs, streakData, score, active] = await Promise.all([
+      const [evts, suggs, streakData, score] = await Promise.all([
         window.electronAPI.calendar.getEvents(today),
         window.electronAPI.stats.suggestions(),
         window.electronAPI.stats.streak(),
         window.electronAPI.stats.focusScore(),
-        window.electronAPI.zone.getActive(),
       ]);
 
       setEvents(evts);
@@ -184,7 +182,7 @@ export default function TodayView() {
   );
 }
 
-function StatCard({ label, value, sub, color, bg }: {
+const StatCard = memo(function StatCard({ label, value, sub, color, bg }: {
   label: string; value: string; sub: string; color: string; bg: string;
 }) {
   return (
@@ -194,7 +192,7 @@ function StatCard({ label, value, sub, color, bg }: {
       <div className="text-xs text-gray-400 mt-0.5">{sub}</div>
     </div>
   );
-}
+});
 
 async function startZone(zoneId: string) {
   try {

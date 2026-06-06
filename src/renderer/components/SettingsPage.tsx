@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { AppSettings, FocusZone } from '../types';
 
@@ -6,9 +6,15 @@ export default function SettingsPage() {
   const { settings, setSettings, zones, setZones } = useAppStore();
   const [activeTab, setActiveTab] = useState<'general' | 'calendar' | 'zones' | 'notifications' | 'sounds' | 'sync'>('general');
   const [newZone, setNewZone] = useState({ name: '', duration: 25 });
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRef = useRef<AppSettings | null>(null);
 
   useEffect(() => {
     loadSettings();
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (pendingRef.current) window.electronAPI.settings.set(pendingRef.current);
+    };
   }, []);
 
   const loadSettings = async () => {
@@ -24,17 +30,7 @@ export default function SettingsPage() {
     }
   };
 
-  const updateSetting = async <K extends keyof AppSettings>(
-    key: K,
-    value: AppSettings[K]
-  ) => {
-    if (!settings) return;
-    const updated = { ...settings, [key]: value };
-    setSettings(updated);
-    await window.electronAPI.settings.set(updated);
-  };
-
-  const updateNestedSetting = async (
+  const updateNestedSetting = (
     parent: keyof AppSettings,
     key: string,
     value: any
@@ -45,7 +41,12 @@ export default function SettingsPage() {
       [parent]: { ...(settings[parent] as any), [key]: value },
     };
     setSettings(updated);
-    await window.electronAPI.settings.set(updated);
+    pendingRef.current = updated;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      await window.electronAPI.settings.set(updated);
+      pendingRef.current = null;
+    }, 500);
   };
 
   const createZone = async () => {
@@ -333,7 +334,6 @@ export default function SettingsPage() {
                 <option value="none">None</option>
                 <option value="rain">Rain</option>
                 <option value="white-noise">White Noise</option>
-                <option value="lofi">Lo-fi</option>
                 <option value="forest">Forest</option>
               </select>
             </div>
@@ -427,7 +427,7 @@ export default function SettingsPage() {
   );
 }
 
-function ToggleSetting({ label, description, checked, onChange }: {
+const ToggleSetting = memo(function ToggleSetting({ label, description, checked, onChange }: {
   label: string; description?: string; checked: boolean; onChange: (v: boolean) => void;
 }) {
   return (
@@ -450,4 +450,4 @@ function ToggleSetting({ label, description, checked, onChange }: {
       </button>
     </div>
   );
-}
+});

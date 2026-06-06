@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 
-export default function BreakReminder() {
+const BreakReminder = memo(function BreakReminder() {
   const { settings, breakTimer, activeZone } = useAppStore();
   const [focusMinutes, setFocusMinutes] = useState(0);
-  const [startTime] = useState(() => Date.now());
 
   // Track how long the user has been in focus mode
   useEffect(() => {
@@ -64,4 +63,6 @@ export default function BreakReminder() {
       )}
     </div>
   );
-}
+});
+
+export default BreakReminder;

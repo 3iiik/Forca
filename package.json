@@ -26,7 +26,6 @@
     "release": "npm run build && electron-builder --publish always"
   },
   "dependencies": {
-    "@react-oauth/google": "^0.12.1",
     "electron-store": "^8.2.0",
     "electron-updater": "^6.1.7",
     "firebase": "^10.7.1",

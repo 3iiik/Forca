@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import { StreakData } from '../types';
 
 interface StreakCounterProps {
   streak: StreakData;
 }
 
-export default function StreakCounter({ streak }: StreakCounterProps) {
+const StreakCounter = memo(function StreakCounter({ streak }: StreakCounterProps) {
   if (streak.currentStreak === 0) return null;
 
   return (
@@ -21,4 +22,6 @@ export default function StreakCounter({ streak }: StreakCounterProps) {
       )}
     </div>
   );
-}
+});
+
+export default StreakCounter;

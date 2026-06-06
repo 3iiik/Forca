@@ -23,6 +23,8 @@ declare global {
         blockSites: (sites: string[]) => Promise<void>;
         unblockSites: () => Promise<void>;
         getBlockedApps: () => Promise<string[]>;
+        getAllowedApps: () => Promise<string[]>;
+        setAllowedApps: (apps: string[]) => Promise<void>;
       };
       settings: {
         get: () => Promise<import('../../shared/types').AppSettings>;

@@ -9,6 +9,11 @@ const isWindows = os.platform() === 'win32';
 
 const execAsync = promisify(exec);
 
+function getHostsPath(): string {
+  if (isWindows) return 'C:\\Windows\\System32\\drivers\\etc\\hosts';
+  return '/etc/hosts';
+}
+
 interface BlockedProcess {
   name: string;
   pid: number;
@@ -20,22 +25,28 @@ export class BlockingService {
   private isBlocking = false;
   private window: BrowserWindow | null = null;
   private blockedAppsList: string[] = [];
+  private alwaysAllowedApps: string[] = [];
   private checkInterval: ReturnType<typeof setInterval> | null = null;
+
+  setAlwaysAllowedApps(apps: string[]): void {
+    this.alwaysAllowedApps = apps;
+  }
+
+  getAlwaysAllowedApps(): string[] {
+    return this.alwaysAllowedApps;
+  }
 
   setWindow(win: BrowserWindow) {
     this.window = win;
   }
 
   async blockApps(apps: string[]): Promise<void> {
-    this.blockedAppsList = apps;
-    if (apps.length === 0) return;
+    const toBlock = apps.filter(a => !this.alwaysAllowedApps.includes(a));
+    this.blockedAppsList = toBlock;
+    if (toBlock.length === 0) return;
 
     this.isBlocking = true;
-
-    // Start monitoring for blocked processes (Windows only for now)
-    if (isWindows) {
-      this.startProcessMonitor(apps);
-    }
+    this.startProcessMonitor(toBlock);
   }
 
   async unblockApps(): Promise<void> {
@@ -49,18 +60,15 @@ export class BlockingService {
   }
 
   async blockSites(sites: string[]): Promise<void> {
-    if (sites.length === 0 || os.platform() !== 'win32') return;
+    if (sites.length === 0) return;
 
-    const hostsPath = 'C:\\Windows\\System32\\drivers\\etc\\hosts';
+    const hostsPath = getHostsPath();
 
     try {
-      // Backup hosts file
       this.hostsBackupPath = path.join(os.tmpdir(), `hosts-backup-${Date.now()}`);
       fs.copyFileSync(hostsPath, this.hostsBackupPath);
 
       let hostsContent = fs.readFileSync(hostsPath, 'utf-8');
-
-      // Add blocked sites
       const blockEntries = sites.map(site => `\n127.0.0.1 ${site}\n127.0.0.1 www.${site}`);
       hostsContent += '\n# Forca - Blocked Sites\n' + blockEntries.join('\n');
 
@@ -71,9 +79,7 @@ export class BlockingService {
   }
 
   async unblockSites(): Promise<void> {
-    if (os.platform() !== 'win32') return;
-
-    const hostsPath = 'C:\\Windows\\System32\\drivers\\etc\\hosts';
+    const hostsPath = getHostsPath();
 
     try {
       if (this.hostsBackupPath && fs.existsSync(this.hostsBackupPath)) {
@@ -81,7 +87,6 @@ export class BlockingService {
         fs.unlinkSync(this.hostsBackupPath);
         this.hostsBackupPath = '';
       } else {
-        // Remove Forca block entries
         let hostsContent = fs.readFileSync(hostsPath, 'utf-8');
         const lines = hostsContent.split('\n');
         const filtered = lines.filter(line => !line.includes('# Forca - Blocked Sites'));
@@ -102,26 +107,20 @@ export class BlockingService {
       clearInterval(this.checkInterval);
     }
 
-    // Check every 2 seconds for blocked processes
     this.checkInterval = setInterval(async () => {
       if (!this.isBlocking) return;
 
       for (const appName of apps) {
         try {
-          const { stdout } = await execAsync(
-            `powershell -Command "Get-Process -Name '${appName}' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id"`
-          );
-          const pids = stdout.trim().split('\n').filter(Boolean);
+          const pids = await this.findProcessPids(appName);
           if (pids.length > 0) {
-            // Kill the processes
             for (const pid of pids) {
               try {
-                await execAsync(`taskkill /F /PID ${pid.trim()}`);
-                this.blockedProcesses.push({ name: appName, pid: parseInt(pid.trim()) });
+                await this.killProcess(pid);
+                this.blockedProcesses.push({ name: appName, pid });
               } catch { /* process may already be dead */ }
             }
 
-            // Show overlay notification
             if (this.window && !this.window.isDestroyed()) {
               this.window.webContents.send('blocker:app-blocked', appName);
               new Notification({
@@ -133,6 +132,26 @@ export class BlockingService {
         } catch { /* process may have exited */ }
       }
     }, 2000);
+  }
+
+  private async findProcessPids(processName: string): Promise<number[]> {
+    if (isWindows) {
+      const { stdout } = await execAsync(
+        `powershell -Command "Get-Process -Name '${processName}' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id"`
+      );
+      return stdout.trim().split('\n').filter(Boolean).map(p => parseInt(p.trim())).filter(n => !isNaN(n));
+    }
+
+    const { stdout } = await execAsync(`pgrep -f "${processName}" 2>/dev/null || true`);
+    return stdout.trim().split('\n').filter(Boolean).map(p => parseInt(p.trim())).filter(n => !isNaN(n));
+  }
+
+  private async killProcess(pid: number): Promise<void> {
+    if (isWindows) {
+      await execAsync(`taskkill /F /PID ${pid}`);
+    } else {
+      await execAsync(`kill -9 ${pid}`);
+    }
   }
 
   cleanup(): void {

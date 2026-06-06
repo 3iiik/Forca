@@ -1,10 +1,12 @@
+import { memo } from 'react';
 import { useAppStore } from '../stores/appStore';
 
-export default function ActiveZoneCard() {
+const ActiveZoneCard = memo(function ActiveZoneCard() {
   const { activeZone, breakTimer } = useAppStore();
 
   const handlePause = async () => {
-    if (activeZone?.status === 'running') {
+    if (!activeZone) return;
+    if (activeZone.status === 'running') {
       await window.electronAPI.zone.pause();
     } else {
       await window.electronAPI.zone.resume();
@@ -37,6 +39,8 @@ export default function ActiveZoneCard() {
       </div>
     );
   }
+
+  if (!activeZone) return null;
 
   if (breakTimer.isBreak) {
     const breakPct = breakTimer.total > 0
@@ -128,4 +132,6 @@ export default function ActiveZoneCard() {
       </div>
     </div>
   );
-}
+});
+
+export default ActiveZoneCard;
