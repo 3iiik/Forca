@@ -14,7 +14,8 @@ function App() {
   useAudio();
   const {
     currentView, setCurrentView, setActiveZone, setBreakTimer,
-    setNotification, setUpdateAvailable, setSettings, darkMode, setDarkMode,
+    setNotification, setUpdateAvailable, setSettings, setZones, setProfiles,
+    darkMode, setDarkMode,
   } = useAppStore();
 
   useEffect(() => {
@@ -31,6 +32,12 @@ function App() {
           const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
           setDarkMode(prefersDark);
         }
+        const [zones, profiles] = await Promise.all([
+          window.electronAPI.zone.list(),
+          window.electronAPI.profiles.list(),
+        ]);
+        setZones(zones);
+        setProfiles(profiles);
       } catch (err) {
         console.error('Failed to load settings:', err);
       }

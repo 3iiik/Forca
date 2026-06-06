@@ -8,6 +8,6 @@ export function registerTrayIpc(trayService: TrayService) {
   });
 
   ipcMain.handle('tray:get-state', async () => {
-    return { status: 'idle' } as TrayState;
+    return trayService.getState();
   });
 }

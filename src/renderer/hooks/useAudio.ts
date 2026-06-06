@@ -17,7 +17,9 @@ export function useAudio() {
 
   const stop = useCallback(() => {
     if (sourceRef.current) {
-      try { sourceRef.current.stop(); } catch {}
+      try { sourceRef.current.stop(); } catch { /* ignore */ }
+
+
       sourceRef.current = null;
     }
     if (audioContextRef.current) {

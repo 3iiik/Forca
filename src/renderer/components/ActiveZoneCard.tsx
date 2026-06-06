@@ -1,25 +1,7 @@
-import { useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 
 export default function ActiveZoneCard() {
-  const { activeZone, setActiveZone, breakTimer } = useAppStore();
-  const [remaining, setRemaining] = useState(0);
-  const [total, setTotal] = useState(0);
-
-  useEffect(() => {
-    if (activeZone) {
-      setRemaining(activeZone.remaining);
-      setTotal(activeZone.remaining + (Date.now() - new Date(activeZone.startTime).getTime()) / 1000);
-    }
-  }, [activeZone]);
-
-  useEffect(() => {
-    if (!activeZone) return;
-    const interval = setInterval(() => {
-      setRemaining(prev => Math.max(0, prev - 1));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [activeZone]);
+  const { activeZone, breakTimer } = useAppStore();
 
   const handlePause = async () => {
     if (activeZone?.status === 'running') {
@@ -91,7 +73,11 @@ export default function ActiveZoneCard() {
     );
   }
 
-  const progress = total > 0 ? ((total - remaining) / total) * 100 : 0;
+  const totalDuration = Math.floor(
+    (new Date(activeZone.endTime).getTime() - new Date(activeZone.startTime).getTime()) / 1000
+  );
+  const remaining = activeZone.remaining;
+  const progress = totalDuration > 0 ? ((totalDuration - remaining) / totalDuration) * 100 : 0;
   const isPaused = activeZone.status === 'paused';
 
   return (

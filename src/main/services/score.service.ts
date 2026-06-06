@@ -2,7 +2,7 @@ import { FocusSession, FocusScore, WeeklySummary, StreakData } from '../../share
 import store from '../store/store';
 
 export class ScoreService {
-  calculateSessionScore(session: FocusSession): number {
+  static calculateSessionScore(session: FocusSession): number {
     const durationRatio = session.durationPlanned > 0
       ? session.durationCompleted / session.durationPlanned
       : 0;
@@ -26,7 +26,7 @@ export class ScoreService {
 
     return {
       session: todaySessions.length > 0
-        ? this.calculateSessionScore(todaySessions[todaySessions.length - 1])
+        ? ScoreService.calculateSessionScore(todaySessions[todaySessions.length - 1])
         : 0,
       daily: todaySessions.length > 0
         ? Math.round(todaySessions.reduce((a, s) => a + s.score, 0) / todaySessions.length)

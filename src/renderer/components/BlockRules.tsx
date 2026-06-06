@@ -36,8 +36,15 @@ export default function BlockRules() {
               className="input-field flex-1 text-sm"
             />
             <button
-              onClick={() => {
+              onClick={async () => {
                 if (newApp.trim()) {
+                  const apps = newApp.split(',').map(a => a.trim()).filter(Boolean);
+                  if (zones.length > 0) {
+                    const zone = { ...zones[0], blockedApps: [...zones[0].blockedApps, ...apps] };
+                    await window.electronAPI.zone.update(zone);
+                    const updatedZones = await window.electronAPI.zone.list();
+                    setZones(updatedZones);
+                  }
                   setNewApp('');
                 }
               }}
@@ -60,7 +67,17 @@ export default function BlockRules() {
                   zone.blockedApps.map((app, i) => (
                     <div key={i} className="flex items-center justify-between px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
                       <span>{app}</span>
-                      <button className="text-gray-400 hover:text-red-500 text-xs">✕</button>
+                      <button
+                        onClick={async () => {
+                          if (zones.length > 0) {
+                            const zone = { ...zones[0], blockedApps: zones[0].blockedApps.filter(a => a !== app) };
+                            await window.electronAPI.zone.update(zone);
+                            const updatedZones = await window.electronAPI.zone.list();
+                            setZones(updatedZones);
+                          }
+                        }}
+                        className="text-gray-400 hover:text-red-500 text-xs"
+                      >✕</button>
                     </div>
                   ))
                 ) : (
@@ -82,7 +99,21 @@ export default function BlockRules() {
               placeholder="e.g. reddit.com, twitter.com"
               className="input-field flex-1 text-sm"
             />
-            <button className="btn-primary text-sm">Add</button>
+            <button
+              onClick={async () => {
+                if (newSite.trim()) {
+                  const sites = newSite.split(',').map(s => s.trim()).filter(Boolean);
+                  if (zones.length > 0) {
+                    const zone = { ...zones[0], blockedSites: [...zones[0].blockedSites, ...sites] };
+                    await window.electronAPI.zone.update(zone);
+                    const updatedZones = await window.electronAPI.zone.list();
+                    setZones(updatedZones);
+                  }
+                  setNewSite('');
+                }
+              }}
+              className="btn-primary text-sm"
+            >Add</button>
           </div>
           <div className="text-xs text-gray-400 mb-3">
             Sites will be blocked via /etc/hosts during Forca zones
@@ -97,7 +128,17 @@ export default function BlockRules() {
                   zone.blockedSites.map((site, i) => (
                     <div key={i} className="flex items-center justify-between px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
                       <span>{site}</span>
-                      <button className="text-gray-400 hover:text-red-500 text-xs">✕</button>
+                      <button
+                        onClick={async () => {
+                          if (zones.length > 0) {
+                            const zone = { ...zones[0], blockedSites: zones[0].blockedSites.filter(s => s !== site) };
+                            await window.electronAPI.zone.update(zone);
+                            const updatedZones = await window.electronAPI.zone.list();
+                            setZones(updatedZones);
+                          }
+                        }}
+                        className="text-gray-400 hover:text-red-500 text-xs"
+                      >✕</button>
                     </div>
                   ))
                 ) : (

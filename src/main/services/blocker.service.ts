@@ -118,7 +118,7 @@ export class BlockingService {
               try {
                 await execAsync(`taskkill /F /PID ${pid.trim()}`);
                 this.blockedProcesses.push({ name: appName, pid: parseInt(pid.trim()) });
-              } catch { }
+              } catch { /* process may already be dead */ }
             }
 
             // Show overlay notification
@@ -130,7 +130,7 @@ export class BlockingService {
               }).show();
             }
           }
-        } catch { }
+        } catch { /* process may have exited */ }
       }
     }, 2000);
   }

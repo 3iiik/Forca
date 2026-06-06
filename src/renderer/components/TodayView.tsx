@@ -5,7 +5,7 @@ import Timeline from './Timeline';
 import StreakCounter from './StreakCounter';
 import AmbientSoundControl from './AmbientSoundControl';
 import BreakReminder from './BreakReminder';
-import { CalendarEvent, Suggestion, FocusZone } from '../types';
+import { CalendarEvent, Suggestion } from '../types';
 
 export default function TodayView() {
   const {
@@ -115,7 +115,7 @@ export default function TodayView() {
 
           {/* Timeline */}
           <div>
-            <h2 className="text-lg font-semibold mb-3">Today's Schedule</h2>
+            <h2 className="text-lg font-semibold mb-3">Today&apos;s Schedule</h2>
             <Timeline events={events} />
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron';
 import store from '../store/store';
 import { FocusZone, ActiveZone, FocusSession, ZoneProfile, TrayState } from '../../shared/types';
+import { ScoreService } from './score.service';
 import { BlockingService } from './blocker.service';
 import { TrayService } from './tray.service';
 import { DndService } from './dnd.service';
@@ -175,6 +176,9 @@ export class ZoneEngine {
     const completedDuration = Math.floor(
       (Date.now() - this.activeZone.startTime.getTime()) / 60000
     );
+    const durationPlanned = Math.floor(
+      (this.activeZone.endTime.getTime() - this.activeZone.startTime.getTime()) / 60000
+    );
 
     // Save session
     const session: FocusSession = {
@@ -185,12 +189,22 @@ export class ZoneEngine {
       startTime: this.activeZone.startTime,
       endTime: new Date(),
       durationCompleted: completedDuration,
-      durationPlanned: Math.floor(
-        (this.activeZone.endTime.getTime() - this.activeZone.startTime.getTime()) / 60000
-      ),
+      durationPlanned,
       interruptions: 0,
       appsBlocked: 0,
-      score: 0,
+      score: ScoreService.calculateSessionScore({
+        id: '',
+        zoneId: this.activeZone.zoneId,
+        zoneName: this.activeZone.zoneName,
+        startTime: this.activeZone.startTime,
+        endTime: new Date(),
+        durationCompleted: completedDuration,
+        durationPlanned,
+        interruptions: 0,
+        appsBlocked: 0,
+        score: 0,
+        date: new Date().toISOString().split('T')[0],
+      }),
       date: new Date().toISOString().split('T')[0],
     };
 

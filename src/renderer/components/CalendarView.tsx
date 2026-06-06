@@ -7,6 +7,7 @@ export default function CalendarView() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [icalUrl, setIcalUrl] = useState('');
 
   useEffect(() => {
     loadEvents();
@@ -101,10 +102,24 @@ export default function CalendarView() {
         <div className="flex gap-2">
           <input
             type="url"
+            value={icalUrl}
+            onChange={(e) => setIcalUrl(e.target.value)}
             placeholder="https://calendar.google.com/.../basic.ics"
             className="input-field flex-1"
           />
-          <button className="btn-primary text-sm">Connect</button>
+          <button
+            onClick={async () => {
+              if (icalUrl.trim()) {
+                const settings = await window.electronAPI.settings.get();
+                settings.calendar.icalUrl = icalUrl.trim();
+                settings.calendar.provider = 'ical';
+                await window.electronAPI.settings.set(settings);
+                setIsConnected(true);
+                loadEvents();
+              }
+            }}
+            className="btn-primary text-sm"
+          >Connect</button>
         </div>
       </div>
     </div>

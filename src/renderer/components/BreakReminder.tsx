@@ -2,20 +2,21 @@ import { useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 
 export default function BreakReminder() {
-  const { settings, breakTimer } = useAppStore();
+  const { settings, breakTimer, activeZone } = useAppStore();
   const [focusMinutes, setFocusMinutes] = useState(0);
+  const [startTime] = useState(() => Date.now());
 
   // Track how long the user has been in focus mode
   useEffect(() => {
-    if (!breakTimer.isBreak) {
+    if (!breakTimer.isBreak && activeZone) {
       const interval = setInterval(() => {
-        setFocusMinutes(prev => prev + 1);
-      }, 60000);
+        setFocusMinutes(Math.floor((Date.now() - new Date(activeZone.startTime).getTime()) / 60000));
+      }, 10000);
       return () => clearInterval(interval);
     } else {
       setFocusMinutes(0);
     }
-  }, [breakTimer.isBreak]);
+  }, [breakTimer.isBreak, activeZone]);
 
   if (!settings?.breakReminder.enabled) return null;
 
@@ -55,7 +56,7 @@ export default function BreakReminder() {
           {isDue && (
             <div className="mt-3 text-center">
               <p className="text-sm text-amber-600 dark:text-amber-400 mb-2">
-                Time for a break! You've been focused for {focusMinutes} minutes.
+                Time for a break! You&apos;ve been focused for {focusMinutes} minutes.
               </p>
             </div>
           )}

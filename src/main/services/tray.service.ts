@@ -76,7 +76,7 @@ export class TrayService {
     try {
       const img = nativeImage.createFromPath(iconPath);
       if (!img.isEmpty()) return img;
-    } catch {}
+    } catch { /* ignore */ }
 
     // Fallback: create a colored circle via nativeImage
     return this.createFallbackIcon(color);
@@ -180,6 +180,10 @@ export class TrayService {
 
     const contextMenu = Menu.buildFromTemplate(template);
     this.tray.setContextMenu(contextMenu);
+  }
+
+  getState(): TrayState {
+    return this.state;
   }
 
   destroy() {
