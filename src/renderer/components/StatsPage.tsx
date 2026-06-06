@@ -109,7 +109,7 @@ export default function StatsPage() {
                   fontSize: '12px',
                 }}
               />
-              <Bar dataKey="hours" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="hours" fill="#3D2FA8" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -7,79 +7,43 @@ import pngToIco from 'png-to-ico';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const iconsDir = path.resolve(__dirname, '..', 'assets', 'icons');
 
-const SIZE = 512;
-const COLORS = {
-  primary: [99, 102, 241],   // indigo-500
-  secondary: [139, 92, 246],  // violet-500
-  accent: [168, 85, 247],     // purple-500
-  white: [255, 255, 255],
-};
-
-async function generatePng(size) {
-  const cx = size / 2;
-  const cy = size / 2;
-  const radius = size * 0.42;
-
-  const svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="rgb(${COLORS.primary.join(',')})" />
-        <stop offset="100%" stop-color="rgb(${COLORS.secondary.join(',')})" />
-      </linearGradient>
-    </defs>
-    <rect width="${size}" height="${size}" rx="${size * 0.1}" ry="${size * 0.1}" fill="url(#bg)" />
-    <circle cx="${cx}" cy="${cy}" r="${radius}" fill="rgba(255,255,255,0.15)" />
-    <circle cx="${cx}" cy="${cy}" r="${radius * 0.7}" fill="rgba(255,255,255,0.1)" />
-    <text x="${cx}" y="${cy + size * 0.12}" text-anchor="middle" font-family="Arial,Helvetica,sans-serif"
-          font-size="${size * 0.5}px" font-weight="bold" fill="white">F</text>
-  </svg>`;
-
-  return sharp(Buffer.from(svg)).png().toBuffer();
-}
-
-async function generateVariant(color, outputName) {
-  const size = 16;
-  const cx = size / 2;
-  const cy = size / 2;
-  const r = size * 0.38;
-  const [cr, cg, cb] = color;
-
-  const svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="rgb(${cr},${cg},${cb})" />
-  </svg>`;
-
-  const buf = await sharp(Buffer.from(svg)).png().toBuffer();
-  await fs.writeFile(path.join(iconsDir, outputName), buf);
-  console.log(`  ✓ ${outputName}`);
-}
+const SVG = `<svg width="512" height="512" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+  <rect width="96" height="96" rx="22" fill="#1A1035"/>
+  <circle cx="48" cy="48" r="26" fill="none" stroke="#3D2FA8" stroke-width="3.5"/>
+  <circle cx="48" cy="48" r="26" fill="none" stroke="#1D9E75" stroke-width="3.5"
+    stroke-dasharray="81 163" stroke-dashoffset="41" stroke-linecap="round"/>
+  <circle cx="48" cy="48" r="7" fill="#1D9E75"/>
+  <rect x="46.5" y="18" width="3" height="11" rx="1.5" fill="#6B5FD4"/>
+  <rect x="46.5" y="67" width="3" height="11" rx="1.5" fill="#6B5FD4"/>
+  <rect x="18" y="46.5" width="11" height="3" rx="1.5" fill="#6B5FD4"/>
+  <rect x="67" y="46.5" width="11" height="3" rx="1.5" fill="#6B5FD4"/>
+</svg>`;
 
 async function main() {
   console.log('Generating Forca icons...\n');
 
   await fs.mkdir(iconsDir, { recursive: true });
 
-  // 1. Generate 512x512 main icon
-  console.log('Main icon (512x512):');
-  const png512 = await generatePng(512);
+  // 1. Generate 512x512 PNG
+  console.log('Main icon:');
+  const png512 = await sharp(Buffer.from(SVG)).png().toBuffer();
   await fs.writeFile(path.join(iconsDir, 'icon.png'), png512);
   console.log('  ✓ icon.png');
 
-  // 2. Generate .ico (Windows) - uses the PNG buffer directly
+  // 2. Generate .ico (Windows)
   console.log('\nWindows icon:');
   const icoBuf = await pngToIco(png512);
   await fs.writeFile(path.join(iconsDir, 'icon.ico'), icoBuf);
   console.log('  ✓ icon.ico');
 
-  // 3. Generate .icns (macOS) - create a minimal valid icns from the PNG
-  // A simple approach: embed the PNG into the icns container.
-  // The icns format supports 'ic07' (128x128) and 'ic08' (256x256) entries as PNG data.
+  // 3. Generate .icns (macOS)
   console.log('\nmacOS icon:');
   const resized128 = await sharp(png512).resize(128).png().toBuffer();
   const resized256 = await sharp(png512).resize(256).png().toBuffer();
   const resized512 = png512;
 
   function makeIcns(entries) {
-    let totalSize = 8; // header: magic + size
+    let totalSize = 8;
     const chunks = [];
     for (const [type, data] of entries) {
       const entrySize = 8 + data.length;
@@ -88,7 +52,6 @@ async function main() {
         Buffer.alloc(4),
         Buffer.from(data),
       ]));
-      // Fix size in the 4 bytes after type
       chunks[chunks.length - 1].writeUInt32BE(entrySize, 4);
       totalSize += entrySize;
     }
@@ -108,12 +71,24 @@ async function main() {
 
   // 4. Generate tray variant icons (16x16)
   console.log('\nTray icons (16x16):');
-  await generateVariant([107, 114, 128], 'icon-gray.png');
-  await generateVariant([34, 197, 94], 'icon-green.png');
-  await generateVariant([234, 179, 8], 'icon-yellow.png');
 
-  // Summary
-  console.log('\nDone! Generated files:');
+  function traySvg(color) {
+    const size = 16;
+    const cx = size / 2;
+    const cy = size / 2;
+    const r = size * 0.38;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"/>
+    </svg>`;
+  }
+
+  for (const [name, color] of [['gray', '#6b7280'], ['green', '#1D9E75'], ['yellow', '#eab308']]) {
+    const buf = await sharp(Buffer.from(traySvg(color))).png().toBuffer();
+    await fs.writeFile(path.join(iconsDir, `icon-${name}.png`), buf);
+    console.log(`  ✓ icon-${name}.png`);
+  }
+
+  console.log('\nDone!');
   for (const file of await fs.readdir(iconsDir)) {
     const stat = await fs.stat(path.join(iconsDir, file));
     console.log(`  ${file.padEnd(20)} ${(stat.size / 1024).toFixed(1)} KB`);
