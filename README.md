@@ -7,8 +7,7 @@
   </p>
   <br />
 
-[![Build](https://img.shields.io/github/actions/workflow/status/3iiik/Forca/release.yml?branch=main&label=build)](https://github.com/3iiik/Forca/actions)
-[![License](https://img.shields.io/github/license/3iiik/Forca)](LICENSE)
+[![Build](https://img.shields.io/github/actions/workflow/status/3iiik/Forca/release.yml?label=build)](https://github.com/3iiik/Forca/actions)[![License](https://img.shields.io/github/license/3iiik/Forca)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/3iiik/Forca)](https://github.com/3iiik/Forca/releases)
 [![Downloads](https://img.shields.io/github/downloads/3iiik/Forca/total)](https://github.com/3iiik/Forca/releases)
 
