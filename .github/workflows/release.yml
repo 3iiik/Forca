@@ -58,19 +58,19 @@ jobs:
       - name: Build React app
         run: npm run build
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Build and publish macOS artifacts
-        run: npx electron-builder --mac --publish always
+      - name: Build macOS artifacts
+        run: npx electron-builder --mac --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-    outputs:
-      artifact-name: Forca-x64.dmg
+      - name: Upload macOS artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.dmg
+            dist/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
   # ──────────────────────────────────────────────
   # Job 3: Windows release
@@ -94,16 +94,18 @@ jobs:
       - name: Build React app
         run: npm run build
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Build and publish Windows artifacts
-        run: npx electron-builder --win --publish always
+      - name: Build Windows artifacts
+        run: npx electron-builder --win --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Upload Windows artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
   # ──────────────────────────────────────────────
   # Job 4: Linux release
@@ -127,13 +129,17 @@ jobs:
       - name: Build React app
         run: npm run build
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Build and publish Linux artifacts
-        run: npx electron-builder --linux --publish always
+      - name: Build Linux artifacts
+        run: npx electron-builder --linux --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Upload Linux artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
