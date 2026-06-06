@@ -1,12 +1,11 @@
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { BrowserWindow, Notification } from 'electron';
+import { BrowserWindow } from 'electron';
 
 const isWindows = os.platform() === 'win32';
-
 const execAsync = promisify(exec);
 
 function getHostsPath(): string {
@@ -14,19 +13,126 @@ function getHostsPath(): string {
   return '/etc/hosts';
 }
 
+const HOSTS_START_MARKER = '# Forca - Start Blocked Sites';
+const HOSTS_END_MARKER = '# Forca - End Blocked Sites';
+
 interface BlockedProcess {
   name: string;
   pid: number;
 }
 
+function canWriteHosts(): boolean {
+  try {
+    fs.accessSync(getHostsPath(), fs.constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function runPowerShellElevated(args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const command = [
+      'Start-Process',
+      '-FilePath', 'powershell',
+      '-ArgumentList', `@(${args.map(a => `'${a.replace(/'/g, "''")}'`).join(',')})`,
+      '-Verb', 'RunAs',
+      '-Wait',
+      '-WindowStyle', 'Hidden',
+    ].join(' ');
+
+    const child = spawn('powershell', [
+      '-NoProfile',
+      '-Command',
+      command,
+    ], { windowsHide: false, stdio: 'pipe' });
+
+    let stderr = '';
+    child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+
+    child.on('close', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`PowerShell elevation exited code ${code}: ${stderr}`));
+    });
+
+    child.on('error', reject);
+  });
+}
+
+async function modifyHostsFileRaw(hostsContent: string): Promise<void> {
+  const hostsPath = getHostsPath();
+  if (canWriteHosts()) {
+    fs.writeFileSync(hostsPath, hostsContent, 'utf-8');
+    return;
+  }
+
+  const tmpFile = path.join(os.tmpdir(), `forca-hosts-${Date.now()}`);
+  fs.writeFileSync(tmpFile, hostsContent, 'utf-8');
+
+  try {
+    await runPowerShellElevated([
+      '-ExecutionPolicy', 'Bypass',
+      '-Command',
+      `Copy-Item -LiteralPath '${tmpFile.replace(/'/g, "''")}' -Destination '${hostsPath.replace(/'/g, "''")}' -Force; Remove-Item -LiteralPath '${tmpFile.replace(/'/g, "''")}' -Force`,
+    ]);
+  } catch (err) {
+    try { fs.unlinkSync(tmpFile); } catch {}
+    throw err;
+  }
+
+  try { fs.unlinkSync(tmpFile); } catch {}
+}
+
+async function flushDns(): Promise<void> {
+  try {
+    if (isWindows) {
+      await execAsync('ipconfig /flushdns');
+    } else if (os.platform() === 'darwin') {
+      await execAsync('dscacheutil -flushcache; killall -HUP mDNSResponder');
+    }
+  } catch {
+    // DNS flush may fail without admin rights, but hosts changes still apply
+  }
+}
+
+function removeForcaSection(content: string): string {
+  const lines = content.split('\n');
+  const result: string[] = [];
+  let inBlock = false;
+  for (const line of lines) {
+    if (line.trim() === HOSTS_START_MARKER) {
+      inBlock = true;
+      continue;
+    }
+    if (line.trim() === HOSTS_END_MARKER) {
+      inBlock = false;
+      continue;
+    }
+    if (!inBlock) {
+      result.push(line);
+    }
+  }
+  return result.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+}
+
+function buildHostsContent(sites: string[]): string {
+  const unique = [...new Set(sites.map(s => s.trim().toLowerCase()).filter(Boolean))];
+  const entries = unique.flatMap(site => [
+    `127.0.0.1 ${site}`,
+    `127.0.0.1 www.${site}`,
+  ]);
+  return `${HOSTS_START_MARKER}\n${entries.join('\n')}\n${HOSTS_END_MARKER}`;
+}
+
 export class BlockingService {
   private blockedProcesses: BlockedProcess[] = [];
-  private hostsBackupPath: string = '';
   private isBlocking = false;
   private window: BrowserWindow | null = null;
   private blockedAppsList: string[] = [];
+  private blockedSitesList: string[] = [];
   private alwaysAllowedApps: string[] = [];
   private checkInterval: ReturnType<typeof setInterval> | null = null;
+  private hostsWriteFailed = false;
 
   setAlwaysAllowedApps(apps: string[]): void {
     this.alwaysAllowedApps = apps;
@@ -61,40 +167,46 @@ export class BlockingService {
 
   async blockSites(sites: string[]): Promise<void> {
     if (sites.length === 0) return;
-
-    const hostsPath = getHostsPath();
+    this.blockedSitesList = sites;
+    this.hostsWriteFailed = false;
 
     try {
-      this.hostsBackupPath = path.join(os.tmpdir(), `hosts-backup-${Date.now()}`);
-      fs.copyFileSync(hostsPath, this.hostsBackupPath);
+      let hostsContent = fs.readFileSync(getHostsPath(), 'utf-8');
+      hostsContent = removeForcaSection(hostsContent);
+      hostsContent += '\n' + buildHostsContent(sites) + '\n';
 
-      let hostsContent = fs.readFileSync(hostsPath, 'utf-8');
-      const blockEntries = sites.map(site => `\n127.0.0.1 ${site}\n127.0.0.1 www.${site}`);
-      hostsContent += '\n# Forca - Blocked Sites\n' + blockEntries.join('\n');
+      await modifyHostsFileRaw(hostsContent);
+      await flushDns();
+    } catch (err: any) {
+      this.hostsWriteFailed = true;
+      const msg = isWindows
+        ? 'Forca needs Administrator privileges to block websites. Please restart Forca as Administrator.'
+        : 'Forca needs root privileges to block websites. Please restart Forca with sudo.';
 
-      fs.writeFileSync(hostsPath, hostsContent);
-    } catch (err) {
-      console.error('Failed to block sites:', err);
+      if (this.window && !this.window.isDestroyed()) {
+        this.window.webContents.send('notification:show', {
+          title: 'Website Blocking Failed',
+          body: msg,
+        });
+      }
+      console.error('Failed to block sites:', err.message);
     }
   }
 
   async unblockSites(): Promise<void> {
-    const hostsPath = getHostsPath();
+    this.blockedSitesList = [];
+    if (this.hostsWriteFailed) return;
 
     try {
-      if (this.hostsBackupPath && fs.existsSync(this.hostsBackupPath)) {
-        fs.copyFileSync(this.hostsBackupPath, hostsPath);
-        fs.unlinkSync(this.hostsBackupPath);
-        this.hostsBackupPath = '';
-      } else {
-        let hostsContent = fs.readFileSync(hostsPath, 'utf-8');
-        const lines = hostsContent.split('\n');
-        const filtered = lines.filter(line => !line.includes('# Forca - Blocked Sites'));
-        hostsContent = filtered.join('\n');
-        fs.writeFileSync(hostsPath, hostsContent);
+      let hostsContent = fs.readFileSync(getHostsPath(), 'utf-8');
+      const cleaned = removeForcaSection(hostsContent);
+
+      if (cleaned !== hostsContent + '\n') {
+        await modifyHostsFileRaw(cleaned);
+        await flushDns();
       }
-    } catch (err) {
-      console.error('Failed to unblock sites:', err);
+    } catch (err: any) {
+      console.error('Failed to unblock sites:', err.message);
     }
   }
 
@@ -120,14 +232,6 @@ export class BlockingService {
                 this.blockedProcesses.push({ name: appName, pid });
               } catch { /* process may already be dead */ }
             }
-
-            if (this.window && !this.window.isDestroyed()) {
-              this.window.webContents.send('blocker:app-blocked', appName);
-              new Notification({
-                title: 'App Blocked',
-                body: `${appName} was blocked during focus mode.`,
-              }).show();
-            }
           }
         } catch { /* process may have exited */ }
       }
@@ -151,6 +255,25 @@ export class BlockingService {
       await execAsync(`taskkill /F /PID ${pid}`);
     } else {
       await execAsync(`kill -9 ${pid}`);
+    }
+  }
+
+  async ensureHostsAccess(): Promise<boolean> {
+    try {
+      const hostsPath = getHostsPath();
+      if (canWriteHosts()) return true;
+
+      // Trigger UAC at startup by writing and removing a test marker
+      let content = fs.readFileSync(hostsPath, 'utf-8');
+      const testLine = `# Forca access test ${Date.now()}\n`;
+      await modifyHostsFileRaw(content + testLine);
+      content = fs.readFileSync(hostsPath, 'utf-8');
+      if (content.includes(testLine)) {
+        await modifyHostsFileRaw(content.replace(testLine, ''));
+      }
+      return true;
+    } catch {
+      return false;
     }
   }
 

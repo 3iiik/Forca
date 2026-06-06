@@ -57,6 +57,7 @@ export class TrayService {
       case 'active':
         color = 'green';
         break;
+      case 'paused':
       case 'meeting-soon':
         color = 'yellow';
         break;
@@ -131,7 +132,8 @@ export class TrayService {
 
     const template: Electron.MenuItemConstructorOptions[] = [];
 
-    if (this.state.status === 'active') {
+    if (this.state.status === 'active' || this.state.status === 'paused') {
+      const isPaused = this.state.status === 'paused';
       template.push(
         {
           label: `● ${this.state.activeZoneName || 'Focus Active'}`,
@@ -139,10 +141,16 @@ export class TrayService {
         },
         { label: `⏱ ${remainingStr}`, enabled: false },
         { type: 'separator' },
-        {
-          label: '⏸ Pause',
-          click: () => this.callbacks.onPause?.(),
-        },
+        ...(isPaused
+          ? [{
+              label: '▶ Resume',
+              click: () => this.callbacks.onResume?.(),
+            }]
+          : [{
+              label: '⏸ Pause',
+              click: () => this.callbacks.onPause?.(),
+            }]
+        ),
         {
           label: '⏹ Skip',
           click: () => this.callbacks.onSkip?.(),
@@ -153,10 +161,6 @@ export class TrayService {
         {
           label: '▶ Start Focus',
           click: () => this.callbacks.onStartFocus?.(),
-        },
-        {
-          label: '⏯ Resume',
-          click: () => this.callbacks.onResume?.(),
         }
       );
     }

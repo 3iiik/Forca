@@ -1,10 +1,19 @@
 import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
+import { CalendarEvent } from '../types';
 import ActiveZoneCard from './ActiveZoneCard';
 import Timeline from './Timeline';
 import StreakCounter from './StreakCounter';
 import AmbientSoundControl from './AmbientSoundControl';
 import BreakReminder from './BreakReminder';
+
+function parseEvents(events: CalendarEvent[]): CalendarEvent[] {
+  return events.map(e => ({
+    ...e,
+    start: new Date(e.start),
+    end: new Date(e.end),
+  }));
+}
 
 export default function TodayView() {
   const {
@@ -32,7 +41,7 @@ export default function TodayView() {
         window.electronAPI.stats.focusScore(),
       ]);
 
-      setEvents(evts);
+      setEvents(parseEvents(evts));
       setSuggestions(suggs);
       setStreak(streakData);
       setFocusScore(score);

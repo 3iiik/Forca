@@ -79,7 +79,7 @@ export interface FocusScore {
 }
 
 export interface TrayState {
-  status: 'idle' | 'active' | 'meeting-soon';
+  status: 'idle' | 'active' | 'paused' | 'meeting-soon';
   activeZoneName?: string;
   remaining?: number;
 }

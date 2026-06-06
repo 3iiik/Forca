@@ -10,6 +10,7 @@ interface StoreSchema {
   currentStreak: number;
   longestStreak: number;
   alwaysAllowedApps: string[];
+  onboardingComplete: boolean;
 }
 
 const defaults: StoreSchema = {
@@ -33,8 +34,8 @@ const defaults: StoreSchema = {
       milestone: true,
     },
     sounds: {
-      enabled: false,
-      defaultSound: 'none',
+      enabled: true,
+      defaultSound: 'rain',
       defaultVolume: 50,
       fadeOutDuration: 3,
     },
@@ -66,6 +67,7 @@ const defaults: StoreSchema = {
   streakLastDate: '',
   currentStreak: 0,
   longestStreak: 0,
+  onboardingComplete: false,
 };
 
 const store = new Store<StoreSchema>({ defaults });

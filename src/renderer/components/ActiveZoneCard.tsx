@@ -2,7 +2,15 @@ import { memo } from 'react';
 import { useAppStore } from '../stores/appStore';
 
 const ActiveZoneCard = memo(function ActiveZoneCard() {
-  const { activeZone, breakTimer } = useAppStore();
+  const { activeZone, breakTimer, zones, setCurrentView } = useAppStore();
+
+  const handleStart = async () => {
+    if (zones.length > 0) {
+      await window.electronAPI.zone.start(zones[0].id);
+    } else {
+      setCurrentView('settings');
+    }
+  };
 
   const handlePause = async () => {
     if (!activeZone) return;
@@ -26,15 +34,10 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
           Start a focus zone from the list or wait for an auto-trigger
         </p>
         <button
-          onClick={async () => {
-            const zones = await window.electronAPI.zone.list();
-            if (zones.length > 0) {
-              await window.electronAPI.zone.start(zones[0].id);
-            }
-          }}
+          onClick={handleStart}
           className="btn-primary"
         >
-          Start First Zone
+          {zones.length > 0 ? 'Start First Zone' : 'Create Your First Zone'}
         </button>
       </div>
     );

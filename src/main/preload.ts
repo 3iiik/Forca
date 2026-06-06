@@ -88,6 +88,8 @@ const api = {
     getVersion: () => ipcRenderer.invoke('app:get-version'),
     checkUpdate: () => ipcRenderer.invoke('app:check-update'),
     installUpdate: () => ipcRenderer.invoke('app:install-update'),
+    getOnboardingStatus: () => ipcRenderer.invoke('app:get-onboarding-status'),
+    completeOnboarding: () => ipcRenderer.invoke('app:complete-onboarding'),
   },
 
   // Event listeners

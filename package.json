@@ -30,6 +30,7 @@
     "electron-updater": "^6.1.7",
     "firebase": "^10.7.1",
     "googleapis": "^134.0.0",
+    "is-admin": "^4.0.0",
     "node-ical": "^0.18.0",
     "open": "^10.1.0",
     "react": "^18.3.1",

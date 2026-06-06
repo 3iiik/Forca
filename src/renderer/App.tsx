@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useAppStore } from './stores/appStore';
 import Layout from './components/Layout';
+import OnboardingFlow from './components/OnboardingFlow';
 import { useAudio } from './hooks/useAudio';
 
 const TodayView = lazy(() => import('./components/TodayView'));
@@ -15,9 +16,23 @@ function App() {
   const {
     currentView, setCurrentView, setActiveZone, setBreakTimer,
     setNotification, setUpdateAvailable, setSettings, setZones, setProfiles,
-    darkMode, setDarkMode,
+    darkMode, setDarkMode, onboardingComplete, setOnboardingComplete,
   } = useAppStore();
+  const [onboardingLoading, setOnboardingLoading] = useState(true);
   const notifyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const completed = await window.electronAPI.app.getOnboardingStatus();
+        setOnboardingComplete(completed);
+      } catch {
+        setOnboardingComplete(true);
+      }
+      setOnboardingLoading(false);
+    };
+    checkOnboarding();
+  }, [setOnboardingComplete]);
 
   useEffect(() => {
     const api = window.electronAPI;
@@ -98,6 +113,18 @@ function App() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
+
+  if (onboardingLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-950">
+        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!onboardingComplete) {
+    return <OnboardingFlow />;
+  }
 
   return (
     <Layout>

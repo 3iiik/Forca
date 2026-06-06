@@ -2,6 +2,14 @@ import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { CalendarEvent } from '../types';
 
+function parseEvents(events: CalendarEvent[]): CalendarEvent[] {
+  return events.map(e => ({
+    ...e,
+    start: new Date(e.start),
+    end: new Date(e.end),
+  }));
+}
+
 export default function CalendarView() {
   const { events, setEvents } = useAppStore();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -17,7 +25,7 @@ export default function CalendarView() {
     setIsLoading(true);
     try {
       const evts = await window.electronAPI.calendar.getEvents(selectedDate);
-      setEvents(evts);
+      setEvents(parseEvents(evts));
       setIsConnected(true);
     } catch (err) {
       console.error('Failed to load events:', err);

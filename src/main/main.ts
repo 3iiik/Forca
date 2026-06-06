@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Notification } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
+import { execSync } from 'child_process';
 import { autoUpdater } from 'electron-updater';
 
 import store from './store/store';
@@ -274,7 +275,22 @@ if (process.platform === 'darwin') {
   app.dock?.hide();
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // Check if running as admin; if not, relaunch elevated and quit
+  if (process.platform === 'win32') {
+    try {
+      const isAdmin = (await import('is-admin')).default;
+      if (!(await isAdmin())) {
+        const args = process.argv.slice(1).map(a => `'${a.replace(/'/g, "''")}'`).join(' ');
+        execSync(`powershell -Command "Start-Process -FilePath '${process.execPath}' -ArgumentList '${args}' -Verb RunAs"`);
+        app.quit();
+        return;
+      }
+    } catch (err) {
+      console.error('Admin check failed:', err);
+    }
+  }
+
   createWindow();
 
   app.on('activate', () => {

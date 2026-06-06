@@ -3,6 +3,7 @@ import { useAppStore } from '../stores/appStore';
 
 export default function BlockRules() {
   const { zones, setZones } = useAppStore();
+  const [selectedZoneId, setSelectedZoneId] = useState<string>('');
   const [newApp, setNewApp] = useState('');
   const [newSite, setNewSite] = useState('');
   const [allowedApps, setAllowedApps] = useState<string[]>([]);
@@ -13,6 +14,12 @@ export default function BlockRules() {
     loadAllowedApps();
   }, []);
 
+  useEffect(() => {
+    if (zones.length > 0 && !selectedZoneId) {
+      setSelectedZoneId(zones[0].id);
+    }
+  }, [zones, selectedZoneId]);
+
   const loadZones = async () => {
     const z = await window.electronAPI.zone.list();
     setZones(z);
@@ -21,6 +28,15 @@ export default function BlockRules() {
   const loadAllowedApps = async () => {
     const apps = await window.electronAPI.blocker.getAllowedApps();
     setAllowedApps(apps);
+  };
+
+  const selectedZone = zones.find(z => z.id === selectedZoneId) || zones[0];
+
+  const updateZone = async (update: Partial<typeof selectedZone>) => {
+    if (!selectedZone) return;
+    const updated = { ...selectedZone, ...update };
+    await window.electronAPI.zone.update(updated);
+    await loadZones();
   };
 
   const handleAddAllowedApp = useCallback(async () => {
@@ -45,132 +61,123 @@ export default function BlockRules() {
         Configure which apps and websites are blocked during Forca zones.
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Blocked Apps */}
-        <div className="focus-card">
-          <h2 className="font-semibold mb-3">Blocked Apps</h2>
-          <div className="flex gap-2 mb-3">
-            <input
-              type="text"
-              value={newApp}
-              onChange={(e) => setNewApp(e.target.value)}
-              placeholder="e.g. discord, slack, chrome"
-              className="input-field flex-1 text-sm"
-            />
-            <button
-              onClick={async () => {
-                if (newApp.trim()) {
-                  const apps = newApp.split(',').map(a => a.trim()).filter(Boolean);
-                  if (zones.length > 0) {
-                    const zone = { ...zones[0], blockedApps: [...zones[0].blockedApps, ...apps] };
-                    await window.electronAPI.zone.update(zone);
-                    const updatedZones = await window.electronAPI.zone.list();
-                    setZones(updatedZones);
-                  }
-                  setNewApp('');
-                }
-              }}
-              className="btn-primary text-sm"
-            >
-              Add
-            </button>
-          </div>
-          <div className="text-xs text-gray-400 mb-3">
-            Enter process names (without .exe), separated by commas
-          </div>
-          <div className="space-y-2">
-            {/* Show from first zone */}
-            {zones.slice(0, 1).map((zone) => (
-              <div key={zone.id}>
-                <div className="text-xs font-medium text-gray-500 mb-2">
-                  {zone.name} blocked apps:
-                </div>
-                {zone.blockedApps.length > 0 ? (
-                  zone.blockedApps.map((app, i) => (
-                    <div key={i} className="flex items-center justify-between px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
-                      <span>{app}</span>
-                      <button
-                        onClick={async () => {
-                          if (zones.length > 0) {
-                            const zone = { ...zones[0], blockedApps: zones[0].blockedApps.filter(a => a !== app) };
-                            await window.electronAPI.zone.update(zone);
-                            const updatedZones = await window.electronAPI.zone.list();
-                            setZones(updatedZones);
-                          }
-                        }}
-                        className="text-gray-400 hover:text-red-500 text-xs"
-                      >✕</button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-gray-400 py-2">No blocked apps configured</p>
-                )}
-              </div>
+      {/* Zone selector */}
+      {zones.length > 1 && (
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Zone:</label>
+          <select
+            value={selectedZoneId}
+            onChange={(e) => setSelectedZoneId(e.target.value)}
+            className="input-field w-auto"
+          >
+            {zones.map(z => (
+              <option key={z.id} value={z.id}>{z.name}</option>
             ))}
-          </div>
+          </select>
         </div>
+      )}
 
-        {/* Blocked Sites */}
-        <div className="focus-card">
-          <h2 className="font-semibold mb-3">Blocked Websites</h2>
-          <div className="flex gap-2 mb-3">
-            <input
-              type="text"
-              value={newSite}
-              onChange={(e) => setNewSite(e.target.value)}
-              placeholder="e.g. reddit.com, twitter.com"
-              className="input-field flex-1 text-sm"
-            />
-            <button
-              onClick={async () => {
-                if (newSite.trim()) {
-                  const sites = newSite.split(',').map(s => s.trim()).filter(Boolean);
-                  if (zones.length > 0) {
-                    const zone = { ...zones[0], blockedSites: [...zones[0].blockedSites, ...sites] };
-                    await window.electronAPI.zone.update(zone);
-                    const updatedZones = await window.electronAPI.zone.list();
-                    setZones(updatedZones);
+      {!selectedZone ? (
+        <div className="focus-card text-center py-8">
+          <p className="text-sm text-gray-400">No zones configured. Create one in Settings.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Blocked Apps */}
+          <div className="focus-card">
+            <h2 className="font-semibold mb-3">Blocked Apps — {selectedZone.name}</h2>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={newApp}
+                onChange={(e) => setNewApp(e.target.value)}
+                placeholder="e.g. discord, slack, chrome"
+                className="input-field flex-1 text-sm"
+              />
+              <button
+                onClick={async () => {
+                  if (newApp.trim() && selectedZone) {
+                    const apps = newApp.split(',').map(a => a.trim()).filter(Boolean);
+                    await updateZone({ blockedApps: [...selectedZone.blockedApps, ...apps] });
+                    setNewApp('');
                   }
-                  setNewSite('');
-                }
-              }}
-              className="btn-primary text-sm"
-            >Add</button>
+                }}
+                className="btn-primary text-sm"
+              >
+                Add
+              </button>
+            </div>
+            <div className="text-xs text-gray-400 mb-3">
+              Enter process names (without .exe), separated by commas
+            </div>
+            <div className="space-y-2">
+              {selectedZone.blockedApps.length > 0 ? (
+                selectedZone.blockedApps.map((app, i) => (
+                  <div key={i} className="flex items-center justify-between px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
+                    <span>{app}</span>
+                    <button
+                      onClick={async () => {
+                        if (selectedZone) {
+                          await updateZone({ blockedApps: selectedZone.blockedApps.filter(a => a !== app) });
+                        }
+                      }}
+                      className="text-gray-400 hover:text-red-500 text-xs"
+                    >✕</button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-gray-400 py-2">No blocked apps configured</p>
+              )}
+            </div>
           </div>
-          <div className="text-xs text-gray-400 mb-3">
-            Sites will be blocked via /etc/hosts during Forca zones
-          </div>
-          <div className="space-y-2">
-            {zones.slice(0, 1).map((zone) => (
-              <div key={zone.id}>
-                <div className="text-xs font-medium text-gray-500 mb-2">
-                  {zone.name} blocked sites:
-                </div>
-                {zone.blockedSites.length > 0 ? (
-                  zone.blockedSites.map((site, i) => (
-                    <div key={i} className="flex items-center justify-between px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
-                      <span>{site}</span>
-                      <button
-                        onClick={async () => {
-                          if (zones.length > 0) {
-                            const zone = { ...zones[0], blockedSites: zones[0].blockedSites.filter(s => s !== site) };
-                            await window.electronAPI.zone.update(zone);
-                            const updatedZones = await window.electronAPI.zone.list();
-                            setZones(updatedZones);
-                          }
-                        }}
-                        className="text-gray-400 hover:text-red-500 text-xs"
-                      >✕</button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-gray-400 py-2">No blocked sites configured</p>
-                )}
-              </div>
-            ))}
+
+          {/* Blocked Sites */}
+          <div className="focus-card">
+            <h2 className="font-semibold mb-3">Blocked Websites — {selectedZone.name}</h2>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={newSite}
+                onChange={(e) => setNewSite(e.target.value)}
+                placeholder="e.g. reddit.com, twitter.com"
+                className="input-field flex-1 text-sm"
+              />
+              <button
+                onClick={async () => {
+                  if (newSite.trim() && selectedZone) {
+                    const sites = newSite.split(',').map(s => s.trim()).filter(Boolean);
+                    await updateZone({ blockedSites: [...selectedZone.blockedSites, ...sites] });
+                    setNewSite('');
+                  }
+                }}
+                className="btn-primary text-sm"
+              >Add</button>
+            </div>
+            <div className="text-xs text-gray-400 mb-3">
+              Sites will be blocked via /etc/hosts during Forca zones
+            </div>
+            <div className="space-y-2">
+              {selectedZone.blockedSites.length > 0 ? (
+                selectedZone.blockedSites.map((site, i) => (
+                  <div key={i} className="flex items-center justify-between px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
+                    <span>{site}</span>
+                    <button
+                      onClick={async () => {
+                        if (selectedZone) {
+                          await updateZone({ blockedSites: selectedZone.blockedSites.filter(s => s !== site) });
+                        }
+                      }}
+                      className="text-gray-400 hover:text-red-500 text-xs"
+                    >✕</button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-gray-400 py-2">No blocked sites configured</p>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Allow list */}
       <div className="focus-card">

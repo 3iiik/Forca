@@ -252,7 +252,7 @@ export class ZoneEngine {
     this.activeZone.status = 'paused';
     this.stopTimer();
     this.tray.updateState({
-      status: 'active',
+      status: 'paused',
       activeZoneName: this.activeZone.zoneName,
       remaining: this.activeZone.remaining,
     });

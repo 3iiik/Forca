@@ -35,13 +35,9 @@ export class SyncService {
 
     try {
       const payload: SyncPayload = {
-        settings: {
-          zones: store.get('zones', []),
-          profiles: store.get('profiles', []),
-          ...store.get('settings'),
-        } as any,
-        sessions: store.get('sessions', []) as any,
-        profiles: store.get('profiles', []) as any,
+        settings: store.get('settings'),
+        sessions: store.get('sessions', []),
+        profiles: store.get('profiles', []),
         streaks: {
           currentStreak: store.get('currentStreak', 0),
           longestStreak: store.get('longestStreak', 0),

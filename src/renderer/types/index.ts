@@ -67,6 +67,8 @@ declare global {
         getVersion: () => Promise<string>;
         checkUpdate: () => Promise<{ available: boolean; version?: string }>;
         installUpdate: () => Promise<void>;
+        getOnboardingStatus: () => Promise<boolean>;
+        completeOnboarding: () => Promise<void>;
       };
       on: (channel: string, callback: (...args: any[]) => void) => () => void;
       removeAllListeners: (channel: string) => void;

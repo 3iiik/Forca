@@ -67,6 +67,10 @@ interface AppStore {
   // Loading
   loading: boolean;
   setLoading: (loading: boolean) => void;
+
+  // Onboarding
+  onboardingComplete: boolean;
+  setOnboardingComplete: (complete: boolean) => void;
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -117,4 +121,7 @@ export const useAppStore = create<AppStore>((set) => ({
 
   loading: false,
   setLoading: (loading) => set({ loading }),
+
+  onboardingComplete: true,
+  setOnboardingComplete: (complete) => set({ onboardingComplete: complete }),
 }));
