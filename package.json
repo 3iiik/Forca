@@ -2,6 +2,10 @@
   "name": "forca",
   "version": "1.0.0",
   "description": "Forca — deep focus sessions with calendar integration and smart blocking",
+  "author": {
+    "name": "3iiik",
+    "email": "your@email.com"
+  },
   "main": "dist/main/main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
@@ -50,7 +54,9 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
+    "png-to-ico": "^3.0.1",
     "postcss": "^8.4.35",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
     "vite": "^5.2.0",
