@@ -29,6 +29,7 @@ export default function ZoneProfiles() {
 
   useEffect(() => {
     loadProfiles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadProfiles = async () => {

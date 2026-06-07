@@ -12,6 +12,7 @@ export default function BlockRules() {
   useEffect(() => {
     loadZones();
     loadAllowedApps();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

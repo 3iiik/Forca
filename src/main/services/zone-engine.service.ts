@@ -12,7 +12,7 @@ export class ZoneEngine {
   private timerInterval: ReturnType<typeof setInterval> | null = null;
   private breakInterval: ReturnType<typeof setInterval> | null = null;
   private onUpdate: ((zone: ActiveZone | null) => void) | null = null;
-  private onBreakUpdate: ((isBreak: boolean, remaining: number) => void) | null = null;
+  private onBreakUpdate: ((isBreak: boolean, remaining: number, total: number) => void) | null = null;
   private blocker: BlockingService;
   private tray: TrayService;
   private dnd: DndService;
@@ -43,7 +43,7 @@ export class ZoneEngine {
 
   setCallbacks(opts: {
     onUpdate: (zone: ActiveZone | null) => void;
-    onBreakUpdate: (isBreak: boolean, remaining: number) => void;
+    onBreakUpdate: (isBreak: boolean, remaining: number, total: number) => void;
   }) {
     this.onUpdate = opts.onUpdate;
     this.onBreakUpdate = opts.onBreakUpdate;
@@ -247,10 +247,11 @@ export class ZoneEngine {
     this.onUpdate?.(null);
   }
 
-  pauseZone(): void {
+  async pauseZone(): Promise<void> {
     if (!this.activeZone || this.activeZone.status !== 'running') return;
     this.activeZone.status = 'paused';
     this.stopTimer();
+
     this.tray.updateState({
       status: 'paused',
       activeZoneName: this.activeZone.zoneName,
@@ -259,9 +260,10 @@ export class ZoneEngine {
     this.onUpdate?.(this.activeZone);
   }
 
-  resumeZone(): void {
+  async resumeZone(): Promise<void> {
     if (!this.activeZone || this.activeZone.status !== 'paused') return;
     this.activeZone.status = 'running';
+
     this.startTimer();
     this.tray.updateState({
       status: 'active',
@@ -340,7 +342,7 @@ export class ZoneEngine {
 
     this.breakInterval = setInterval(() => {
       this.breakRemaining--;
-      this.onBreakUpdate?.(true, this.breakRemaining);
+      this.onBreakUpdate?.(true, this.breakRemaining, this.breakTotal);
 
       if (this.breakRemaining <= 0) {
         this.endBreakTimer();
@@ -359,7 +361,7 @@ export class ZoneEngine {
     }
     this.isBreakActive = false;
     this.breakRemaining = 0;
-    this.onBreakUpdate?.(false, 0);
+    this.onBreakUpdate?.(false, 0, 0);
   }
 
   getBreakState(): { isBreak: boolean; remaining: number } {

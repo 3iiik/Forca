@@ -3,11 +3,12 @@ import { getAuth, signInAnonymously } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import store from '../store/store';
 import { SyncPayload } from '../../shared/types';
+import { logger } from '../utils/logger';
 
 export class SyncService {
-  private app: any = null;
-  private db: any = null;
-  private user: any = null;
+  private app: ReturnType<typeof initializeApp> | null = null;
+  private db: ReturnType<typeof getFirestore> | null = null;
+  private user: { uid: string } | null = null;
   private initialized = false;
 
   async init(): Promise<boolean> {
@@ -17,12 +18,12 @@ export class SyncService {
     try {
       this.app = initializeApp(settings.sync.firebaseConfig);
       const auth = getAuth(this.app);
-      this.user = await signInAnonymously(auth).then((cred: any) => cred.user);
+      this.user = await signInAnonymously(auth).then((cred: { user: { uid: string } }) => cred.user);
       this.db = getFirestore(this.app);
       this.initialized = true;
       return true;
     } catch (err) {
-      console.error('Sync init failed:', err);
+      logger.error('Sync init failed:', err);
       return false;
     }
   }
@@ -55,7 +56,7 @@ export class SyncService {
         });
       }
     } catch (err) {
-      console.error('Sync upload failed:', err);
+      logger.error('Sync upload failed:', err);
     }
   }
 
@@ -74,7 +75,7 @@ export class SyncService {
           // Merge sessions (deduplicate by id)
           const localSessions = store.get('sessions', []);
           const remoteSessions = data.sessions || [];
-          const sessionMap = new Map<string, any>();
+          const sessionMap = new Map<string, import('../../shared/types').FocusSession>();
           for (const s of [...localSessions, ...remoteSessions]) {
             sessionMap.set(s.id, s);
           }
@@ -100,7 +101,7 @@ export class SyncService {
         }
       }
     } catch (err) {
-      console.error('Sync download failed:', err);
+      logger.error('Sync download failed:', err);
     }
   }
 

@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { AppSettings, FocusZone } from '../types';
+import { logger } from '../utils/logger';
 
 export default function SettingsPage() {
   const { settings, setSettings, zones, setZones } = useAppStore();
@@ -15,6 +16,7 @@ export default function SettingsPage() {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       if (pendingRef.current) window.electronAPI.settings.set(pendingRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadSettings = async () => {
@@ -26,19 +28,19 @@ export default function SettingsPage() {
       setSettings(s);
       setZones(z);
     } catch (err) {
-      console.error('Failed to load settings:', err);
+      logger.error('Failed to load settings:', err);
     }
   };
 
   const updateNestedSetting = (
     parent: keyof AppSettings,
     key: string,
-    value: any
+    value: unknown
   ) => {
     if (!settings) return;
     const updated = {
       ...settings,
-      [parent]: { ...(settings[parent] as any), [key]: value },
+      [parent]: { ...(settings[parent] as unknown as Record<string, unknown>), [key]: value },
     };
     setSettings(updated);
     pendingRef.current = updated;

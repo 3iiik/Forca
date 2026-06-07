@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Notification } from 'electron';
+import { app, BrowserWindow, Menu, Notification, ipcMain, Tray, nativeImage, shell } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
 import { execSync } from 'child_process';
@@ -15,6 +15,7 @@ import { SuggestionService } from './services/suggestion.service';
 import { ScoreService } from './services/score.service';
 import { SyncService } from './services/sync.service';
 import { UpdaterService } from './services/updater.service';
+import { logger } from './utils/logger';
 
 import { registerCalendarIpc } from './ipc/calendar.ipc';
 import { registerZoneIpc } from './ipc/zone.ipc';
@@ -44,6 +45,8 @@ const syncService = new SyncService();
 const updaterService = new UpdaterService();
 
 function createWindow() {
+  Menu.setApplicationMenu(null);
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -52,6 +55,7 @@ function createWindow() {
     frame: true,
     show: false,
     icon: path.join(__dirname, '..', '..', 'assets', 'icons', 'icon.png'),
+	autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -60,6 +64,11 @@ function createWindow() {
       backgroundThrottling: true,
     },
   });
+
+  Menu.setApplicationMenu(null);
+
+  mainWindow.setMenuBarVisibility(false);
+  mainWindow.autoHideMenuBar = true;
 
   // In development, load from Vite dev server
   const isDev = process.env.NODE_ENV === 'development' || process.env.VITE_DEV_SERVER_URL;
@@ -107,8 +116,8 @@ function createWindow() {
     onUpdate: (zone) => {
       mainWindow?.webContents.send('zone:updated', zone);
     },
-    onBreakUpdate: (isBreak, remaining) => {
-      mainWindow?.webContents.send('break:update', { isBreak, remaining });
+    onBreakUpdate: (isBreak, remaining, total) => {
+      mainWindow?.webContents.send('break:update', { isBreak, remaining, total });
     },
   });
 
@@ -159,11 +168,11 @@ function createWindow() {
   const isProd = process.env.NODE_ENV === 'production' && !process.env.VITE_DEV_SERVER_URL;
 
   autoUpdater.on('checking-for-update', () => {
-    if (!isProd) console.log('[updater] checking for updates');
+    if (!isProd) logger.info('[updater] checking for updates');
   });
 
   autoUpdater.on('update-available', (info) => {
-    if (!isProd) console.log(`[updater] update available: v${info.version}`);
+    if (!isProd) logger.info(`[updater] update available: v${info.version}`);
     mainWindow?.webContents.send('update:available', {
       version: info.version,
       releaseDate: info.releaseDate,
@@ -171,7 +180,7 @@ function createWindow() {
   });
 
   autoUpdater.on('update-not-available', () => {
-    if (!isProd) console.log('[updater] no update available');
+    if (!isProd) logger.info('[updater] no update available');
   });
 
   autoUpdater.on('download-progress', (progress) => {
@@ -182,7 +191,7 @@ function createWindow() {
   });
 
   autoUpdater.on('update-downloaded', () => {
-    if (!isProd) console.log('[updater] update downloaded');
+    if (!isProd) logger.info('[updater] update downloaded');
     mainWindow?.webContents.send('update:downloaded');
 
     // Show native notification prompting restart
@@ -197,7 +206,7 @@ function createWindow() {
   });
 
   autoUpdater.on('error', (err) => {
-    console.error('[updater] error:', err.message);
+    logger.error('[updater] error:', err.message);
   });
 
   updaterService.init();
@@ -287,7 +296,7 @@ app.whenReady().then(async () => {
         return;
       }
     } catch (err) {
-      console.error('Admin check failed:', err);
+      logger.error('Admin check failed:', err);
     }
   }
 

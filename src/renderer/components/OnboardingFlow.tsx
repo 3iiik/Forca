@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAppStore } from '../stores/appStore';
+import { logger } from '../utils/logger';
 
 export default function OnboardingFlow() {
   const { setOnboardingComplete, setCurrentView, setZones, setProfiles } = useAppStore();
@@ -59,8 +60,8 @@ export default function OnboardingFlow() {
       window.electronAPI.zone.list(),
       window.electronAPI.profiles.list(),
     ]);
-    console.log('[onboarding] store zones:', JSON.stringify(zones));
-    console.log('[onboarding] store profiles:', JSON.stringify(profiles));
+    logger.debug('[onboarding] store zones:', JSON.stringify(zones));
+    logger.debug('[onboarding] store profiles:', JSON.stringify(profiles));
     setZones(zones);
     setProfiles(profiles);
   };

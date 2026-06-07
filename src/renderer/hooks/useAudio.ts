@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { AmbientSoundType } from '../types';
+import { logger } from '../utils/logger';
 
 const SAMPLE_RATE = 44100;
 const DURATION = 30;
@@ -122,7 +123,7 @@ export function useAudio() {
 
       currentSoundRef.current = sound;
     } catch (err) {
-      console.error('Audio play failed:', err);
+      logger.error('Audio play failed:', err);
     }
   }, [stop]);
 

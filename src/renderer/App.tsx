@@ -3,6 +3,7 @@ import { useAppStore } from './stores/appStore';
 import Layout from './components/Layout';
 import OnboardingFlow from './components/OnboardingFlow';
 import { useAudio } from './hooks/useAudio';
+import { logger } from './utils/logger';
 
 const TodayView = lazy(() => import('./components/TodayView'));
 const CalendarView = lazy(() => import('./components/CalendarView'));
@@ -37,7 +38,7 @@ function App() {
   useEffect(() => {
     const api = window.electronAPI;
     if (!api) {
-      console.warn('Forca is running outside Electron — electronAPI not available');
+      logger.warn('Forca is running outside Electron — electronAPI not available');
       return;
     }
 
@@ -61,16 +62,16 @@ function App() {
         setZones(zones);
         setProfiles(profiles);
       } catch (err) {
-        console.error('Failed to load settings:', err);
+        logger.error('Failed to load settings:', err);
       }
     };
     loadSettings();
 
-    const unsubZone = api.on('zone:updated', (zone: any) => {
+    const unsubZone = api.on('zone:updated', (zone: import('./types').ActiveZone) => {
       setActiveZone(zone);
     });
 
-    const unsubBreak = api.on('break:update', (data: any) => {
+    const unsubBreak = api.on('break:update', (data: { isBreak: boolean; remaining: number; total: number }) => {
       setBreakTimer(data);
     });
 

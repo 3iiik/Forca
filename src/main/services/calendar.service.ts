@@ -5,6 +5,7 @@ import store from '../store/store';
 import { BrowserWindow } from 'electron';
 import * as http from 'http';
 import { AddressInfo } from 'net';
+import { logger } from '../utils/logger';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const REDIRECT_PATH = '/oauth/callback';
@@ -41,7 +42,7 @@ export class CalendarService {
       const clientId = process.env.GOOGLE_CLIENT_ID;
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
       if (!clientId || !clientSecret) {
-        console.warn('Google OAuth: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set');
+        logger.warn('Google OAuth: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set');
         return false;
       }
 
@@ -65,7 +66,7 @@ export class CalendarService {
 
       return true;
     } catch (err) {
-      console.error('Google auth failed:', err);
+      logger.error('Google auth failed:', err);
       return false;
     }
   }
@@ -193,7 +194,7 @@ export class CalendarService {
         calendarName: event.organizer?.displayName,
       }));
     } catch (err) {
-      console.error('Failed to fetch Google events:', err);
+      logger.error('Failed to fetch Google events:', err);
       return [];
     }
   }
@@ -222,7 +223,7 @@ export class CalendarService {
 
       return events.sort((a, b) => a.start.getTime() - b.start.getTime());
     } catch (err) {
-      console.error('Failed to fetch iCal events:', err);
+      logger.error('Failed to fetch iCal events:', err);
       return [];
     }
   }

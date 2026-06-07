@@ -1,12 +1,41 @@
-import { exec, spawn } from 'child_process';
-import { promisify } from 'util';
+import { Notification } from 'electron';
+import { execSync, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { BrowserWindow } from 'electron';
+import { logger } from '../utils/logger';
 
-const isWindows = os.platform() === 'win32';
-const execAsync = promisify(exec);
+const PLATFORM = os.platform();
+const isWindows = PLATFORM === 'win32';
+const isMac = PLATFORM === 'darwin';
+const isLinux = PLATFORM === 'linux';
+
+const BROWSERS_WIN = ['firefox.exe', 'chrome.exe', 'msedge.exe', 'waterfox.exe', 'brave.exe'];
+const BROWSERS_MAC = ['Firefox', 'Google Chrome', 'Safari'];
+const BROWSERS_LINUX = ['firefox', 'chrome', 'chromium'];
+
+const APP_NAME_MAP_WIN: Record<string, string[]> = {
+  'calculator': ['CalculatorApp.exe', 'Calculator.exe'],
+  'chrome': ['chrome.exe'],
+  'firefox': ['firefox.exe'],
+  'spotify': ['Spotify.exe'],
+  'discord': ['Discord.exe'],
+  'slack': ['slack.exe'],
+};
+
+function resolveProcessNames(appName: string): string[] {
+  if (isWindows) {
+    const lower = appName.toLowerCase();
+    if (APP_NAME_MAP_WIN[lower]) {
+      return APP_NAME_MAP_WIN[lower];
+    }
+    if (lower.endsWith('.exe')) {
+      return [appName];
+    }
+    return [`${appName}.exe`, appName];
+  }
+  return [appName];
+}
 
 function getHostsPath(): string {
   if (isWindows) return 'C:\\Windows\\System32\\drivers\\etc\\hosts';
@@ -15,11 +44,6 @@ function getHostsPath(): string {
 
 const HOSTS_START_MARKER = '# Forca - Start Blocked Sites';
 const HOSTS_END_MARKER = '# Forca - End Blocked Sites';
-
-interface BlockedProcess {
-  name: string;
-  pid: number;
-}
 
 function canWriteHosts(): boolean {
   try {
@@ -59,15 +83,15 @@ function runPowerShellElevated(args: string[]): Promise<void> {
   });
 }
 
-async function modifyHostsFileRaw(hostsContent: string): Promise<void> {
+async function writeHostsFile(content: string): Promise<void> {
   const hostsPath = getHostsPath();
   if (canWriteHosts()) {
-    fs.writeFileSync(hostsPath, hostsContent, 'utf-8');
+    fs.writeFileSync(hostsPath, content, 'utf-8');
     return;
   }
 
   const tmpFile = path.join(os.tmpdir(), `forca-hosts-${Date.now()}`);
-  fs.writeFileSync(tmpFile, hostsContent, 'utf-8');
+  fs.writeFileSync(tmpFile, content, 'utf-8');
 
   try {
     await runPowerShellElevated([
@@ -76,23 +100,11 @@ async function modifyHostsFileRaw(hostsContent: string): Promise<void> {
       `Copy-Item -LiteralPath '${tmpFile.replace(/'/g, "''")}' -Destination '${hostsPath.replace(/'/g, "''")}' -Force; Remove-Item -LiteralPath '${tmpFile.replace(/'/g, "''")}' -Force`,
     ]);
   } catch (err) {
-    try { fs.unlinkSync(tmpFile); } catch {}
+    try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
     throw err;
   }
 
-  try { fs.unlinkSync(tmpFile); } catch {}
-}
-
-async function flushDns(): Promise<void> {
-  try {
-    if (isWindows) {
-      await execAsync('ipconfig /flushdns');
-    } else if (os.platform() === 'darwin') {
-      await execAsync('dscacheutil -flushcache; killall -HUP mDNSResponder');
-    }
-  } catch {
-    // DNS flush may fail without admin rights, but hosts changes still apply
-  }
+  try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
 }
 
 function removeForcaSection(content: string): string {
@@ -115,172 +127,184 @@ function removeForcaSection(content: string): string {
   return result.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
 }
 
-function buildHostsContent(sites: string[]): string {
-  const unique = [...new Set(sites.map(s => s.trim().toLowerCase()).filter(Boolean))];
-  const entries = unique.flatMap(site => [
-    `127.0.0.1 ${site}`,
-    `127.0.0.1 www.${site}`,
-  ]);
-  return `${HOSTS_START_MARKER}\n${entries.join('\n')}\n${HOSTS_END_MARKER}`;
+function flushDns(): void {
+  try {
+    if (isWindows) {
+      execSync('ipconfig /flushdns', { stdio: 'pipe' });
+    } else if (isMac) {
+      execSync('dscacheutil -flushcache && killall -HUP mDNSResponder', { stdio: 'pipe' });
+    } else if (isLinux) {
+      execSync('systemctl restart systemd-resolved', { stdio: 'pipe' });
+    }
+  } catch {
+    // best effort
+  }
+}
+
+function killProcess(appName: string): void {
+  const names = resolveProcessNames(appName);
+  for (const name of names) {
+    try {
+      if (isWindows) {
+        execSync(`taskkill /F /IM ${name} /T`, { stdio: 'ignore' });
+      } else if (isMac) {
+        execSync(`killall -9 ${name}`, { stdio: 'ignore' });
+      } else if (isLinux) {
+        execSync(`pkill -9 ${name}`, { stdio: 'ignore' });
+      }
+    } catch {
+      // process may not be running
+    }
+  }
+}
+
+function isProcessRunning(appName: string): boolean {
+  const names = resolveProcessNames(appName);
+  for (const name of names) {
+    try {
+      if (isWindows) {
+        const out = execSync(`tasklist /FI "IMAGENAME eq ${name}" /NH`, { encoding: 'utf-8', stdio: 'pipe' });
+        if (out.includes(name.replace('.exe', ''))) return true;
+      } else if (isMac) {
+        execSync(`pgrep -x "${name}"`, { stdio: 'pipe' });
+        return true;
+      } else {
+        execSync(`pgrep -x "${name}"`, { stdio: 'pipe' });
+        return true;
+      }
+    } catch {
+      // try next name
+    }
+  }
+  return false;
+}
+
+function killBrowsers(): void {
+  const browsers = isWindows ? BROWSERS_WIN : isMac ? BROWSERS_MAC : BROWSERS_LINUX;
+  for (const browser of browsers) {
+    killProcess(browser);
+  }
 }
 
 export class BlockingService {
-  private blockedProcesses: BlockedProcess[] = [];
-  private isBlocking = false;
-  private window: BrowserWindow | null = null;
-  private blockedAppsList: string[] = [];
-  private blockedSitesList: string[] = [];
-  private alwaysAllowedApps: string[] = [];
-  private checkInterval: ReturnType<typeof setInterval> | null = null;
-  private hostsWriteFailed = false;
+  private killInterval: ReturnType<typeof setInterval> | null = null;
+  private appsToKill: string[] = [];
+  private sitesToBlock: string[] = [];
+  private isActive = false;
 
-  setAlwaysAllowedApps(apps: string[]): void {
-    this.alwaysAllowedApps = apps;
+  setWindow(_win: Electron.BrowserWindow): void {
+    // no-op
+  }
+
+  setAlwaysAllowedApps(_apps: string[]): void {
+    // unused for now
   }
 
   getAlwaysAllowedApps(): string[] {
-    return this.alwaysAllowedApps;
-  }
-
-  setWindow(win: BrowserWindow) {
-    this.window = win;
+    return [];
   }
 
   async blockApps(apps: string[]): Promise<void> {
-    const toBlock = apps.filter(a => !this.alwaysAllowedApps.includes(a));
-    this.blockedAppsList = toBlock;
-    if (toBlock.length === 0) return;
+    if (apps.length === 0) return;
+    this.appsToKill = apps;
+    this.isActive = true;
 
-    this.isBlocking = true;
-    this.startProcessMonitor(toBlock);
+    for (const app of apps) {
+      killProcess(app);
+    }
+
+    if (this.killInterval) clearInterval(this.killInterval);
+    this.killInterval = setInterval(() => {
+      if (!this.isActive) return;
+      for (const app of this.appsToKill) {
+        if (isProcessRunning(app)) {
+          killProcess(app);
+          logger.info(`Killed blocked app: ${app}`);
+        }
+      }
+    }, 3000);
   }
 
   async unblockApps(): Promise<void> {
-    this.isBlocking = false;
-    this.blockedAppsList = [];
-    this.blockedProcesses = [];
-    if (this.checkInterval) {
-      clearInterval(this.checkInterval);
-      this.checkInterval = null;
+    this.isActive = false;
+    this.appsToKill = [];
+    if (this.killInterval) {
+      clearInterval(this.killInterval);
+      this.killInterval = null;
     }
   }
 
   async blockSites(sites: string[]): Promise<void> {
     if (sites.length === 0) return;
-    this.blockedSitesList = sites;
-    this.hostsWriteFailed = false;
+    this.sitesToBlock = sites;
+
+    const unique = [...new Set(sites.map(s => s.trim().toLowerCase()).filter(Boolean))];
+
+    const lines: string[] = [];
+    lines.push(HOSTS_START_MARKER);
+    for (const site of unique) {
+      lines.push(`127.0.0.1 ${site}`);
+      lines.push(`127.0.0.1 www.${site}`);
+      logger.info(`Blocking site: ${site}`);
+    }
+    lines.push(HOSTS_END_MARKER);
+    const blockSection = lines.join('\n') + '\n';
 
     try {
-      let hostsContent = fs.readFileSync(getHostsPath(), 'utf-8');
-      hostsContent = removeForcaSection(hostsContent);
-      hostsContent += '\n' + buildHostsContent(sites) + '\n';
+      const hostsContent = fs.readFileSync(getHostsPath(), 'utf-8');
+      const cleaned = removeForcaSection(hostsContent);
+      const newContent = cleaned + '\n' + blockSection;
+      await writeHostsFile(newContent);
+      flushDns();
+      logger.info(`Blocked ${unique.length} sites in hosts file`);
 
-      await modifyHostsFileRaw(hostsContent);
-      await flushDns();
-    } catch (err: any) {
-      this.hostsWriteFailed = true;
-      const msg = isWindows
-        ? 'Forca needs Administrator privileges to block websites. Please restart Forca as Administrator.'
-        : 'Forca needs root privileges to block websites. Please restart Forca with sudo.';
-
-      if (this.window && !this.window.isDestroyed()) {
-        this.window.webContents.send('notification:show', {
-          title: 'Website Blocking Failed',
-          body: msg,
-        });
-      }
-      console.error('Failed to block sites:', err.message);
+      killBrowsers();
+      setTimeout(() => {
+        try {
+          if (isWindows) {
+            execSync('start "" "http://localhost"', { stdio: 'pipe' });
+          } else if (isMac) {
+            execSync('open "http://localhost"', { stdio: 'pipe' });
+          } else if (isLinux) {
+            execSync('xdg-open "http://localhost"', { stdio: 'pipe' });
+          }
+        } catch { /* best effort */ }
+      }, 2000);
+    } catch (err) {
+      logger.error('Failed to block sites:', err);
     }
   }
 
   async unblockSites(): Promise<void> {
-    this.blockedSitesList = [];
-    if (this.hostsWriteFailed) return;
-
+    this.sitesToBlock = [];
     try {
-      let hostsContent = fs.readFileSync(getHostsPath(), 'utf-8');
+      const hostsContent = fs.readFileSync(getHostsPath(), 'utf-8');
       const cleaned = removeForcaSection(hostsContent);
-
-      if (cleaned !== hostsContent + '\n') {
-        await modifyHostsFileRaw(cleaned);
-        await flushDns();
-      }
-    } catch (err: any) {
-      console.error('Failed to unblock sites:', err.message);
+      await writeHostsFile(cleaned);
+      flushDns();
+      new Notification({
+        title: 'Forca Focus',
+        body: 'Focus zone ended - sites unblocked',
+      }).show();
+      logger.info('Unblocked all sites');
+    } catch (err) {
+      logger.error('Failed to unblock sites:', err);
     }
   }
 
   getBlockedApps(): string[] {
-    return this.blockedAppsList;
+    return this.appsToKill;
   }
 
-  private startProcessMonitor(apps: string[]): void {
-    if (this.checkInterval) {
-      clearInterval(this.checkInterval);
-    }
-
-    this.checkInterval = setInterval(async () => {
-      if (!this.isBlocking) return;
-
-      for (const appName of apps) {
-        try {
-          const pids = await this.findProcessPids(appName);
-          if (pids.length > 0) {
-            for (const pid of pids) {
-              try {
-                await this.killProcess(pid);
-                this.blockedProcesses.push({ name: appName, pid });
-              } catch { /* process may already be dead */ }
-            }
-          }
-        } catch { /* process may have exited */ }
-      }
-    }, 2000);
-  }
-
-  private async findProcessPids(processName: string): Promise<number[]> {
-    if (isWindows) {
-      const { stdout } = await execAsync(
-        `powershell -Command "Get-Process -Name '${processName}' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id"`
-      );
-      return stdout.trim().split('\n').filter(Boolean).map(p => parseInt(p.trim())).filter(n => !isNaN(n));
-    }
-
-    const { stdout } = await execAsync(`pgrep -f "${processName}" 2>/dev/null || true`);
-    return stdout.trim().split('\n').filter(Boolean).map(p => parseInt(p.trim())).filter(n => !isNaN(n));
-  }
-
-  private async killProcess(pid: number): Promise<void> {
-    if (isWindows) {
-      await execAsync(`taskkill /F /PID ${pid}`);
-    } else {
-      await execAsync(`kill -9 ${pid}`);
-    }
-  }
-
-  async ensureHostsAccess(): Promise<boolean> {
-    try {
-      const hostsPath = getHostsPath();
-      if (canWriteHosts()) return true;
-
-      // Trigger UAC at startup by writing and removing a test marker
-      let content = fs.readFileSync(hostsPath, 'utf-8');
-      const testLine = `# Forca access test ${Date.now()}\n`;
-      await modifyHostsFileRaw(content + testLine);
-      content = fs.readFileSync(hostsPath, 'utf-8');
-      if (content.includes(testLine)) {
-        await modifyHostsFileRaw(content.replace(testLine, ''));
-      }
-      return true;
-    } catch {
-      return false;
-    }
+  getBlockedSites(): string[] {
+    return this.sitesToBlock;
   }
 
   cleanup(): void {
-    if (this.checkInterval) {
-      clearInterval(this.checkInterval);
-      this.checkInterval = null;
+    this.isActive = false;
+    if (this.killInterval) {
+      clearInterval(this.killInterval);
+      this.killInterval = null;
     }
   }
 }

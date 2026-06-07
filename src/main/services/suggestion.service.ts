@@ -9,14 +9,15 @@ export class SuggestionService {
 
     // Suggest focus times in free blocks
     for (const free of freeBlocks) {
-      if (free.duration >= 30) {
+      const roundedDuration = Math.round(free.duration);
+      if (roundedDuration >= 30) {
         suggestions.push({
           id: crypto.randomUUID(),
           type: 'focus-time',
           title: 'Schedule Focus Block',
-          description: `You have ${free.duration} minutes free between your meetings. Great for a focus session!`,
+          description: `You have ${roundedDuration} minutes free between your meetings. Great for a focus session!`,
           suggestedTime: free.start.toISOString(),
-          suggestedDuration: Math.min(free.duration, 120),
+          suggestedDuration: Math.min(roundedDuration, 120),
           confidence: 0.85,
         });
       }

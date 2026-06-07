@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import { useAppStore } from '../stores/appStore';
 import { FocusSession } from '../types';
+import { logger } from '../utils/logger';
 
 export default function StatsPage() {
   const { focusScore, setFocusScore, weeklySummary, setWeeklySummary, streak } = useAppStore();
@@ -13,6 +14,7 @@ export default function StatsPage() {
 
   useEffect(() => {
     loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadStats = async () => {
@@ -26,7 +28,7 @@ export default function StatsPage() {
       setWeeklySummary(summary);
       setSessions(allSessions);
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      logger.error('Failed to load stats:', err);
     } finally {
       setIsLoading(false);
     }

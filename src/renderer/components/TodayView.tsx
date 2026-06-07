@@ -6,6 +6,7 @@ import Timeline from './Timeline';
 import StreakCounter from './StreakCounter';
 import AmbientSoundControl from './AmbientSoundControl';
 import BreakReminder from './BreakReminder';
+import { logger } from '../utils/logger';
 
 function parseEvents(events: CalendarEvent[]): CalendarEvent[] {
   return events.map(e => ({
@@ -28,6 +29,7 @@ export default function TodayView() {
     loadData();
     const interval = setInterval(loadData, 30000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = async () => {
@@ -46,7 +48,7 @@ export default function TodayView() {
       setStreak(streakData);
       setFocusScore(score);
     } catch (err) {
-      console.error('Failed to load today data:', err);
+      logger.error('Failed to load today data:', err);
     } finally {
       setIsLoading(false);
     }
@@ -207,6 +209,6 @@ async function startZone(zoneId: string) {
   try {
     await window.electronAPI.zone.start(zoneId);
   } catch (err) {
-    console.error('Failed to start zone:', err);
+    logger.error('Failed to start zone:', err);
   }
 }

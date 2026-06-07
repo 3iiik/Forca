@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'firebase/app' {
   const app: any;
   export function initializeApp(config: any): any;

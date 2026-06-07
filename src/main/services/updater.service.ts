@@ -1,5 +1,6 @@
 import { autoUpdater } from 'electron-updater';
 import { BrowserWindow } from 'electron';
+import { logger } from '../utils/logger';
 
 export class UpdaterService {
   private window: BrowserWindow | null = null;
@@ -30,7 +31,7 @@ export class UpdaterService {
     });
 
     autoUpdater.on('error', (err) => {
-      console.error('Update error:', err);
+      logger.error('Update error:', err);
     });
   }
 
@@ -46,7 +47,7 @@ export class UpdaterService {
     } catch (err) {
       // Not published yet, that's fine
       if (process.env.NODE_ENV !== 'production') {
-        console.debug('Update check failed:', err);
+        logger.debug('Update check failed:', err);
       }
     }
     return { available: false };

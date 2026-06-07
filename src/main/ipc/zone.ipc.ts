@@ -12,11 +12,11 @@ export function registerZoneIpc(zoneEngine: ZoneEngine) {
   });
 
   ipcMain.handle('zone:pause', async () => {
-    zoneEngine.pauseZone();
+    await zoneEngine.pauseZone();
   });
 
   ipcMain.handle('zone:resume', async () => {
-    zoneEngine.resumeZone();
+    await zoneEngine.resumeZone();
   });
 
   ipcMain.handle('zone:list', async () => {

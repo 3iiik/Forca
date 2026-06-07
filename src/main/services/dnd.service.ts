@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as os from 'os';
+import { logger } from '../utils/logger';
 
 const execAsync = promisify(exec);
 
@@ -23,7 +24,7 @@ export class DndService {
         this.wasEnabled = true;
       }
     } catch (err) {
-      console.error('Failed to enable DND:', err);
+      logger.error('Failed to enable DND:', err);
     }
   }
 
@@ -41,7 +42,7 @@ export class DndService {
       }
       this.wasEnabled = false;
     } catch (err) {
-      console.error('Failed to disable DND:', err);
+      logger.error('Failed to disable DND:', err);
     }
   }
 }

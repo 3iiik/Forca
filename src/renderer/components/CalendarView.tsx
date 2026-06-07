@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { CalendarEvent } from '../types';
+import { logger } from '../utils/logger';
 
 function parseEvents(events: CalendarEvent[]): CalendarEvent[] {
   return events.map(e => ({
@@ -19,6 +20,7 @@ export default function CalendarView() {
 
   useEffect(() => {
     loadEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
   const loadEvents = async () => {
@@ -28,7 +30,7 @@ export default function CalendarView() {
       setEvents(parseEvents(evts));
       setIsConnected(true);
     } catch (err) {
-      console.error('Failed to load events:', err);
+      logger.error('Failed to load events:', err);
       setIsConnected(false);
     } finally {
       setIsLoading(false);

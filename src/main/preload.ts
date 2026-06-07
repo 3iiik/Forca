@@ -15,8 +15,8 @@ const api = {
     pause: () => ipcRenderer.invoke('zone:pause'),
     resume: () => ipcRenderer.invoke('zone:resume'),
     list: () => ipcRenderer.invoke('zone:list'),
-    create: (zone: any) => ipcRenderer.invoke('zone:create', zone),
-    update: (zone: any) => ipcRenderer.invoke('zone:update', zone),
+    create: (zone: import('../shared/types').FocusZone) => ipcRenderer.invoke('zone:create', zone),
+    update: (zone: import('../shared/types').FocusZone) => ipcRenderer.invoke('zone:update', zone),
     delete: (zoneId: string) => ipcRenderer.invoke('zone:delete', zoneId),
     getActive: () => ipcRenderer.invoke('zone:get-active'),
   },
@@ -35,7 +35,7 @@ const api = {
   // Settings
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
-    set: (settings: any) => ipcRenderer.invoke('settings:set', settings),
+    set: (settings: import('../shared/types').AppSettings) => ipcRenderer.invoke('settings:set', settings),
     reset: () => ipcRenderer.invoke('settings:reset'),
   },
 
@@ -43,13 +43,13 @@ const api = {
   sessions: {
     list: (date: string) => ipcRenderer.invoke('sessions:list', date),
     all: () => ipcRenderer.invoke('sessions:all'),
-    save: (session: any) => ipcRenderer.invoke('sessions:save', session),
+    save: (session: import('../shared/types').FocusSession) => ipcRenderer.invoke('sessions:save', session),
   },
 
   // Profiles
   profiles: {
     list: () => ipcRenderer.invoke('profiles:list'),
-    save: (profile: any) => ipcRenderer.invoke('profiles:save', profile),
+    save: (profile: import('../shared/types').ZoneProfile) => ipcRenderer.invoke('profiles:save', profile),
     delete: (profileId: string) => ipcRenderer.invoke('profiles:delete', profileId),
   },
 
@@ -93,7 +93,7 @@ const api = {
   },
 
   // Event listeners
-  on: (channel: string, callback: (...args: any[]) => void) => {
+  on: (channel: string, callback: (...args: unknown[]) => void) => {
     const validChannels = [
       'zone:updated', 'break:update', 'calendar:meeting-ended',
       'tray:action', 'update:available', 'update:progress',
@@ -101,7 +101,7 @@ const api = {
       'sound:play', 'sound:stop', 'sound:volume', 'sound:fade-out',
     ];
     if (validChannels.includes(channel)) {
-      const subscription = (_event: Electron.IpcRendererEvent, ...args: any[]) => callback(...args);
+      const subscription = (_event: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
       ipcRenderer.on(channel, subscription);
       return () => ipcRenderer.removeListener(channel, subscription);
     }
