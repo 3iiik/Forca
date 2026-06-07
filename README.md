@@ -38,27 +38,29 @@
 
 ## Installation
 
-### Windows
+### 🪟 Windows
 
-| Type | Download |
+| | |
 |---|---|
-| Installer | [Forca-Setup-x64.exe](https://github.com/3iiik/forca/releases/latest/download/Forca-Setup-x64.exe) |
-| Portable | [Forca-Portable-x64.exe](https://github.com/3iiik/forca/releases/latest/download/Forca-Portable-x64.exe) |
+| 📦 **Installer** | [Download Forca-Setup-x64.exe](https://github.com/3iiik/Forca/releases/latest/download/Forca-Setup-x64.exe) |
+| 💼 **Portable** | [Download Forca-Portable-x64.exe](https://github.com/3iiik/Forca/releases/latest/download/Forca-Portable-x64.exe) |
 
-### macOS
+### 🍎 macOS
 
-| Architecture | Download |
+| | |
 |---|---|
-| Intel | [Forca-x64.dmg](https://github.com/3iiik/forca/releases/latest/download/Forca-x64.dmg) |
-| Apple Silicon | [Forca-arm64.dmg](https://github.com/3iiik/forca/releases/latest/download/Forca-arm64.dmg) |
+| 💻 **Intel** | [Download Forca-x64.dmg](https://github.com/3iiik/Forca/releases/latest/download/Forca-x64.dmg) |
+| 🔵 **Apple Silicon** | [Download Forca-arm64.dmg](https://github.com/3iiik/Forca/releases/latest/download/Forca-arm64.dmg) |
 
-### Linux
+### 🐧 Linux
 
-| Format | Download |
+| | |
 |---|---|
-| AppImage | [Forca-x64.AppImage](https://github.com/3iiik/forca/releases/latest/download/Forca-x64.AppImage) |
-| Debian | [Forca-x64.deb](https://github.com/3iiik/forca/releases/latest/download/Forca-x64.deb) |
-| RPM | [Forca-x64.rpm](https://github.com/3iiik/forca/releases/latest/download/Forca-x64.rpm) |
+| 📀 **AppImage** | [Download Forca-x64.AppImage](https://github.com/3iiik/Forca/releases/latest/download/Forca-x64.AppImage) |
+| 🟠 **Debian** | [Download Forca-x64.deb](https://github.com/3iiik/Forca/releases/latest/download/Forca-x64.deb) |
+| 🔴 **RPM** | [Download Forca-x64.rpm](https://github.com/3iiik/Forca/releases/latest/download/Forca-x64.rpm) |
+
+> 💡 **Note:** On Windows, run Forca as Administrator for website blocking to work correctly.
 
 ## Running from Source
 
