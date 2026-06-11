@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forca Blocker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <div class="header">
+      <img src="../icons/icon-48.png" alt="Forca" class="logo" onerror="this.style.display='none'">
+      <h1>Forca Blocker</h1>
+    </div>
+
+    <div id="statusContainer">
+      <div class="status disconnected" id="statusDisconnected">
+        <div class="status-dot gray"></div>
+        <span>Disconnected</span>
+        <button id="reconnectBtn" class="btn-small">Reconnect</button>
+      </div>
+      <div class="status connecting" id="statusConnecting" style="display:none;">
+        <div class="spinner"></div>
+        <span>Connecting...</span>
+      </div>
+      <div class="status idle" id="statusIdle" style="display:none;">
+        <div class="status-dot blue"></div>
+        <span>No active zone</span>
+      </div>
+      <div class="status active" id="statusActive" style="display:none;">
+        <div class="status-dot green"></div>
+        <div class="status-content">
+          <div class="status-label">Active</div>
+          <div class="zone-name" id="activeZoneName">—</div>
+          <div class="sites-count" id="activeSitesCount">0 sites blocked</div>
+          <div class="time-remaining" id="activeTimeRemaining">—</div>
+        </div>
+      </div>
+      <div class="status paused" id="statusPaused" style="display:none;">
+        <div class="status-dot yellow"></div>
+        <div class="status-content">
+          <div class="status-label">Paused</div>
+          <div class="zone-name" id="pausedZoneName">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions" id="actionsContainer" style="display:none;">
+      <button id="pauseActionBtn" class="btn">⏸ Pause Zone</button>
+      <button id="endActionBtn" class="btn btn-secondary">⏹ End Zone</button>
+    </div>
+
+    <div class="footer">
+      <button id="settingsBtn" class="btn-text">⚙ Settings</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

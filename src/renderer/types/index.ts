@@ -19,13 +19,9 @@ declare global {
         getActive: () => Promise<import('../../shared/types').ActiveZone | null>;
       };
       blocker: {
-        blockApps: (apps: string[]) => Promise<void>;
-        unblockApps: () => Promise<void>;
         blockSites: (sites: string[]) => Promise<void>;
         unblockSites: () => Promise<void>;
-        getBlockedApps: () => Promise<string[]>;
-        getAllowedApps: () => Promise<string[]>;
-        setAllowedApps: (apps: string[]) => Promise<void>;
+        getBlockedSites: () => Promise<string[]>;
       };
       settings: {
         get: () => Promise<import('../../shared/types').AppSettings>;
@@ -62,6 +58,14 @@ declare global {
         download: () => Promise<void>;
         status: () => Promise<{ lastSynced: string; online: boolean }>;
       };
+      extension: {
+        deploy: (browser: string) => Promise<{ method: string; success: boolean; details: string }>;
+        getIdentity: () => Promise<{ chrome: string; firefox: string; directory: string }>;
+        getClientCount: () => Promise<number>;
+        openStore: (browser: string) => Promise<{ method: string; success: boolean; details: string }>;
+        openFolder: (browser: string) => Promise<{ success: boolean; details: string }>;
+        launchWithExtension: (browser: string) => Promise<{ success: boolean; details: string }>;
+      };
       app: {
         minimize: () => Promise<void>;
         close: () => Promise<void>;
@@ -88,7 +92,6 @@ export type {
   FocusSession,
   FocusScore,
   TrayState,
-  BlockedApp,
   AppSettings,
   CalendarSettings,
   NotificationSettings,

@@ -8,10 +8,9 @@ export class ScoreService {
       : 0;
 
     const interruptionPenalty = Math.min(session.interruptions * 10, 30);
-    const appBlockBonus = Math.min(session.appsBlocked * 5, 20);
 
     const durationScore = durationRatio * 60;
-    const baseScore = durationScore - interruptionPenalty + appBlockBonus;
+    const baseScore = durationScore - interruptionPenalty;
 
     return Math.max(0, Math.min(100, Math.round(baseScore)));
   }

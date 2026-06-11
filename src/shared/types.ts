@@ -12,8 +12,6 @@ export interface FocusZone {
   id: string;
   name: string;
   duration: number;
-  blockedApps: string[];
-  allowedApps: string[];
   blockedSites: string[];
   trigger: ZoneTrigger;
   profileId?: string;
@@ -33,8 +31,6 @@ export interface ZoneProfile {
   id: string;
   name: string;
   icon: string;
-  blockedApps: string[];
-  allowedApps: string[];
   blockedSites: string[];
   ambientSound: AmbientSoundType | null;
   ambientVolume: number;
@@ -66,7 +62,6 @@ export interface FocusSession {
   durationCompleted: number;
   durationPlanned: number;
   interruptions: number;
-  appsBlocked: number;
   score: number;
   date: string;
 }
@@ -82,12 +77,6 @@ export interface TrayState {
   status: 'idle' | 'active' | 'paused' | 'meeting-soon';
   activeZoneName?: string;
   remaining?: number;
-}
-
-export interface BlockedApp {
-  name: string;
-  processName: string;
-  path?: string;
 }
 
 export interface AppSettings {
@@ -211,13 +200,9 @@ export interface IpcChannels {
   'zone:update': (zone: FocusZone) => Promise<FocusZone>;
   'zone:delete': (zoneId: string) => Promise<void>;
   'zone:get-active': () => Promise<ActiveZone | null>;
-  'blocker:block-apps': (apps: string[]) => Promise<void>;
-  'blocker:unblock-apps': () => Promise<void>;
   'blocker:block-sites': (sites: string[]) => Promise<void>;
   'blocker:unblock-sites': () => Promise<void>;
-  'blocker:get-blocked-apps': () => Promise<string[]>;
-  'blocker:get-allowed-apps': () => Promise<string[]>;
-  'blocker:set-allowed-apps': (apps: string[]) => Promise<void>;
+  'blocker:get-blocked-sites': () => Promise<string[]>;
   'tray:update': (state: TrayState) => Promise<void>;
   'tray:get-state': () => Promise<TrayState>;
   'settings:get': () => Promise<AppSettings>;

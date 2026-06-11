@@ -9,7 +9,6 @@ interface StoreSchema {
   streakLastDate: string;
   currentStreak: number;
   longestStreak: number;
-  alwaysAllowedApps: string[];
   onboardingComplete: boolean;
 }
 
@@ -63,7 +62,6 @@ const defaults: StoreSchema = {
   zones: [],
   profiles: [],
   sessions: [],
-  alwaysAllowedApps: ['Code', 'Figma', 'GitHub Desktop', 'Notion', 'Spotify'],
   streakLastDate: '',
   currentStreak: 0,
   longestStreak: 0,

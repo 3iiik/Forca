@@ -6,6 +6,7 @@ import { BlockingService } from './blocker.service';
 import { TrayService } from './tray.service';
 import { DndService } from './dnd.service';
 import { SoundService } from './sound.service';
+import { WebSocketServerService } from './websocket-server.service';
 
 export class ZoneEngine {
   private activeZone: ActiveZone | null = null;
@@ -17,6 +18,7 @@ export class ZoneEngine {
   private tray: TrayService;
   private dnd: DndService;
   private sound: SoundService;
+  private wsServer: WebSocketServerService;
   private window: BrowserWindow | null = null;
 
   // Break timer state
@@ -28,12 +30,14 @@ export class ZoneEngine {
     blocker: BlockingService,
     tray: TrayService,
     dnd: DndService,
-    sound: SoundService
+    sound: SoundService,
+    wsServer: WebSocketServerService
   ) {
     this.blocker = blocker;
     this.tray = tray;
     this.dnd = dnd;
     this.sound = sound;
+    this.wsServer = wsServer;
   }
 
   setWindow(win: BrowserWindow) {
@@ -133,18 +137,12 @@ export class ZoneEngine {
       ambientVolume,
     };
 
-    // Start blocking
-    await this.blocker.blockApps(zone.blockedApps);
+    // Start blocking via extension
     await this.blocker.blockSites(zone.blockedSites);
 
     // Enable DND if configured
     if (settings.general.dndSync) {
       await this.dnd.enable();
-    }
-
-    // Start ambient sound
-    if (ambientSound && ambientSound !== 'none' && settings.sounds.enabled) {
-      this.sound.play(ambientSound, ambientVolume);
     }
 
     // Update tray
@@ -164,6 +162,13 @@ export class ZoneEngine {
         body: `Forca: ${zone.name} is now active for ${zone.duration} minutes`,
       });
     }
+
+    // Broadcast to browser extension
+    this.wsServer.broadcast('zone:start', {
+      sites: zone.blockedSites,
+      zoneName: zone.name,
+      remaining: zone.duration * 60,
+    });
 
     this.onUpdate?.(this.activeZone);
     return true;
@@ -191,7 +196,6 @@ export class ZoneEngine {
       durationCompleted: completedDuration,
       durationPlanned,
       interruptions: 0,
-      appsBlocked: 0,
       score: ScoreService.calculateSessionScore({
         id: '',
         zoneId: this.activeZone.zoneId,
@@ -201,7 +205,6 @@ export class ZoneEngine {
         durationCompleted: completedDuration,
         durationPlanned,
         interruptions: 0,
-        appsBlocked: 0,
         score: 0,
         date: new Date().toISOString().split('T')[0],
       }),
@@ -212,8 +215,7 @@ export class ZoneEngine {
     sessions.push(session);
     store.set('sessions', sessions);
 
-    // Unblock everything
-    await this.blocker.unblockApps();
+    // Unblock sites
     await this.blocker.unblockSites();
 
     // Disable DND
@@ -243,6 +245,9 @@ export class ZoneEngine {
       this.startBreakTimer();
     }
 
+    // Broadcast to browser extension
+    this.wsServer.broadcast('zone:end');
+
     this.activeZone = null;
     this.onUpdate?.(null);
   }
@@ -251,6 +256,10 @@ export class ZoneEngine {
     if (!this.activeZone || this.activeZone.status !== 'running') return;
     this.activeZone.status = 'paused';
     this.stopTimer();
+
+    this.wsServer.broadcast('zone:pause', {
+      remaining: this.activeZone.remaining,
+    });
 
     this.tray.updateState({
       status: 'paused',
@@ -263,6 +272,15 @@ export class ZoneEngine {
   async resumeZone(): Promise<void> {
     if (!this.activeZone || this.activeZone.status !== 'paused') return;
     this.activeZone.status = 'running';
+
+    const zones = store.get('zones', []);
+    const zone = zones.find(z => z.id === this.activeZone?.zoneId);
+    const sites = zone?.blockedSites || [];
+
+    this.wsServer.broadcast('zone:resume', {
+      sites,
+      remaining: this.activeZone.remaining,
+    });
 
     this.startTimer();
     this.tray.updateState({

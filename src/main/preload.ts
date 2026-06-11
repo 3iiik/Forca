@@ -23,13 +23,9 @@ const api = {
 
   // Blocker
   blocker: {
-    blockApps: (apps: string[]) => ipcRenderer.invoke('blocker:block-apps', apps),
-    unblockApps: () => ipcRenderer.invoke('blocker:unblock-apps'),
     blockSites: (sites: string[]) => ipcRenderer.invoke('blocker:block-sites', sites),
     unblockSites: () => ipcRenderer.invoke('blocker:unblock-sites'),
-    getBlockedApps: () => ipcRenderer.invoke('blocker:get-blocked-apps'),
-    getAllowedApps: () => ipcRenderer.invoke('blocker:get-allowed-apps'),
-    setAllowedApps: (apps: string[]) => ipcRenderer.invoke('blocker:set-allowed-apps', apps),
+    getBlockedSites: () => ipcRenderer.invoke('blocker:get-blocked-sites'),
   },
 
   // Settings
@@ -81,6 +77,16 @@ const api = {
     status: () => ipcRenderer.invoke('sync:status'),
   },
 
+  // Extension
+  extension: {
+    deploy: (browser: string) => ipcRenderer.invoke('extension:deploy', browser),
+    getIdentity: () => ipcRenderer.invoke('extension:identity'),
+    getClientCount: () => ipcRenderer.invoke('extension:get-client-count'),
+    openStore: (browser: string) => ipcRenderer.invoke('extension:open-store', browser),
+    openFolder: (browser: string) => ipcRenderer.invoke('extension:open-folder', browser),
+    launchWithExtension: (browser: string) => ipcRenderer.invoke('extension:launch-with-extension', browser),
+  },
+
   // App
   app: {
     minimize: () => ipcRenderer.invoke('app:minimize'),
@@ -97,7 +103,7 @@ const api = {
     const validChannels = [
       'zone:updated', 'break:update', 'calendar:meeting-ended',
       'tray:action', 'update:available', 'update:progress',
-      'update:downloaded', 'notification:show', 'blocker:app-blocked',
+      'update:downloaded', 'notification:show',
       'sound:play', 'sound:stop', 'sound:volume', 'sound:fade-out',
     ];
     if (validChannels.includes(channel)) {

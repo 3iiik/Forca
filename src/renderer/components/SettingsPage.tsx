@@ -57,8 +57,6 @@ export default function SettingsPage() {
       id: crypto.randomUUID(),
       name: newZone.name,
       duration: newZone.duration,
-      blockedApps: [],
-      allowedApps: [],
       blockedSites: [],
       trigger: { type: 'manual' },
       createdAt: new Date(),

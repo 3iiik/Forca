@@ -23,6 +23,9 @@ desktop.ini
 *.log
 npm-debug.log*
 
+# Chrome extension private key (DO NOT COMMIT)
+forca-chrome-key.pem
+
 # Environment
 .env
 .env.local

@@ -1,7 +1,6 @@
-import { app, BrowserWindow, Menu, Notification, ipcMain, Tray, nativeImage, shell } from 'electron';
+import { app, BrowserWindow, Menu, Notification } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
-import { execSync } from 'child_process';
 import { autoUpdater } from 'electron-updater';
 
 import store from './store/store';
@@ -15,6 +14,8 @@ import { SuggestionService } from './services/suggestion.service';
 import { ScoreService } from './services/score.service';
 import { SyncService } from './services/sync.service';
 import { UpdaterService } from './services/updater.service';
+import { WebSocketServerService } from './services/websocket-server.service';
+import { setExtensionDir } from './services/extension-deploy.service';
 import { logger } from './utils/logger';
 
 import { registerCalendarIpc } from './ipc/calendar.ipc';
@@ -29,6 +30,7 @@ import { registerSessionsIpc } from './ipc/sessions.ipc';
 import { registerProfilesIpc } from './ipc/profiles.ipc';
 import { registerSyncIpc } from './ipc/sync.ipc';
 import { registerAppIpc } from './ipc/app.ipc';
+import { registerExtensionIpc } from './ipc/extension.ipc';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -37,7 +39,8 @@ const blockerService = new BlockingService();
 const trayService = new TrayService();
 const dndService = new DndService();
 const soundService = new SoundService();
-const zoneEngine = new ZoneEngine(blockerService, trayService, dndService, soundService);
+const wsServer = new WebSocketServerService();
+const zoneEngine = new ZoneEngine(blockerService, trayService, dndService, soundService, wsServer);
 const calendarService = new CalendarService();
 const suggestionService = new SuggestionService();
 const scoreService = new ScoreService();
@@ -121,6 +124,34 @@ function createWindow() {
     },
   });
 
+  // Provide catch-up state for newly connecting WebSocket clients
+  wsServer.getActiveZoneState = () => {
+    const active = zoneEngine.getActiveZone();
+    if (!active) return null;
+    const zones = zoneEngine.getZones();
+    const zone = zones.find(z => z.id === active.zoneId);
+    return {
+      sites: zone?.blockedSites || [],
+      zoneName: active.zoneName,
+      remaining: active.remaining,
+    };
+  };
+
+  // Forward client commands from the browser extension to the zone engine
+  wsServer.onClientCommand = (command, _payload) => {
+    switch (command) {
+      case 'pause':
+        zoneEngine.pauseZone();
+        break;
+      case 'resume':
+        zoneEngine.resumeZone();
+        break;
+      case 'end':
+        zoneEngine.stopZone();
+        break;
+    }
+  };
+
   // Set up calendar callbacks
   calendarService.setCallbacks({
     onMeetingEnd: (event) => {
@@ -139,9 +170,6 @@ function createWindow() {
     },
   });
 
-  // Load always-allowed apps into blocker
-  blockerService.setAlwaysAllowedApps(store.get('alwaysAllowedApps'));
-
   // Register all IPC handlers
   registerCalendarIpc(calendarService);
   registerZoneIpc(zoneEngine);
@@ -155,6 +183,7 @@ function createWindow() {
   registerProfilesIpc();
   registerSyncIpc(syncService);
   registerAppIpc(updaterService);
+  registerExtensionIpc(wsServer);
 
   // Setup tray
   setupTray();
@@ -285,21 +314,12 @@ if (process.platform === 'darwin') {
 }
 
 app.whenReady().then(async () => {
-  // Check if running as admin; if not, relaunch elevated and quit
-  if (process.platform === 'win32') {
-    try {
-      const isAdmin = (await import('is-admin')).default;
-      if (!(await isAdmin())) {
-        const args = process.argv.slice(1).map(a => `'${a.replace(/'/g, "''")}'`).join(' ');
-        execSync(`powershell -Command "Start-Process -FilePath '${process.execPath}' -ArgumentList '${args}' -Verb RunAs"`);
-        app.quit();
-        return;
-      }
-    } catch (err) {
-      logger.error('Admin check failed:', err);
-    }
-  }
+  // Resolve extension directory for deploy service
+  // In dev: relative to project root; in production: shipped alongside app resources
+  const extDir = path.join(app.getAppPath(), 'browser-extension');
+  setExtensionDir(extDir);
 
+  wsServer.start();
   createWindow();
 
   app.on('activate', () => {
@@ -323,4 +343,5 @@ app.on('before-quit', () => {
   blockerService.cleanup();
   trayService.destroy();
   syncService.destroy();
+  wsServer.stop();
 });
