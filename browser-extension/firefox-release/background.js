@@ -32,11 +32,14 @@ function addDynamicRules(rules) {
 // ---------------------------------------------------------------------------
 let ws = null;
 let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 10;
-const RECONNECT_INTERVAL = 3000;
+let initRetryCount = 0;
+const MAX_RECONNECT_ATTEMPTS = 15;
+const RECONNECT_INTERVAL = 2000;
+const MAX_INIT_RETRIES = 15; // 30 seconds total (15 × 2s)
 let ruleIdCounter = 1;
 let zoneInfo = { status: 'idle', zoneName: '', sites: [], remaining: 0, startedAt: null };
 let retryTimer = null;
+let initRetryTimer = null;
 
 // ---------------------------------------------------------------------------
 // WebSocket
@@ -44,10 +47,13 @@ let retryTimer = null;
 function connect() {
   if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
 
+  console.log('[Forca] connecting to ws://127.0.0.1:7432 ...');
   ws = new WebSocket('ws://127.0.0.1:7432');
 
   ws.onopen = () => {
+    console.log('[Forca] WebSocket connected, sending handshake');
     reconnectAttempts = 0;
+    initRetryCount = 0;
     ws.send(JSON.stringify({ type: 'handshake', payload: { client: 'forca-extension' } }));
     chrome.storage.local.set({ wsStatus: 'connected' });
   };
@@ -62,6 +68,7 @@ function connect() {
   };
 
   ws.onclose = () => {
+    console.log('[Forca] WebSocket disconnected' + (reconnectAttempts > 0 ? ' (attempt ' + reconnectAttempts + ')' : ''));
     chrome.storage.local.set({ wsStatus: 'disconnected' });
     ws = null;
     scheduleReconnect();
@@ -73,12 +80,39 @@ function connect() {
 }
 
 function scheduleReconnect() {
-  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) return;
+  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+    console.log('[Forca] max reconnect attempts reached');
+    return;
+  }
   if (retryTimer) clearTimeout(retryTimer);
   retryTimer = setTimeout(() => {
     reconnectAttempts++;
+    console.log('[Forca] reconnect attempt ' + reconnectAttempts + '/' + MAX_RECONNECT_ATTEMPTS);
     connect();
   }, RECONNECT_INTERVAL);
+}
+
+function startInitRetryWatchdog() {
+  if (initRetryTimer) clearInterval(initRetryTimer);
+  initRetryCount = 0;
+  initRetryTimer = setInterval(() => {
+    initRetryCount++;
+    const isConnected = ws && ws.readyState === WebSocket.OPEN;
+    if (isConnected) {
+      console.log('[Forca] connected, stopping init watchdog');
+      clearInterval(initRetryTimer);
+      initRetryTimer = null;
+      return;
+    }
+    if (initRetryCount >= MAX_INIT_RETRIES) {
+      console.log('[Forca] init watchdog max retries reached, giving up');
+      clearInterval(initRetryTimer);
+      initRetryTimer = null;
+      return;
+    }
+    console.log('[Forca] init watchdog retry ' + initRetryCount + '/' + MAX_INIT_RETRIES);
+    connect();
+  }, 2000);
 }
 
 // ---------------------------------------------------------------------------
@@ -222,8 +256,8 @@ function updateRemainingOnBlockedPages() {
   }
 }
 
-chrome.runtime.onStartup.addListener(() => { connect(); });
-chrome.runtime.onInstalled.addListener(() => { connect(); });
+chrome.runtime.onStartup.addListener(() => { connect(); startInitRetryWatchdog(); });
+chrome.runtime.onInstalled.addListener(() => { connect(); startInitRetryWatchdog(); });
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && zoneInfo.status === 'active') {
     updateRemainingOnBlockedPages();
@@ -238,6 +272,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (ws) ws.close();
     reconnectAttempts = 0;
     connect();
+    startInitRetryWatchdog();
     return;
   }
 
@@ -261,5 +296,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-// Connect immediately
+// Connect immediately with aggressive retry watchdog
 connect();
+startInitRetryWatchdog();
