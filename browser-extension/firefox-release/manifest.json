@@ -1,22 +1,31 @@
 {
   "manifest_version": 3,
   "name": "Forca — Focus Mode Blocker",
-  "version": "1.0.0",
+  "version": "2-prebuild",
   "description": "Blocks distracting websites during Forca focus zones via WebSocket sync with the Forca desktop app.",
   "permissions": [
     "declarativeNetRequest",
     "storage",
     "tabs"
   ],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "web_accessible_resources": [
     {
-      "resources": ["blocked/blocked.html", "blocked/blocked.js"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "blocked/blocked.html",
+        "blocked/blocked.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "action": {
     "default_popup": "popup/popup.html",

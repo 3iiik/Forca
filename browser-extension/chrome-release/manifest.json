@@ -1,19 +1,26 @@
 {
   "manifest_version": 3,
   "name": "Forca — Focus Mode Blocker",
-  "version": "1.0.0",
+  "version": "2-prebuild",
   "description": "Blocks distracting websites during Forca focus zones via WebSocket sync with the Forca desktop app.",
   "permissions": [
     "declarativeNetRequest",
     "storage",
     "tabs"
   ],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsqsRHGP/YSGO3wtpnV0yjxqPJDKa5xgXzSTd6m01lxNdGLZhl7DTn10S26+7OBY5//F0F4ee9fylJTHgRvX9vvooL8ZQIt6KciTBtyXpauRie+zOS8qOY+O1wdu3bi+zzkf58iTOEDakTPBFTVHsbiIPd1C5mpevsFvGsxddcPQhSJlAee0/r+K/BGjk99O6jSrTNrq1ZTQb4g+z+Tg/03JirwcZC2SJr4tQOmi0SxRVeflkZQ5dQGgYUeQ0KhBwKzRzj8kTaNMZQ88P4ACJsvoFNYVFlkWb0I2IRVRpM7iRqL5YNtRtJZY57W/82At/f2Ejm1UbAkP/5bbaGoEK0wIDAQAB",
   "web_accessible_resources": [
     {
-      "resources": ["blocked/blocked.html", "blocked/blocked.js"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "blocked/blocked.html",
+        "blocked/blocked.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
   "background": {

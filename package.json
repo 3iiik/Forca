@@ -1,6 +1,6 @@
 {
   "name": "forca",
-  "version": "1.1.1",
+  "version": "2-prebuild",
   "description": "Forca — deep focus sessions with calendar integration and smart blocking",
   "author": {
     "name": "3iiik",
@@ -11,9 +11,9 @@
     "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
     "dev:main": "tsc -p tsconfig.node.json --watch",
     "dev:renderer": "vite",
-    "build": "tsc -p tsconfig.node.json && vite build",
-    "build:main": "tsc -p tsconfig.node.json",
-    "build:renderer": "vite build",
+    "build": "node ./scripts/inject-version.js && tsc -p tsconfig.node.json && vite build",
+    "build:main": "node ./scripts/inject-version.js && tsc -p tsconfig.node.json",
+    "build:renderer": "node ./scripts/inject-version.js && vite build",
     "build:mac": "npm run build && electron-builder --mac",
     "build:win": "npm run build && electron-builder --win",
     "build:linux": "npm run build && electron-builder --linux",
