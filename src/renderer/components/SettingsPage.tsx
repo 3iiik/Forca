@@ -89,15 +89,15 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold">Settings</h1>
 
       {/* Tabs */}
-      <div className="flex gap-1 flex-wrap">
+      <div className="flex border-b border-zinc-800">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`px-4 py-2 text-xs font-medium transition-colors ${
               activeTab === tab.id
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                ? 'text-zinc-100 border-b-2 border-primary-700'
+                : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
             {tab.label}
@@ -108,7 +108,7 @@ export default function SettingsPage() {
       <div className="focus-card">
         {activeTab === 'general' && (
           <div className="space-y-4">
-            <h2 className="font-semibold">General Settings</h2>
+            <h2 className="text-sm font-semibold text-zinc-200">General Settings</h2>
 
             <ToggleSetting
               label="Launch on system startup"
@@ -142,7 +142,7 @@ export default function SettingsPage() {
             />
 
             <div>
-              <label className="text-sm font-medium block mb-1">Appearance</label>
+              <label className="text-xs text-zinc-400 block mb-1">Appearance</label>
               <select
                 value={settings.general.darkMode}
                 onChange={(e) => updateNestedSetting('general', 'darkMode', e.target.value)}
@@ -158,10 +158,10 @@ export default function SettingsPage() {
 
         {activeTab === 'calendar' && (
           <div className="space-y-4">
-            <h2 className="font-semibold">Calendar Integration</h2>
+            <h2 className="text-sm font-semibold text-zinc-200">Calendar Integration</h2>
 
             <div>
-              <label className="text-sm font-medium block mb-1">Provider</label>
+              <label className="text-xs text-zinc-400 block mb-1">Provider</label>
               <select
                 value={settings.calendar.provider}
                 onChange={(e) => updateNestedSetting('calendar', 'provider', e.target.value)}
@@ -175,14 +175,14 @@ export default function SettingsPage() {
 
             {settings.calendar.provider === 'google' && (
               <div>
-                <p className="text-xs text-gray-400 mb-2">
+                <p className="text-xs text-zinc-500 mb-2">
                   Connect your Google Calendar to auto-detect meetings and trigger zones.
                 </p>
                 <button
                   onClick={async () => {
                     await window.electronAPI.calendar.auth();
                   }}
-                  className="btn-primary"
+                  className="btn-primary text-sm"
                 >
                   Connect Google Calendar
                 </button>
@@ -191,7 +191,7 @@ export default function SettingsPage() {
 
             {settings.calendar.provider === 'ical' && (
               <div>
-                <label className="text-sm font-medium block mb-1">iCal URL</label>
+                <label className="text-xs text-zinc-400 block mb-1">iCal URL</label>
                 <input
                   type="url"
                   value={settings.calendar.icalUrl}
@@ -213,7 +213,7 @@ export default function SettingsPage() {
 
         {activeTab === 'zones' && (
           <div className="space-y-4">
-            <h2 className="font-semibold">Forca</h2>
+            <h2 className="text-sm font-semibold text-zinc-200">Forca</h2>
 
             {/* Create zone */}
             <div className="flex gap-2">
@@ -232,23 +232,23 @@ export default function SettingsPage() {
                 min={5}
                 max={240}
               />
-              <button onClick={createZone} className="btn-primary">
+              <button onClick={createZone} className="btn-primary text-sm">
                 Add Zone
               </button>
             </div>
 
             {/* Zone list */}
-            <div className="space-y-2">
+            <div className="space-y-1">
               {zones.length === 0 ? (
-                <p className="text-sm text-gray-400 py-2">
+                <p className="text-xs text-zinc-500 py-2">
                   No zones yet. Create your first zone above.
                 </p>
               ) : (
                 zones.map((zone) => (
-                  <div key={zone.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                  <div key={zone.id} className="flex items-center justify-between px-3 py-2 border border-zinc-800 bg-zinc-900/50">
                     <div>
-                      <div className="font-medium text-sm">{zone.name}</div>
-                      <div className="text-xs text-gray-400">{zone.duration} min · {zone.trigger.type}</div>
+                      <div className="text-sm text-zinc-300">{zone.name}</div>
+                      <div className="text-[11px] text-zinc-500">{zone.duration} min · {zone.trigger.type}</div>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -264,7 +264,7 @@ export default function SettingsPage() {
                           await window.electronAPI.zone.delete(zone.id);
                           loadSettings();
                         }}
-                        className="btn-ghost text-xs text-red-400"
+                        className="btn-ghost text-xs text-zinc-500 hover:text-red-400"
                       >
                         ✕
                       </button>
@@ -278,7 +278,7 @@ export default function SettingsPage() {
 
         {activeTab === 'notifications' && (
           <div className="space-y-4">
-            <h2 className="font-semibold">Notification Preferences</h2>
+            <h2 className="text-sm font-semibold text-zinc-200">Notification Preferences</h2>
 
             <ToggleSetting
               label="Zone started"
@@ -315,7 +315,7 @@ export default function SettingsPage() {
 
         {activeTab === 'sounds' && (
           <div className="space-y-4">
-            <h2 className="font-semibold">Sound Settings</h2>
+            <h2 className="text-sm font-semibold text-zinc-200">Sound Settings</h2>
 
             <ToggleSetting
               label="Ambient sounds"
@@ -325,7 +325,7 @@ export default function SettingsPage() {
             />
 
             <div>
-              <label className="text-sm font-medium block mb-1">Default Sound</label>
+              <label className="text-xs text-zinc-400 block mb-1">Default Sound</label>
               <select
                 value={settings.sounds.defaultSound}
                 onChange={(e) => updateNestedSetting('sounds', 'defaultSound', e.target.value)}
@@ -339,7 +339,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-1">
+              <label className="text-xs text-zinc-400 block mb-1">
                 Default Volume: {settings.sounds.defaultVolume}%
               </label>
               <input
@@ -348,12 +348,12 @@ export default function SettingsPage() {
                 max={100}
                 value={settings.sounds.defaultVolume}
                 onChange={(e) => updateNestedSetting('sounds', 'defaultVolume', parseInt(e.target.value))}
-                className="w-full accent-primary-500"
+                className="w-full accent-primary-700"
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-1">
+              <label className="text-xs text-zinc-400 block mb-1">
                 Fade-out duration: {settings.sounds.fadeOutDuration}s
               </label>
               <input
@@ -362,7 +362,7 @@ export default function SettingsPage() {
                 max={10}
                 value={settings.sounds.fadeOutDuration}
                 onChange={(e) => updateNestedSetting('sounds', 'fadeOutDuration', parseInt(e.target.value))}
-                className="w-full accent-primary-500"
+                className="w-full accent-primary-700"
               />
             </div>
           </div>
@@ -370,7 +370,7 @@ export default function SettingsPage() {
 
         {activeTab === 'sync' && (
           <div className="space-y-4">
-            <h2 className="font-semibold">Multi-Device Sync</h2>
+            <h2 className="text-sm font-semibold text-zinc-200">Multi-Device Sync</h2>
 
             <ToggleSetting
               label="Enable sync"
@@ -382,7 +382,7 @@ export default function SettingsPage() {
             {settings.sync.enabled && (
               <>
                 <div>
-                  <label className="text-sm font-medium block mb-1">Provider</label>
+                  <label className="text-xs text-zinc-400 block mb-1">Provider</label>
                   <select
                     value={settings.sync.provider}
                     onChange={(e) => updateNestedSetting('sync', 'provider', e.target.value)}
@@ -415,7 +415,7 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
-                <div className="text-xs text-gray-400">
+                <div className="text-[11px] text-zinc-500">
                   Last synced: {settings.sync.lastSynced || 'Never'}
                 </div>
               </>
@@ -433,17 +433,17 @@ const ToggleSetting = memo(function ToggleSetting({ label, description, checked,
   return (
     <div className="flex items-center justify-between py-1">
       <div>
-        <div className="text-sm font-medium">{label}</div>
-        {description && <div className="text-xs text-gray-400">{description}</div>}
+        <div className="text-sm text-zinc-200">{label}</div>
+        {description && <div className="text-[11px] text-zinc-500">{description}</div>}
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className={`relative w-10 h-6 rounded-full transition-colors ${
-          checked ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'
+        className={`relative w-9 h-5 transition-colors ${
+          checked ? 'bg-primary-800' : 'bg-zinc-700'
         }`}
       >
         <div
-          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
+          className={`absolute top-0.5 left-0.5 w-4 h-4 bg-zinc-100 transition-transform ${
             checked ? 'translate-x-4' : ''
           }`}
         />

@@ -85,6 +85,7 @@ const api = {
     openStore: (browser: string) => ipcRenderer.invoke('extension:open-store', browser),
     openFolder: (browser: string) => ipcRenderer.invoke('extension:open-folder', browser),
     launchWithExtension: (browser: string) => ipcRenderer.invoke('extension:launch-with-extension', browser),
+    reconnect: () => ipcRenderer.invoke('extension:reconnect'),
   },
 
   // App

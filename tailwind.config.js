@@ -6,16 +6,16 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eeeffc',
-          100: '#d0d1f7',
-          200: '#b0b1f2',
-          300: '#8d8fec',
-          400: '#6b6fe6',
-          500: '#3D2FA8',
-          600: '#352a94',
-          700: '#2d2380',
-          800: '#251d6c',
-          900: '#1d1758',
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
         },
         focus: {
           green: '#1D9E75',
@@ -25,11 +25,8 @@ export default {
         },
       },
       animation: {
-        'spin-slow': 'spin 3s linear infinite',
-        'pulse-soft': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
-        'countdown': 'countdown 1s linear forwards',
       },
       keyframes: {
         fadeIn: {

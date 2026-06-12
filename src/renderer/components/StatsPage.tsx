@@ -68,8 +68,8 @@ export default function StatsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Stats</h1>
-        <button onClick={loadStats} className="btn-ghost text-sm">
+        <h1 className="text-xl font-bold text-zinc-100">Stats</h1>
+        <button onClick={loadStats} className="btn-ghost text-xs">
           ↻ Refresh
         </button>
       </div>
@@ -85,7 +85,7 @@ export default function StatsPage() {
       {/* Weekly Summary */}
       {weeklySummary && (
         <div className="focus-card">
-          <h2 className="font-semibold mb-4">Weekly Summary</h2>
+          <h2 className="text-sm font-semibold text-zinc-200 mb-4">Weekly Summary</h2>
           <div className="grid grid-cols-4 gap-4">
             <SummaryItem label="Deep Work Hours" value={`${weeklySummary.totalDeepWorkHours}h`} />
             <SummaryItem label="Best Day" value={weeklySummary.mostProductiveDay} />
@@ -97,21 +97,21 @@ export default function StatsPage() {
 
       {/* Daily Deep Work Chart */}
       <div className="focus-card">
-        <h2 className="font-semibold mb-4">Daily Deep Work</h2>
+        <h2 className="text-sm font-semibold text-zinc-200 mb-4">Daily Deep Work</h2>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={dailyDeepWork}>
-              <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
+              <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#a1a1aa' }} />
+              <YAxis tick={{ fontSize: 12, fill: '#a1a1aa' }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'var(--tooltip-bg, #fff)',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
+                  backgroundColor: '#18181b',
+                  border: '1px solid #27272a',
                   fontSize: '12px',
+                  color: '#e4e4e7',
                 }}
               />
-              <Bar dataKey="hours" fill="#3D2FA8" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="hours" fill="#5b21b6" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -119,27 +119,27 @@ export default function StatsPage() {
 
       {/* Focus Score Trend */}
       <div className="focus-card">
-        <h2 className="font-semibold mb-4">Focus Score Trend</h2>
+        <h2 className="text-sm font-semibold text-zinc-200 mb-4">Focus Score Trend</h2>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={dailyDeepWork}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+              <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#a1a1aa' }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: '#a1a1aa' }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'var(--tooltip-bg, #fff)',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
+                  backgroundColor: '#18181b',
+                  border: '1px solid #27272a',
                   fontSize: '12px',
+                  color: '#e4e4e7',
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#8b5cf6"
+                stroke="#7c3aed"
                 strokeWidth={2}
-                dot={{ fill: '#8b5cf6', r: 3 }}
+                dot={{ fill: '#7c3aed', r: 3 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -149,7 +149,7 @@ export default function StatsPage() {
       {/* Milestones */}
       {sessions.length > 0 && (
         <div className="focus-card">
-          <h2 className="font-semibold mb-3">🏆 Milestones</h2>
+          <h2 className="text-sm font-semibold text-zinc-200 mb-3">🏆 Milestones</h2>
           <div className="grid grid-cols-3 gap-3">
             <MilestoneCard
               title="Total Sessions"
@@ -177,11 +177,11 @@ export default function StatsPage() {
 }
 
 const ScoreCard = memo(function ScoreCard({ label, value }: { label: string; value: number }) {
-  const color = value >= 80 ? 'text-green-600' : value >= 50 ? 'text-amber-600' : 'text-red-600';
+  const color = value >= 80 ? 'text-green-400' : value >= 50 ? 'text-amber-400' : 'text-red-400';
   return (
     <div className="focus-card text-center">
-      <div className="text-xs text-gray-400 mb-1">{label}</div>
-      <div className={`text-2xl font-bold ${color}`}>{value}</div>
+      <div className="text-[11px] text-zinc-500 mb-1">{label}</div>
+      <div className={`text-xl font-bold ${color}`}>{value}</div>
     </div>
   );
 });
@@ -189,8 +189,8 @@ const ScoreCard = memo(function ScoreCard({ label, value }: { label: string; val
 const SummaryItem = memo(function SummaryItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <div className="text-2xl font-bold text-primary-600">{value}</div>
-      <div className="text-xs text-gray-400 mt-1">{label}</div>
+      <div className="text-xl font-bold text-primary-400">{value}</div>
+      <div className="text-[11px] text-zinc-500 mt-1">{label}</div>
     </div>
   );
 });
@@ -199,10 +199,10 @@ const MilestoneCard = memo(function MilestoneCard({ title, value, icon, unlocked
   title: string; value: string; icon: string; unlocked: boolean;
 }) {
   return (
-    <div className={`p-3 rounded-lg text-center ${unlocked ? 'bg-purple-50 dark:bg-purple-900/20' : 'bg-gray-50 dark:bg-gray-800/50 opacity-50'}`}>
-      <div className="text-2xl mb-1">{icon}</div>
-      <div className="font-bold text-sm">{value}</div>
-      <div className="text-xs text-gray-400">{title}</div>
+    <div className={`p-3 text-center border ${unlocked ? 'border-primary-800 bg-primary-900/10' : 'border-zinc-800 bg-zinc-900/50 opacity-50'}`}>
+      <div className="text-xl mb-1">{icon}</div>
+      <div className="font-semibold text-sm text-zinc-200">{value}</div>
+      <div className="text-[11px] text-zinc-500">{title}</div>
     </div>
   );
 });

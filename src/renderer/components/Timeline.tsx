@@ -32,10 +32,10 @@ const Timeline = memo(function Timeline({ events }: TimelineProps) {
         {hours.map((hour) => (
           <div
             key={hour}
-            className="absolute left-0 right-0 border-t border-gray-100 dark:border-gray-800"
+            className="absolute left-0 right-0 border-t border-zinc-800"
             style={{ top: `${(hour - 6) * 60}px` }}
           >
-            <span className="text-xs text-gray-400 absolute -top-3 -left-2 w-12 text-right">
+            <span className="text-[11px] text-zinc-500 absolute -top-3 -left-2 w-12 text-right">
               {hour > 12 ? hour - 12 : hour} {hour >= 12 ? 'PM' : 'AM'}
             </span>
           </div>
@@ -48,8 +48,8 @@ const Timeline = memo(function Timeline({ events }: TimelineProps) {
             style={{ top: `${(now.getHours() - 6 + now.getMinutes() / 60) * 60}px` }}
           >
             <div className="flex items-center">
-              <div className="w-2 h-2 rounded-full bg-primary-500" />
-              <div className="flex-1 h-0.5 bg-primary-500" />
+              <div className="w-1.5 h-1.5 bg-primary-600" />
+              <div className="flex-1 h-px bg-primary-600" />
             </div>
           </div>
         )}
@@ -66,17 +66,17 @@ const Timeline = memo(function Timeline({ events }: TimelineProps) {
               return (
                 <div
                   key={event.id}
-                  className={`absolute left-0 right-2 p-2 rounded-lg border-l-4 transition-all ${
+                  className={`absolute left-0 right-2 p-2 border-l-2 transition-all ${
                     ongoing
-                      ? 'bg-primary-50 dark:bg-primary-900/30 border-primary-500'
+                      ? 'bg-primary-900/20 border-primary-600'
                       : past
-                      ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600 opacity-50'
-                      : 'bg-white dark:bg-gray-800 border-primary-300 dark:border-primary-700 hover:shadow-sm'
+                      ? 'bg-zinc-900/50 border-zinc-700 opacity-50'
+                      : 'bg-zinc-900/80 border-zinc-700'
                   }`}
                   style={{ top: `${pos.top}px`, height: `${pos.height}px`, minHeight: '24px' }}
                 >
-                  <div className="text-xs font-medium truncate">{event.title}</div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs font-medium text-zinc-300 truncate">{event.title}</div>
+                  <div className="text-[11px] text-zinc-500">
                     {event.start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                     {' - '}
                     {event.end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
@@ -86,7 +86,7 @@ const Timeline = memo(function Timeline({ events }: TimelineProps) {
             })}
 
           {events.filter(e => !e.isAllDay).length === 0 && (
-            <div className="text-center py-8 text-sm text-gray-400">
+            <div className="text-center py-8 text-xs text-zinc-500">
               No events scheduled today
             </div>
           )}

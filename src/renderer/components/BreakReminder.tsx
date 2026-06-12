@@ -24,37 +24,37 @@ const BreakReminder = memo(function BreakReminder() {
   const isDue = focusMinutes >= focusLimit && !breakTimer.isBreak;
 
   return (
-    <div className={`focus-card ${isDue ? 'border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-900/10' : ''}`}>
-      <h3 className="font-semibold flex items-center gap-2 mb-3">
+    <div className={`focus-card ${isDue ? 'border-amber-700 bg-zinc-900/80' : ''}`}>
+      <h3 className="text-sm font-semibold text-zinc-200 flex items-center gap-2 mb-3">
         <span>⏰</span> Break Reminder
       </h3>
 
       {breakTimer.isBreak ? (
         <div className="text-center py-2">
-          <div className="text-lg font-bold text-amber-600">
+          <div className="text-lg font-bold text-amber-400">
             {Math.floor(breakTimer.remaining / 60)}:{(breakTimer.remaining % 60).toString().padStart(2, '0')}
           </div>
-          <div className="text-xs text-gray-400">break remaining</div>
+          <div className="text-[11px] text-zinc-500">break remaining</div>
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between text-sm mb-1">
-            <span className="text-gray-500">Focus time</span>
-            <span className="font-medium">
+          <div className="flex items-center justify-between text-xs mb-1">
+            <span className="text-zinc-500">Focus time</span>
+            <span className="text-zinc-300">
               {focusMinutes}m / {focusLimit}m
             </span>
           </div>
-          <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div className="h-1 bg-zinc-800">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                progress >= 1 ? 'bg-amber-500' : 'bg-primary-500'
+              className={`h-full transition-all duration-500 ${
+                progress >= 1 ? 'bg-amber-600' : 'bg-primary-800'
               }`}
               style={{ width: `${progress * 100}%` }}
             />
           </div>
           {isDue && (
             <div className="mt-3 text-center">
-              <p className="text-sm text-amber-600 dark:text-amber-400 mb-2">
+              <p className="text-xs text-amber-400 mb-2">
                 Time for a break! You&apos;ve been focused for {focusMinutes} minutes.
               </p>
             </div>

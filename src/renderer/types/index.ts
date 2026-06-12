@@ -65,6 +65,7 @@ declare global {
         openStore: (browser: string) => Promise<{ method: string; success: boolean; details: string }>;
         openFolder: (browser: string) => Promise<{ success: boolean; details: string }>;
         launchWithExtension: (browser: string) => Promise<{ success: boolean; details: string }>;
+        reconnect: () => Promise<{ success: boolean; clientCount: number }>;
       };
       app: {
         minimize: () => Promise<void>;

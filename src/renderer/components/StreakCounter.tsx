@@ -9,16 +9,16 @@ const StreakCounter = memo(function StreakCounter({ streak }: StreakCounterProps
   if (streak.currentStreak === 0) return null;
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-full border border-orange-200 dark:border-orange-800">
-      <span className="text-lg">🔥</span>
-      <span className="text-sm font-bold text-orange-700 dark:text-orange-300">
+    <div className="flex items-center gap-1.5 px-2 py-1 border border-zinc-800 bg-zinc-900/50">
+      <span className="text-sm">🔥</span>
+      <span className="text-xs font-semibold text-zinc-300">
         {streak.currentStreak}
       </span>
-      <span className="text-xs text-orange-500">
-        {streak.currentStreak === 1 ? 'day' : 'day streak'}
+      <span className="text-[11px] text-zinc-500">
+        {streak.currentStreak === 1 ? 'day' : 'days'}
       </span>
       {!streak.todayCompleted && (
-        <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" title="Complete today's session!" />
+        <span className="w-1 h-1 bg-zinc-500" title="Complete today's session!" />
       )}
     </div>
   );

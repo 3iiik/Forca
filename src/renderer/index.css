@@ -4,12 +4,12 @@
 
 @layer base {
   * {
-    @apply border-gray-200 dark:border-gray-700;
+    @apply border-zinc-200 dark:border-zinc-800;
   }
 
   body {
-    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    @apply bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
@@ -24,49 +24,45 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+    @apply bg-zinc-700;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-500;
+    @apply bg-zinc-600;
   }
 }
 
 @layer components {
   .focus-card {
-    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-all duration-200;
-  }
-
-  .focus-card:hover {
-    @apply shadow-md;
+    @apply bg-zinc-900/80 dark:bg-zinc-900/80 border border-zinc-800 p-5 rounded-xl;
   }
 
   .btn-primary {
-    @apply px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply px-5 py-2.5 bg-primary-900 hover:bg-primary-800 text-white font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors duration-200;
+    @apply px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium transition-colors duration-200 rounded-xl;
   }
 
   .btn-ghost {
-    @apply px-3 py-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200;
+    @apply px-3 py-1.5 text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/50 transition-colors duration-200 rounded-lg;
   }
 
   .input-field {
-    @apply w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200;
+    @apply w-full px-4 py-2.5 bg-zinc-800/40 border border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:border-primary-700 focus:outline-none transition-colors duration-200 rounded-xl;
   }
 
   .sidebar-item {
-    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer;
+    @apply flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors duration-150 cursor-pointer rounded-xl;
   }
 
   .sidebar-item.active {
-    @apply bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300;
+    @apply bg-zinc-800 text-zinc-100;
   }
 
   .sidebar-item:not(.active) {
-    @apply text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800;
+    @apply text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/30;
   }
 
   .countdown-ring {
@@ -78,11 +74,11 @@
   }
 
   .timeline-dot {
-    @apply w-3 h-3 rounded-full border-2 border-primary-500 bg-white dark:bg-gray-800 z-10;
+    @apply w-3 h-3 rounded-full border-2 border-primary-600 bg-zinc-950 z-10;
   }
 
   .timeline-line {
-    @apply w-0.5 bg-gray-200 dark:bg-gray-600 absolute left-1.5;
+    @apply w-0.5 bg-zinc-800 absolute left-1.5;
   }
 
   .overlay-enter {

@@ -29,8 +29,8 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
     return (
       <div className="focus-card text-center py-8">
         <div className="text-4xl mb-3">🧘</div>
-        <h2 className="text-xl font-semibold mb-2">No Active Zone</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <h2 className="text-lg font-semibold text-zinc-200 mb-2">No Active Zone</h2>
+        <p className="text-xs text-zinc-500 mb-4">
           Start a focus zone from the list or wait for an auto-trigger
         </p>
         <button
@@ -51,29 +51,29 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
       : 0;
 
     return (
-      <div className="focus-card text-center py-8 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+      <div className="focus-card text-center py-8 border-amber-700 bg-zinc-900/80">
         <div className="text-4xl mb-3">☕</div>
-        <h2 className="text-xl font-semibold mb-1">Break Time</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Take a moment to recharge</p>
+        <h2 className="text-lg font-semibold text-zinc-200 mb-1">Break Time</h2>
+        <p className="text-xs text-zinc-500 mb-4">Take a moment to recharge</p>
 
         <div className="flex items-center justify-center mb-4">
           <div className="relative">
             <svg className="w-24 h-24 transform -rotate-90">
               <circle cx="48" cy="48" r="42" fill="none" stroke="currentColor" strokeWidth="4"
-                className="text-amber-200 dark:text-amber-800" />
+                className="text-zinc-800" />
               <circle cx="48" cy="48" r="42" fill="none" stroke="currentColor" strokeWidth="4"
                 strokeDasharray={`${2 * Math.PI * 42}`}
                 strokeDashoffset={`${2 * Math.PI * 42 * (1 - breakPct / 100)}`}
                 className="text-amber-500 transition-all duration-500" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+              <span className="text-2xl font-bold text-amber-400">
                 {Math.floor(breakTimer.remaining / 60)}:{(breakTimer.remaining % 60).toString().padStart(2, '0')}
               </span>
             </div>
           </div>
         </div>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-zinc-500">
           {Math.ceil(breakTimer.remaining / 60)} min remaining
         </p>
       </div>
@@ -91,10 +91,10 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
     <div className={`focus-card ${isPaused ? 'opacity-75' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <span className={`w-3 h-3 rounded-full ${isPaused ? 'bg-yellow-400' : 'bg-focus-green'} ${isPaused ? '' : 'animate-pulse'}`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${isPaused ? 'bg-yellow-400' : 'bg-focus-green'} ${isPaused ? '' : 'animate-pulse'}`} />
           <div>
-            <h2 className="text-xl font-semibold">{activeZone.zoneName}</h2>
-            <p className="text-xs text-gray-400">
+            <h2 className="text-lg font-semibold text-zinc-200">{activeZone.zoneName}</h2>
+            <p className="text-[11px] text-zinc-500">
               {isPaused ? 'Paused' : 'Focus Mode Active'}
             </p>
           </div>
@@ -109,27 +109,27 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
         <div className="relative">
           <svg className="w-36 h-36 transform -rotate-90">
             <circle cx="72" cy="72" r="64" fill="none" stroke="currentColor" strokeWidth="6"
-              className="text-gray-200 dark:text-gray-700" />
+              className="text-zinc-800" />
             <circle cx="72" cy="72" r="64" fill="none" stroke="currentColor" strokeWidth="6"
               strokeLinecap="round"
               strokeDasharray={`${2 * Math.PI * 64}`}
               strokeDashoffset={`${2 * Math.PI * 64 * (1 - progress / 100)}`}
-              className="text-primary-500 transition-all duration-1000" />
+              className="text-primary-600 transition-all duration-1000" />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-4xl font-bold tracking-tight">
+            <span className="text-4xl font-bold tracking-tight text-zinc-100">
               {Math.floor(remaining / 60).toString().padStart(2, '0')}
-              <span className="text-2xl text-gray-400">:</span>
+              <span className="text-2xl text-zinc-500">:</span>
               {(remaining % 60).toString().padStart(2, '0')}
             </span>
-            <span className="text-xs text-gray-400 mt-1">remaining</span>
+            <span className="text-xs text-zinc-500 mt-1">remaining</span>
           </div>
         </div>
       </div>
 
       {/* Controls */}
       <div className="flex items-center justify-center gap-3 mt-2">
-        <button onClick={handlePause} className="btn-secondary px-6">
+        <button onClick={handlePause} className="btn-secondary px-6 text-xs">
           {isPaused ? '▶ Resume' : '⏸ Pause'}
         </button>
       </div>

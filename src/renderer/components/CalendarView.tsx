@@ -55,7 +55,7 @@ export default function CalendarView() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Calendar</h1>
+        <h1 className="text-xl font-bold text-zinc-100">Calendar</h1>
         {!isConnected && (
           <button onClick={handleAuth} className="btn-primary text-sm">
             Connect Calendar
@@ -65,20 +65,20 @@ export default function CalendarView() {
 
       {/* Date navigator */}
       <div className="flex items-center justify-between focus-card">
-        <button onClick={() => navigateDay(-1)} className="btn-ghost">
+        <button onClick={() => navigateDay(-1)} className="btn-ghost text-xs">
           ← Previous
         </button>
         <div className="text-center">
-          <div className="font-semibold">
+          <div className="text-sm font-semibold text-zinc-200">
             {new Date(selectedDate).toLocaleDateString('en-US', {
               weekday: 'long', month: 'long', day: 'numeric',
             })}
           </div>
           {selectedDate === today && (
-            <span className="text-xs text-primary-500 font-medium">Today</span>
+            <span className="text-[11px] text-primary-400 font-medium">Today</span>
           )}
         </div>
-        <button onClick={() => navigateDay(1)} className="btn-ghost">
+        <button onClick={() => navigateDay(1)} className="btn-ghost text-xs">
           Next →
         </button>
       </div>
@@ -87,15 +87,15 @@ export default function CalendarView() {
       <div className="focus-card">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border border-primary-600 border-t-transparent animate-spin" />
           </div>
         ) : events.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-3xl mb-2">📅</div>
-            <p className="text-sm text-gray-400">No events for this day</p>
+            <p className="text-xs text-zinc-500">No events for this day</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+          <div className="divide-y divide-zinc-800">
             {events.map((event) => (
               <EventRow key={event.id} event={event} />
             ))}
@@ -105,8 +105,8 @@ export default function CalendarView() {
 
       {/* iCal URL input */}
       <div className="focus-card">
-        <h3 className="font-semibold mb-2">iCal Calendar</h3>
-        <p className="text-xs text-gray-400 mb-3">
+        <h3 className="text-sm font-semibold text-zinc-200 mb-2">iCal Calendar</h3>
+        <p className="text-xs text-zinc-500 mb-3">
           Paste your iCal URL to sync public calendars
         </p>
         <div className="flex gap-2">
@@ -144,15 +144,15 @@ const EventRow = memo(function EventRow({ event }: { event: CalendarEvent }) {
     <div className={`py-3 flex items-start gap-3 ${isPast ? 'opacity-40' : ''}`}>
       <div className="flex flex-col items-center mt-1">
         <div
-          className={`w-2.5 h-2.5 rounded-full ${
-            isOngoing ? 'bg-focus-green animate-pulse' : 'bg-primary-400'
+          className={`w-2 h-2 rounded-full ${
+            isOngoing ? 'bg-focus-green animate-pulse' : 'bg-primary-600'
           }`}
         />
-        <div className="w-0.5 h-full bg-gray-200 dark:bg-gray-700 mt-1" />
+        <div className="w-px h-full bg-zinc-800 mt-1" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-sm truncate">{event.title}</div>
-        <div className="text-xs text-gray-400 mt-0.5">
+        <div className="text-sm text-zinc-300 truncate">{event.title}</div>
+        <div className="text-[11px] text-zinc-500 mt-0.5">
           {event.isAllDay ? (
             'All day'
           ) : (
@@ -164,7 +164,7 @@ const EventRow = memo(function EventRow({ event }: { event: CalendarEvent }) {
           )}
         </div>
       </div>
-      <div className="text-xs text-gray-400 capitalize">{event.source}</div>
+      <div className="text-[11px] text-zinc-500 capitalize">{event.source}</div>
     </div>
   );
 });

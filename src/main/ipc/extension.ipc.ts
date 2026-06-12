@@ -77,4 +77,15 @@ export function registerExtensionIpc(wsServer: WebSocketServerService) {
   ipcMain.handle('extension:identity', async () => {
     return getExtensionIdentity();
   });
+
+  ipcMain.handle('extension:reconnect', async () => {
+    try {
+      wsServer.restart();
+      const count = wsServer.getClientCount();
+      return { success: true, clientCount: count };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, error: msg };
+    }
+  });
 }

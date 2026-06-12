@@ -130,4 +130,11 @@ export class WebSocketServerService {
       logger.info('WebSocket server stopped');
     }
   }
+
+  restart(): void {
+    logger.info('Restarting WebSocket server...');
+    this.stop();
+    this.start();
+    logger.info('WebSocket server restarted');
+  }
 }

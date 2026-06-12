@@ -25,6 +25,7 @@ npm-debug.log*
 
 # Chrome extension private key (DO NOT COMMIT)
 forca-chrome-key.pem
+*.pem
 
 # Environment
 .env
@@ -85,6 +86,9 @@ vite.config.ts.timestamp-*
 
 # pnpm
 .pnpm-store
+
+# ESLint cache
+.eslintcache
 
 # yarn v3
 .pnp.*

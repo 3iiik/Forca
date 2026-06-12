@@ -46,40 +46,40 @@ export default function AmbientSoundControl() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`btn-ghost flex items-center gap-1.5 text-sm ${
-          isPlaying ? 'text-primary-600' : ''
+        className={`flex items-center gap-1.5 text-sm px-2 py-1 transition-colors ${
+          isPlaying ? 'text-primary-400' : 'text-zinc-400 hover:text-zinc-300'
         }`}
       >
-        <span>{isPlaying ? '🔊' : '🔇'}</span>
-        {isPlaying && <span className="text-xs">{sounds.find(s => s.id === currentSound)?.label}</span>}
+        <span className="text-sm">{isPlaying ? '🔊' : '🔇'}</span>
+        {isPlaying && <span className="text-[11px]">{sounds.find(s => s.id === currentSound)?.label}</span>}
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 p-4">
-            <h4 className="text-sm font-semibold mb-3">Ambient Sounds</h4>
-            <div className="space-y-2">
+          <div className="absolute right-0 top-full mt-2 w-64 bg-zinc-900 border border-zinc-800 z-50 p-4">
+            <h4 className="text-xs font-semibold text-zinc-200 mb-3">Ambient Sounds</h4>
+            <div className="space-y-1">
               {sounds.map((sound) => (
                 <button
                   key={sound.id}
                   onClick={() => handlePlay(sound.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`w-full flex items-center gap-3 px-3 py-1.5 text-sm transition-colors ${
                     currentSound === sound.id && isPlaying
-                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      ? 'bg-primary-900/20 text-primary-300'
+                      : 'text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800'
                   }`}
                 >
-                  <span className="text-lg">{sound.icon}</span>
-                  <span className="flex-1 text-left">{sound.label}</span>
+                  <span className="text-base">{sound.icon}</span>
+                  <span className="flex-1 text-left text-xs">{sound.label}</span>
                   {currentSound === sound.id && isPlaying && (
-                    <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
+                    <span className="w-1.5 h-1.5 bg-primary-600 animate-pulse" />
                   )}
                 </button>
               ))}
             </div>
             <div className="mt-4">
-              <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+              <div className="flex items-center justify-between text-[11px] text-zinc-500 mb-1">
                 <span>Volume</span>
                 <span>{volume}%</span>
               </div>
@@ -89,7 +89,7 @@ export default function AmbientSoundControl() {
                 max={100}
                 value={volume}
                 onChange={(e) => handleVolumeChange(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer accent-primary-500"
+                className="w-full h-1 bg-zinc-800 appearance-none cursor-pointer accent-primary-700"
               />
             </div>
           </div>
