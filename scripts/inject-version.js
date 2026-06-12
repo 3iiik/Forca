@@ -4,13 +4,31 @@ const fs = require('fs');
 
 const ROOT = path.resolve(__dirname, '..');
 
+function toSemVer(raw) {
+  let cleaned = raw.replace(/^v/, '');
+  const parts = cleaned.split('-');
+  let version = parts[0];
+  const suffix = parts.slice(1).join('-');
+
+  if (!/^\d+\.\d+\.\d+$/.test(version)) {
+    const digits = version.match(/\d+/g);
+    if (digits) {
+      version = `${digits[0] || '0'}.${digits[1] || '0'}.${digits[2] || '0'}`;
+    } else {
+      version = '0.0.0';
+    }
+  }
+
+  return suffix ? `${version}-${suffix}` : version;
+}
+
 function getVersion() {
   try {
     const tag = execSync('git describe --tags --abbrev=0', {
       cwd: ROOT,
       encoding: 'utf-8',
     }).trim();
-    return tag.replace(/^v/, '');
+    return toSemVer(tag);
   } catch {
     const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf-8'));
     console.warn('[inject-version] no git tag found, keeping existing version:', pkg.version);
