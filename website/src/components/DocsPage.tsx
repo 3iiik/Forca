@@ -201,7 +201,7 @@ const sections = [
 export function DocsPage() {
   return (
     <div className="min-h-screen pb-24">
-      <section className="pt-16 md:pt-24 pb-12 md:pb-16 text-center bg-gradient-to-b from-background via-background to-[#0d0d12]">
+      <section className="pt-16 md:pt-24 pb-12 md:pb-16 text-center bg-gradient-to-b from-purple-900/15 via-background to-background">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h1 className="text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] font-extrabold leading-[1.1] tracking-tight text-foreground mb-3">
