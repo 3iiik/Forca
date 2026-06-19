@@ -2,11 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { ForcaHero } from '../components/ForcaHero';
 import { ProductShowcase } from '../components/ProductShowcase';
+import { WhyForca } from '../components/WhyForca';
 import { ForcaFeatures } from '../components/ForcaFeatures';
 import { HowItWorks } from '../components/HowItWorks';
 
 const title = 'Forca — Automatic focus mode for deep work';
-const description = 'Block distractions automatically when your focus session starts. Open source website blocker and productivity app for Windows, Firefox, and Chromium browsers.';
+const description = 'Block distractions automatically when your focus session starts. Open source website blocker and productivity app for Windows, macOS, Linux, and Firefox.';
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -42,8 +43,8 @@ const faqs = [
     a: 'Automatic activation works with both Google Calendar and iCal. You can choose which calendar to integrate. If you prefer, you can also start focus zones manually at any time — calendar integration is completely optional.',
   },
   {
-    q: 'Is Linux support planned?',
-    a: 'Yes! Linux support is actively planned. The desktop app currently supports Windows, and the browser extension works on all platforms. macOS and Linux builds are on the roadmap. Follow the GitHub repo for updates on new platform releases.',
+    q: 'Does Forca support Linux?',
+    a: 'Yes! Forca fully supports Linux alongside Windows and macOS. The desktop app and all browser extensions work on Linux. Linux is a first-class platform — not an afterthought.',
   },
 ];
 ---
@@ -53,53 +54,57 @@ const faqs = [
 
   <ProductShowcase client:load />
 
+  <WhyForca client:load />
+
   <ForcaFeatures client:load />
 
   <HowItWorks client:load />
 
   <!-- Open Source -->
-  <section class="section section-alt" style="text-align: center;">
-    <div class="container">
-      <h2>Open source</h2>
-      <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 15px; max-width: 540px; margin-left: auto; margin-right: auto;">
+  <section class="bg-card py-16 md:py-24 text-center">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">Open source</h2>
+      <p class="text-muted-foreground max-w-lg mx-auto mb-8 leading-relaxed">
         Forca is free and open source under the MIT License. No tracking, no ads, no paywalls.
       </p>
-      <a href="https://github.com/3iiik/forca" class="btn btn-outline" target="_blank">
-        View source on GitHub →
+      <a
+        href="https://github.com/3iiik/forca"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[#27272a] text-foreground text-sm font-semibold hover:bg-[#27272a] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        target="_blank"
+      >
+        View source on GitHub &rarr;
       </a>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="section" id="faq">
-    <div class="container-narrow">
-      <h2 style="text-align: center;">Frequently asked questions</h2>
-      <div style="margin-top: 40px;">
-        {faqs.map((faq, i) => (
-          <div class="faq-item">
-            <button class="faq-q" aria-expanded="false" data-index={i}>
-              {faq.q}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" /></svg>
-            </button>
-            <div class="faq-a" data-index={i}>
-              {faq.a}
-            </div>
+  <section class="py-16 md:py-24" id="faq">
+    <div class="max-w-3xl mx-auto px-6 md:px-12">
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-12">Frequently asked questions</h2>
+      {faqs.map((faq, i) => (
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false" data-index={i}>
+            {faq.q}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div class="faq-a" data-index={i}>
+            {faq.a}
           </div>
-        ))}
+        </div>
+      ))}
+      <div class="text-center mt-10">
+        <a
+          href="/Forca/download/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white text-sm font-semibold hover:bg-purple-400 hover:-translate-y-0.5 transition-all shadow-lg shadow-purple-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Download Forca free &rarr;
+        </a>
       </div>
     </div>
   </section>
 </BaseLayout>
 
 <script>
-  fetch('https://api.github.com/repos/3iiik/forca')
-    .then(r => r.json())
-    .then(d => {
-      const el = document.getElementById('hero-version');
-      if (el) el.textContent = 'v' + (d.tag_name || d.name || '1.0.1');
-    })
-    .catch(() => {});
-
   document.querySelectorAll('.faq-q').forEach(btn => {
     btn.addEventListener('click', () => {
       const expanded = btn.getAttribute('aria-expanded') === 'true';

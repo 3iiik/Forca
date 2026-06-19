@@ -36,8 +36,8 @@ export function HowItWorks() {
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">
             How it works
           </h2>
-          <p className="text-muted-foreground text-base md:text-lg">
-            Set up once. Focus forever.
+           <p className="text-muted-foreground text-base md:text-lg">
+            Connect your calendar, set your rules, and never think about blocking again.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-5">
@@ -67,6 +67,14 @@ export function HowItWorks() {
               <p className="text-xs text-muted-foreground leading-relaxed pl-9">{step.description}</p>
             </motion.div>
           ))}
+        </div>
+        <div className="text-center mt-10">
+          <a
+            href="/Forca/download/"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white text-sm font-semibold hover:bg-purple-400 hover:-translate-y-0.5 transition-all shadow-lg shadow-purple-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Download Forca free &rarr;
+          </a>
         </div>
       </div>
     </section>
