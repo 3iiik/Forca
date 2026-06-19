@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://3iiik.github.io',
-  base: '/forca',
+  base: '/Forca',
   outDir: './dist',
   publicDir: './public',
   integrations: [sitemap()],

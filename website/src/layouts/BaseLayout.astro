@@ -7,7 +7,7 @@ const { title, description, structuredData } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/forca/favicon.png" />
+    <link rel="icon" type="image/png" href="/Forca/favicon.png" />
     <meta name="theme-color" content="#09090b" />
 
     <!-- SEO -->
@@ -15,15 +15,15 @@ const { title, description, structuredData } = Astro.props;
     <meta name="description" content={description} />
     <meta name="keywords" content="focus app, website blocker, productivity app, distraction blocker, focus mode, deep work, study app" />
     <meta name="author" content="3iiik" />
-    <link rel="canonical" href={`https://3iiik.github.io/forca${Astro.url.pathname}`} />
+    <link rel="canonical" href={Astro.url.href} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Forca" />
     <meta property="og:title" content={`${title} · Forca`} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={`https://3iiik.github.io/forca${Astro.url.pathname}`} />
-    <meta property="og:image" content="https://3iiik.github.io/forca/og-image.png" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:image" content="https://3iiik.github.io/Forca/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
@@ -31,7 +31,7 @@ const { title, description, structuredData } = Astro.props;
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={`${title} · Forca`} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://3iiik.github.io/forca/og-image.png" />
+    <meta name="twitter:image" content="https://3iiik.github.io/Forca/og-image.png" />
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
@@ -220,13 +220,13 @@ const { title, description, structuredData } = Astro.props;
   </head>
   <body>
     <nav>
-      <a href="/forca/" class="logo">F<span>○</span>rca</a>
+      <a href="/Forca/" class="logo">F<span>○</span>rca</a>
       <div class="links">
-        <a href="/forca/">Home</a>
-        <a href="/forca/features/">Features</a>
-        <a href="/forca/download/">Download</a>
-        <a href="/forca/docs/">Docs</a>
-        <a href="/forca/privacy/">Privacy</a>
+        <a href="/Forca/">Home</a>
+        <a href="/Forca/features/">Features</a>
+        <a href="/Forca/download/">Download</a>
+        <a href="/Forca/docs/">Docs</a>
+        <a href="/Forca/privacy/">Privacy</a>
         <a href="https://github.com/3iiik/forca" class="nav-cta" target="_blank">GitHub</a>
       </div>
     </nav>
@@ -237,11 +237,11 @@ const { title, description, structuredData } = Astro.props;
 
     <footer>
       <div class="links">
-        <a href="/forca/">Home</a>
-        <a href="/forca/features/">Features</a>
-        <a href="/forca/download/">Download</a>
-        <a href="/forca/docs/">Docs</a>
-        <a href="/forca/privacy/">Privacy</a>
+        <a href="/Forca/">Home</a>
+        <a href="/Forca/features/">Features</a>
+        <a href="/Forca/download/">Download</a>
+        <a href="/Forca/docs/">Docs</a>
+        <a href="/Forca/privacy/">Privacy</a>
         <a href="https://github.com/3iiik/forca" target="_blank">GitHub</a>
       </div>
       <p>MIT License · © {new Date().getFullYear()} 3iiik · Open source focus app</p>
@@ -254,11 +254,11 @@ const { title, description, structuredData } = Astro.props;
   const path = location.pathname.replace(/\/$/, '');
   document.querySelectorAll('nav .links a').forEach(a => {
     const href = a.getAttribute('href');
-    if (href && !href.startsWith('http') && href !== '/forca/' && path.startsWith(href)) {
+    if (href && !href.startsWith('http') && href !== '/Forca/' && path.startsWith(href)) {
       a.style.color = 'var(--text)';
     }
-    if (href === '/forca/' && path === '/forca' || path === '/forca/') {
-      if (href === '/forca/') a.style.color = 'var(--text)';
+    if (href === '/Forca/' && (path === '/Forca' || path === '/Forca/')) {
+      a.style.color = 'var(--text)';
     }
   });
 
