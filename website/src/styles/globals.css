@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #09090b;
+    --foreground: #f4f4f5;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --border: #27272a;
+    --accent: #3b82f6;
+    --accent-foreground: #e0f2fe;
+    --card: #18181b;
+    --card-foreground: #f4f4f5;
+  }
+}

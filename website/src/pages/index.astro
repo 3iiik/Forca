@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { ForcaHero } from '../components/ForcaHero';
+import { ForcaFeatures } from '../components/ForcaFeatures';
 
 const title = 'Forca — Automatic focus mode for deep work';
 const description = 'Block distractions automatically when your focus session starts. Open source website blocker and productivity app for Windows, Firefox, and Chromium browsers.';
@@ -18,84 +20,10 @@ const structuredData = {
 ---
 
 <BaseLayout {title} {description} {structuredData}>
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Automatic focus mode<br />for people who actually<br />want to get work done.</h1>
-      <p>
-        Block distractions automatically when your focus session starts.
-        Forca detects meeting endings and triggers focus zones — no manual
-        switching, no excuses, no friction.
-      </p>
-      <div class="actions">
-        <a href="/Forca/download/" class="btn btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
-          Download for Windows
-        </a>
-        <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" class="btn btn-outline" target="_blank">
-          Firefox Extension
-        </a>
-        <a href="https://github.com/3iiik/forca" class="btn btn-ghost" target="_blank">
-          View on GitHub →
-        </a>
-      </div>
-      <div class="hero-badges">
-        <span class="badge badge-green">★ Open Source</span>
-        <span class="badge badge-blue" id="latest-release">v1.0.1</span>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="screenshot">
-        <div>
-          <div style="font-size: 52px; margin-bottom: 16px;">🎯</div>
-          <div style="font-weight: 600; margin-bottom: 6px; color: var(--text);">Focus Zone Active</div>
-          <div style="font-size: 14px; color: var(--text-muted);">Deep Work · 45:00 remaining · 3 sites blocked</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section class="section" id="features">
-    <div class="container">
-      <h2 style="text-align: center;">Everything you need to stay focused</h2>
-      <div class="grid-3" style="margin-top: 32px;">
-        <div class="card">
-          <div class="feature-icon">⚡</div>
-          <h3>Automatic activation</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Focus zones auto-start when your meetings end. No toggling, no reminders, no friction.</p>
-        </div>
-        <div class="card">
-          <div class="feature-icon">🚫</div>
-          <h3>Website blocking</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Block distracting sites during focus sessions via the browser extension. YouTube, Reddit, Twitter — gone.</p>
-        </div>
-        <div class="card">
-          <div class="feature-icon">🎯</div>
-          <h3>Focus zones</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Create multiple zones with different durations, blocked sites, and triggers for different work modes.</p>
-        </div>
-        <div class="card">
-          <div class="feature-icon">🦊</div>
-          <h3>Firefox support</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Available on Firefox Add-ons. One-click install from the store.</p>
-        </div>
-        <div class="card">
-          <div class="feature-icon">🌐</div>
-          <h3>Chromium support</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Works with Chrome, Edge, Brave, Arc, Vivaldi, and Opera via Developer Mode.</p>
-        </div>
-        <div class="card">
-          <div class="feature-icon">🔒</div>
-          <h3>Local-first</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">All data stays on your machine. No cloud account required. No data leaves your computer.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <ForcaHero client:load />
 
   <!-- How It Works -->
-  <section class="section section-alt" id="how-it-works">
+  <section class="section" id="how-it-works">
     <div class="container">
       <h2 style="text-align: center;">How it works</h2>
       <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px; font-size: 15px;">
@@ -125,6 +53,8 @@ const structuredData = {
       </div>
     </div>
   </section>
+
+  <ForcaFeatures client:load />
 
   <!-- Open Source -->
   <section class="section" id="open-source">
@@ -177,7 +107,8 @@ const structuredData = {
   fetch('https://api.github.com/repos/3iiik/forca')
     .then(r => r.json())
     .then(d => {
-      document.getElementById('latest-release').textContent = 'v' + (d.tag_name || d.name || '1.0.1');
+      const el = document.getElementById('hero-version');
+      if (el) el.textContent = 'v' + (d.tag_name || d.name || '1.0.1');
     })
     .catch(() => {});
 </script>

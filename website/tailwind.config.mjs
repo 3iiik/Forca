@@ -1,0 +1,31 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        background: '#09090b',
+        foreground: '#f4f4f5',
+        muted: {
+          DEFAULT: '#27272a',
+          foreground: '#a1a1aa',
+        },
+        border: '#27272a',
+        accent: {
+          DEFAULT: '#3b82f6',
+          foreground: '#e0f2fe',
+        },
+        card: {
+          DEFAULT: '#18181b',
+          foreground: '#f4f4f5',
+        },
+      },
+      borderRadius: {
+        xl: '0.75rem',
+        '2xl': '1rem',
+      },
+    },
+  },
+  plugins: [],
+};
