@@ -86,7 +86,7 @@ function FeatureCard({ feature, index }: { feature: (typeof features)[0]; index:
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ delay: index * 0.08, duration: 0.4 }}
-      className="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-600/5"
+      className="rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-600/10"
     >
       <div className="flex items-center gap-3 mb-4">
         <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent/10 ring-1 ring-accent/20 text-accent">
@@ -114,7 +114,7 @@ function FeatureCard({ feature, index }: { feature: (typeof features)[0]; index:
 
 export function ForcaFeatures() {
   return (
-    <section className="py-12 md:py-24" id="features">
+    <section className="py-16 md:py-24" id="features">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">

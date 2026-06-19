@@ -46,6 +46,14 @@ const faqs = [
     q: 'Does Forca support Linux?',
     a: 'Yes! Forca fully supports Linux alongside Windows and macOS. The desktop app and all browser extensions work on Linux. Linux is a first-class platform — not an afterthought.',
   },
+  {
+    q: 'How does Forca protect my privacy?',
+    a: 'Forca is designed privacy-first. All data — focus sessions, zone configurations, usage stats — is stored locally on your device. No cloud sync, no accounts, no tracking. The only network requests are for checking version updates and optional calendar sync.',
+  },
+  {
+    q: 'What platforms does Forca support?',
+    a: 'Forca runs on Windows, macOS, and Linux. The desktop app is available on all three platforms, and browser extensions work across Firefox and Chromium-based browsers (Chrome, Edge, Brave, Arc, Vivaldi, Opera).',
+  },
 ];
 ---
 
@@ -61,18 +69,18 @@ const faqs = [
   <HowItWorks client:load />
 
   <!-- FAQ -->
-  <section class="py-12 md:py-24" id="faq">
+  <section class="py-16 md:py-24" id="faq">
     <div class="max-w-5xl mx-auto px-6 md:px-12">
-      <div class="text-center mb-12">
+      <div class="text-center mb-10">
         <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">Frequently asked questions</h2>
-        <p class="text-muted-foreground text-base">Quick answers to common questions about Forca.</p>
+        <p class="text-muted-foreground text-base max-w-xl mx-auto">Quick answers to common questions about Forca.</p>
       </div>
-      <div class="max-w-3xl mx-auto space-y-3">
+      <div class="max-w-3xl mx-auto faq-wrapper">
         {faqs.map((faq, i) => (
           <div class="faq-item">
             <button class="faq-q" aria-expanded="false" data-index={i}>
-              <span class="text-left">{faq.q}</span>
-              <svg class="faq-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <span>{faq.q}</span>
+              <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
@@ -83,7 +91,7 @@ const faqs = [
           </div>
         ))}
       </div>
-      <div class="text-center mt-10 pt-8 border-t border-[#27272a]">
+      <div class="text-center mt-10">
         <p class="text-sm text-muted-foreground">
           Can't find what you're looking for?{' '}
           <a href="https://github.com/3iiik/forca/discussions" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-accent-hover underline underline-offset-2">

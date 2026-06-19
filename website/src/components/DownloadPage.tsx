@@ -17,6 +17,7 @@ interface Platform {
   id: string;
   title: string;
   subtitle: string;
+  arch: string;
   icon: React.ReactNode;
   recommended: boolean;
   features: string[];
@@ -37,6 +38,7 @@ const platformTemplates: Omit<Platform, 'downloadUrl'>[] = [
     id: 'windows',
     title: 'Windows',
     subtitle: 'Windows 10 & 11',
+    arch: 'x64 & ARM64',
     icon: <SvgIcon paths="M3 5v14l8 2V3zM21 5v14l-8 2V3zM11 3v18M3 12h8M11 12h10" />,
     recommended: true,
     features: ['Native desktop app', 'Auto calendar detection', 'Browser extension support', 'Full focus automation'],
@@ -46,6 +48,7 @@ const platformTemplates: Omit<Platform, 'downloadUrl'>[] = [
     id: 'mac',
     title: 'macOS',
     subtitle: 'Apple Silicon & Intel',
+    arch: 'ARM64 & x64',
     icon: (
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 6 2.5 8.5.5 1.3 1.5 2.5 2.5 2.5s2-1.2 2.5-2.5C13 15 14.5 11.5 14.5 9a7 7 0 0 0-2.5-7z" />
@@ -60,6 +63,7 @@ const platformTemplates: Omit<Platform, 'downloadUrl'>[] = [
     id: 'linux',
     title: 'Linux',
     subtitle: 'AppImage',
+    arch: 'x64',
     icon: <SvgIcon paths="M12 2L2 7v10l10 5 10-5V7zM2 7l10 5 10-5M12 22V12" />,
     recommended: false,
     features: ['Native desktop app', 'Browser extension support', 'Full focus automation', 'Open source friendly'],
@@ -67,14 +71,14 @@ const platformTemplates: Omit<Platform, 'downloadUrl'>[] = [
   },
 ];
 
-function PlatformCard({ platform, index }: { platform: Platform; index: number }) {
+function PlatformCard({ platform, index, version }: { platform: Platform; index: number; version: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ delay: index * 0.15, duration: 0.5 }}
-      className="group relative flex flex-col rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/40 hover:shadow-xl hover:shadow-purple-600/10"
+      className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-600/15"
     >
       {platform.recommended && (
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10">
@@ -90,7 +94,15 @@ function PlatformCard({ platform, index }: { platform: Platform; index: number }
           {platform.icon}
         </div>
         <h3 className="text-lg md:text-xl font-bold text-foreground mb-0.5">{platform.title}</h3>
-        <p className="text-xs md:text-sm text-muted-foreground">{platform.subtitle}</p>
+        <p className="text-xs md:text-sm text-muted-foreground mb-2">{platform.subtitle}</p>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-[10px] font-medium text-accent">
+            v{version}
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-800/80 text-[10px] font-medium text-muted-foreground">
+            {platform.arch}
+          </span>
+        </div>
       </div>
 
       <ul className="space-y-2.5 mb-6 md:mb-8 flex-1">
@@ -166,7 +178,7 @@ export function DownloadPage() {
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             {platforms.map((p, i) => (
-              <PlatformCard key={p.id} platform={p} index={i} />
+              <PlatformCard key={p.id} platform={p} index={i} version={version} />
             ))}
           </div>
         </div>
