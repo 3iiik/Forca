@@ -71,30 +71,30 @@ const faqs = [
   <!-- FAQ -->
   <section class="py-16 md:py-24" id="faq">
     <div class="max-w-5xl mx-auto px-6 md:px-12">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">Frequently asked questions</h2>
-        <p class="text-muted-foreground text-base max-w-xl mx-auto">Quick answers to common questions about Forca.</p>
+      <div>
+        <h2 class="text-foreground text-4xl font-semibold tracking-tight mb-4">Frequently asked questions</h2>
+        <p class="text-muted-foreground text-balance text-lg max-w-xl">Quick answers to common questions about Forca, its features, and how it works.</p>
       </div>
-      <div class="max-w-3xl mx-auto faq-wrapper">
-        {faqs.map((faq, i) => (
-          <div class="faq-item">
-            <button class="faq-q" aria-expanded="false" data-index={i}>
-              <span>{faq.q}</span>
-              <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </button>
-            <div class="faq-a" data-index={i}>
-              <div class="faq-a-inner">{faq.a}</div>
+      <div class="mt-12">
+        <div class="max-w-3xl mx-auto faq-wrapper">
+          {faqs.map((faq, i) => (
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <span>{faq.q}</span>
+                <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <div class="faq-a">
+                <div class="faq-a-inner">{faq.a}</div>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-      <div class="text-center mt-10">
-        <p class="text-sm text-muted-foreground">
+          ))}
+        </div>
+        <p class="text-muted-foreground mt-6 text-center">
           Can't find what you're looking for?{' '}
-          <a href="https://github.com/3iiik/forca/discussions" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-accent-hover underline underline-offset-2">
+          <a href="https://github.com/3iiik/forca/discussions" target="_blank" rel="noopener noreferrer" class="text-foreground font-medium hover:underline">
             Open a discussion on GitHub
           </a>
         </p>
@@ -106,9 +106,16 @@ const faqs = [
 <script>
   document.querySelectorAll('.faq-q').forEach(btn => {
     btn.addEventListener('click', () => {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', !expanded);
-      btn.nextElementSibling?.classList.toggle('open');
+      const parent = btn.closest('.faq-wrapper');
+      const was = btn.getAttribute('aria-expanded') === 'true';
+      parent.querySelectorAll('.faq-q').forEach(b => {
+        b.setAttribute('aria-expanded', 'false');
+        b.nextElementSibling?.classList.remove('open');
+      });
+      if (!was) {
+        btn.setAttribute('aria-expanded', 'true');
+        btn.nextElementSibling?.classList.add('open');
+      }
     });
   });
 </script>

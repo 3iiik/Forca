@@ -145,12 +145,13 @@ import '../styles/globals.css';
 
       .faq-wrapper {
         border: 1px solid var(--border);
-        border-radius: 16px;
+        border-radius: var(--radius);
         background: var(--bg-card);
+        box-shadow: 0 1px 3px rgba(0,0,0,.3);
         overflow: hidden;
       }
       .faq-item {
-        border-bottom: 1px dashed rgba(255,255,255,0.08);
+        border-bottom: 1px dotted rgba(255,255,255,0.10);
       }
       .faq-item:last-child { border-bottom: none; }
       .faq-q {
@@ -161,7 +162,6 @@ import '../styles/globals.css';
       }
       .faq-q span { min-width: 0; flex: 1; }
       .faq-q:hover { color: var(--accent); }
-      .faq-q:hover .faq-icon { color: var(--accent); }
       .faq-icon { transition: transform .3s; flex-shrink: 0; color: var(--text-muted); width: 20px; height: 20px; }
       .faq-q[aria-expanded="true"] .faq-icon { transform: rotate(45deg); color: var(--accent); }
       .faq-a {

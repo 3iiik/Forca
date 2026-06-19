@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Monitor } from 'lucide-react';
 import { DownloadButton } from './ui/button-download';
+import { Icons } from './icons';
 
 interface ReleaseAsset {
   name: string;
@@ -18,60 +18,48 @@ interface Platform {
   title: string;
   subtitle: string;
   arch: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ size?: number }>;
   recommended: boolean;
   features: string[];
   matchAsset: (name: string) => boolean;
   downloadUrl: string;
 }
 
-const SvgIcon = ({ paths, viewBox = '0 0 24 24' }: { paths: string; viewBox?: string }) => (
-  <svg width="36" height="36" viewBox={viewBox} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    {paths.split('|').map((d, i) => (
-      <path key={i} d={d} />
-    ))}
-  </svg>
-);
-
 const platformTemplates: Omit<Platform, 'downloadUrl'>[] = [
   {
     id: 'windows',
     title: 'Windows',
-    subtitle: 'Windows 10 & 11',
+    subtitle: 'Native Desktop App',
     arch: 'x64 & ARM64',
-    icon: <SvgIcon paths="M3 5v14l8 2V3zM21 5v14l-8 2V3zM11 3v18M3 12h8M11 12h10" />,
+    icon: Icons.Windows,
     recommended: true,
-    features: ['Native desktop app', 'Auto calendar detection', 'Browser extension support', 'Full focus automation'],
+    features: ['Windows 10 & 11 support', 'Auto calendar detection', 'Browser extension included', 'Full focus automation'],
     matchAsset: (name: string) => name.includes('.exe') && !name.includes('blockmap'),
   },
   {
     id: 'mac',
     title: 'macOS',
-    subtitle: 'Apple Silicon & Intel',
+    subtitle: 'Native Desktop App',
     arch: 'ARM64 & x64',
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 6 2.5 8.5.5 1.3 1.5 2.5 2.5 2.5s2-1.2 2.5-2.5C13 15 14.5 11.5 14.5 9a7 7 0 0 0-2.5-7z" />
-        <path d="M9 9h6" />
-      </svg>
-    ),
+    icon: Icons.Apple,
     recommended: false,
-    features: ['Native desktop app', 'Calendar integration', 'Browser extension support', 'Full focus automation'],
+    features: ['Apple Silicon & Intel', 'Calendar integration', 'Browser extension included', 'Full focus automation'],
     matchAsset: (name: string) => name.includes('.dmg'),
   },
   {
     id: 'linux',
     title: 'Linux',
-    subtitle: 'AppImage',
+    subtitle: 'Native Desktop App',
     arch: 'x64',
-    icon: <SvgIcon paths="M12 2L2 7v10l10 5 10-5V7zM2 7l10 5 10-5M12 22V12" />,
+    icon: Icons.Linux,
     recommended: false,
-    features: ['Native desktop app', 'Browser extension support', 'Full focus automation', 'Open source friendly'],
+    features: ['AppImage format', 'Browser extension support', 'Full focus automation', 'Open source friendly'],
     matchAsset: (name: string) => name.includes('.AppImage'),
   },
 ];
 
 function PlatformCard({ platform, index, version }: { platform: Platform; index: number; version: string }) {
+  const PlatformIcon = platform.icon;
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -90,11 +78,11 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
       )}
 
       <div className="flex flex-col items-center text-center mb-6 md:mb-8 pt-2">
-        <div className="flex items-center justify-center w-[72px] h-[72px] rounded-2xl bg-accent/10 ring-1 ring-accent/20 mb-4 text-accent transition-all duration-300 group-hover:ring-accent/40 group-hover:bg-accent/15 group-hover:shadow-lg group-hover:shadow-purple-600/20">
-          {platform.icon}
+        <div className="flex items-center justify-center w-20 h-20 rounded-2xl bg-accent/10 ring-1 ring-accent/20 mb-4 text-accent transition-all duration-300 group-hover:ring-accent/40 group-hover:bg-accent/15 group-hover:shadow-lg group-hover:shadow-purple-600/20">
+          <PlatformIcon size={40} />
         </div>
         <h3 className="text-lg md:text-xl font-bold text-foreground mb-0.5">{platform.title}</h3>
-        <p className="text-xs md:text-sm text-muted-foreground mb-2">{platform.subtitle}</p>
+        <p className="text-xs md:text-sm text-muted-foreground mb-3">{platform.subtitle}</p>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-[10px] font-medium text-accent">
             v{version}
@@ -108,10 +96,8 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
       <ul className="space-y-2.5 mb-6 md:mb-8 flex-1">
         {platform.features.map((f, i) => (
           <li key={i} className="flex items-start gap-2.5 text-xs md:text-sm text-muted-foreground">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden="true">
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
-            {f}
+            <Icons.Check size={14} />
+            <span>{f}</span>
           </li>
         ))}
       </ul>
@@ -153,7 +139,7 @@ export function DownloadPage() {
 
   return (
     <div className="min-h-screen pb-24 bg-gradient-to-b from-purple-900/15 via-background to-background">
-      <section className="pt-16 md:pt-24 pb-12 md:pb-16 text-center">
+      <section className="pt-20 pb-12 text-center">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -174,7 +160,7 @@ export function DownloadPage() {
         </div>
       </section>
 
-      <section className="-mt-6 relative z-10">
+      <section className="-mt-4 relative z-10">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             {platforms.map((p, i) => (
@@ -184,7 +170,7 @@ export function DownloadPage() {
         </div>
       </section>
 
-      <section className="mt-16 md:mt-24">
+      <section className="mt-16 md:mt-20">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -194,11 +180,7 @@ export function DownloadPage() {
             className="rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left"
           >
             <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/20">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                <circle cx="16" cy="16" r="14" fill="#e8572a" />
-                <path d="M16 4C9.5 4 5 9.5 5 16c0 4 2 7.5 5 9.5l2-1c-2-1.5-3-4-3-6.5 0-4.5 3.5-8 8-8s8 3.5 8 8c0 2.5-1 5-3 6.5l2 1c3-2 5-5.5 5-9.5C27 9.5 22.5 4 16 4z" fill="#fff" />
-                <path d="M16 10c-3 0-5.5 2-5.5 5 0 1.5 1 3 2.5 3.5l-.5 1.5 2-1c.5 0 1 .5 1.5.5s1 0 1.5-.5l2 1-.5-1.5c1.5-.5 2.5-2 2.5-3.5 0-3-2.5-5-5.5-5z" fill="#e8572a" />
-              </svg>
+              <Icons.Firefox size={36} />
             </div>
             <div className="flex-1">
               <h3 className="text-lg md:text-xl font-bold text-foreground mb-1">Need the browser extension?</h3>
