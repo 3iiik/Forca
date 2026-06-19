@@ -20,37 +20,36 @@ const structuredData = {
 <BaseLayout {title} {description} {structuredData}>
   <!-- Hero -->
   <section class="hero">
-    <div style="font-size: 64px; margin-bottom: 16px; font-weight: 800; letter-spacing: -2px;">
-      F<span style="color: var(--accent);">○</span>rca
+    <div class="hero-content">
+      <h1>Automatic focus mode<br />for people who actually<br />want to get work done.</h1>
+      <p>
+        Block distractions automatically when your focus session starts.
+        Forca detects meeting endings and triggers focus zones — no manual
+        switching, no excuses, no friction.
+      </p>
+      <div class="actions">
+        <a href="/Forca/download/" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
+          Download for Windows
+        </a>
+        <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" class="btn btn-outline" target="_blank">
+          Firefox Extension
+        </a>
+        <a href="https://github.com/3iiik/forca" class="btn btn-ghost" target="_blank">
+          View on GitHub →
+        </a>
+      </div>
+      <div class="hero-badges">
+        <span class="badge badge-green">★ Open Source</span>
+        <span class="badge badge-blue" id="latest-release">v1.0.1</span>
+      </div>
     </div>
-    <h1>Automatic focus mode<br />for people who actually<br />want to get work done.</h1>
-    <p>
-      Block distractions automatically when your focus session starts.
-      Forca detects meeting endings and triggers focus zones — no manual
-      switching, no excuses, no friction.
-    </p>
-    <div class="actions">
-      <a href="/forca/download/" class="btn btn-primary">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
-        Download for Windows
-      </a>
-      <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" class="btn btn-outline" target="_blank">
-        Firefox Extension
-      </a>
-      <a href="https://github.com/3iiik/forca" class="btn btn-ghost" target="_blank">
-        View on GitHub →
-      </a>
-    </div>
-  </section>
-
-  <!-- Screenshots -->
-  <section class="section">
-    <div class="container">
+    <div class="hero-visual">
       <div class="screenshot">
         <div>
-          <div style="font-size: 48px; margin-bottom: 12px;">🎯</div>
-          <div style="font-weight: 600; margin-bottom: 4px;">Focus Zone Active</div>
-          <div style="font-size: 12px;">Deep Work · 45:00 remaining · 3 sites blocked</div>
+          <div style="font-size: 52px; margin-bottom: 16px;">🎯</div>
+          <div style="font-weight: 600; margin-bottom: 6px; color: var(--text);">Focus Zone Active</div>
+          <div style="font-size: 14px; color: var(--text-muted);">Deep Work · 45:00 remaining · 3 sites blocked</div>
         </div>
       </div>
     </div>
@@ -131,23 +130,9 @@ const structuredData = {
   <section class="section" id="open-source">
     <div class="container" style="text-align: center;">
       <h2>Open source</h2>
-      <p style="color: var(--text-muted); margin-bottom: 40px; font-size: 15px;">
+      <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 15px;">
         Forca is free and open source under the MIT License. No tracking, no ads, no paywalls.
       </p>
-      <div class="stats-row" style="margin-bottom: 40px;">
-        <div class="stat">
-          <div class="num">★</div>
-          <div class="label">GitHub Stars</div>
-        </div>
-        <div class="stat">
-          <div class="num" id="latest-release">v1.0.1</div>
-          <div class="label">Latest Release</div>
-        </div>
-        <div class="stat">
-          <div class="num">MIT</div>
-          <div class="label">License</div>
-        </div>
-      </div>
       <a href="https://github.com/3iiik/forca" class="btn btn-outline" target="_blank">
         View source on GitHub →
       </a>

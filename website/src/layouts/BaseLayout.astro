@@ -7,7 +7,7 @@ const { title, description, structuredData } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/Forca/favicon.png" />
+    <link rel="icon" type="image/png" href="/Forca/icon.png" />
     <meta name="theme-color" content="#09090b" />
 
     <!-- SEO -->
@@ -23,15 +23,15 @@ const { title, description, structuredData } = Astro.props;
     <meta property="og:title" content={`${title} · Forca`} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={Astro.url.href} />
-    <meta property="og:image" content="https://3iiik.github.io/Forca/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image" content="https://3iiik.github.io/Forca/icon.png" />
+    <meta property="og:image:width" content="256" />
+    <meta property="og:image:height" content="256" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={`${title} · Forca`} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://3iiik.github.io/Forca/og-image.png" />
+    <meta name="twitter:image" content="https://3iiik.github.io/Forca/icon.png" />
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
@@ -73,8 +73,21 @@ const { title, description, structuredData } = Astro.props;
         padding: 16px 24px; max-width: 1100px; margin: 0 auto;
         border-bottom: 1px solid var(--border);
       }
-      nav .logo { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
-      nav .logo span { color: var(--accent); }
+      nav .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.3px;
+      }
+      nav .logo img {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        flex-shrink: 0;
+      }
       nav .links { display: flex; gap: 24px; align-items: center; }
       nav .links a { color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color .2s; }
       nav .links a:hover, nav .links a.active { color: var(--text); }
@@ -109,19 +122,49 @@ const { title, description, structuredData } = Astro.props;
       .card:hover { border-color: var(--text-dim); }
 
       footer {
-        border-top: 1px solid var(--border); padding: 48px 24px 32px;
+        border-top: 1px solid var(--border); padding: 40px 24px 28px;
         text-align: center; color: var(--text-dim); font-size: 13px;
       }
       footer .links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
       footer .links a { color: var(--text-muted); font-size: 13px; }
       footer .links a:hover { color: var(--text); }
 
-      .hero { text-align: center; padding: 80px 0 64px; }
-      .hero h1 { margin-bottom: 16px; }
-      .hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 32px; }
-      .hero .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+        align-items: center;
+        padding: 48px 0 80px;
+      }
+      .hero-content { text-align: left; }
+      .hero-content h1 { margin-bottom: 20px; }
+      .hero-content p {
+        font-size: 17px;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 28px;
+      }
+      .hero-content .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .hero-badges {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      .hero-visual {
+        position: relative;
+      }
+      .hero-visual .screenshot {
+        padding: 48px;
+        aspect-ratio: 16/10;
+        width: 100%;
+      }
 
-      .section { padding: 80px 0; }
+      .section { padding: 64px 0; }
       .section-alt { background: var(--bg-card); }
 
       .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
@@ -148,10 +191,11 @@ const { title, description, structuredData } = Astro.props;
       .faq-a { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
 
       .screenshot {
-        background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+        background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
         padding: 40px; text-align: center; color: var(--text-dim); font-size: 14px;
-        aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
-        background-image: radial-gradient(circle at 20% 50%, var(--primary) 0%, transparent 50%);
+        display: flex; align-items: center; justify-content: center;
+        background-image: radial-gradient(circle at 30% 40%, var(--primary) 0%, transparent 60%);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
       }
 
       .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
@@ -197,11 +241,20 @@ const { title, description, structuredData } = Astro.props;
       .page-content li { margin-bottom: 6px; }
 
       @media (max-width: 768px) {
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 40px;
+          padding: 32px 0 48px;
+        }
+        .hero-content { text-align: center; }
+        .hero-content p { margin-left: auto; margin-right: auto; }
+        .hero-content .actions { justify-content: center; }
+        .hero-badges { justify-content: center; }
         h1 { font-size: 32px; }
         h2 { font-size: 24px; }
         .hero { padding: 48px 0 40px; }
         .hero p { font-size: 16px; }
-        .section { padding: 48px 0; }
+        .section { padding: 40px 0; }
         .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
         .steps { grid-template-columns: 1fr 1fr; }
         nav .links { gap: 12px; }
@@ -220,7 +273,10 @@ const { title, description, structuredData } = Astro.props;
   </head>
   <body>
     <nav>
-      <a href="/Forca/" class="logo">F<span>○</span>rca</a>
+      <a href="/Forca/" class="logo">
+        <img src="/Forca/icon.png" alt="" width="20" height="20" />
+        Forca
+      </a>
       <div class="links">
         <a href="/Forca/">Home</a>
         <a href="/Forca/features/">Features</a>
