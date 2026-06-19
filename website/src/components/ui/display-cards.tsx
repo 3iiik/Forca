@@ -3,38 +3,40 @@ import { cn } from '../../lib/utils';
 
 interface DisplayCardProps {
   className?: string;
-  icon?: React.ReactNode;
+  image?: string;
   title?: string;
   description?: string;
-  date?: string;
   iconClassName?: string;
   titleClassName?: string;
 }
 
 function DisplayCard({
   className,
-  icon,
+  image,
   title = 'Featured',
   description = 'Discover amazing content',
-  date = 'Just now',
-  iconClassName = 'text-blue-400',
-  titleClassName = 'text-blue-400',
+  iconClassName = 'border-purple-500/30',
+  titleClassName = 'text-white',
 }: DisplayCardProps) {
   return (
     <div
       className={cn(
-        'relative flex h-36 w-[22rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border-2 bg-muted/70 backdrop-blur-sm px-4 py-3 transition-all duration-700 after:absolute after:-right-1 after:top-[-5%] after:h-[110%] after:w-[20rem] after:bg-gradient-to-l after:from-background after:to-transparent after:content-[""] hover:border-white/20 hover:bg-muted [&>*]:flex [&>*]:items-center [&>*]:gap-2',
+        'relative w-full h-[22rem] md:h-[26rem] rounded-2xl border border-[#27272a] overflow-hidden transition-all duration-700 [grid-area:stack] grayscale hover:grayscale-0 bg-[#1c1c1c]',
         className
       )}
     >
-      <div>
-        <span className={cn('relative inline-block rounded-full p-1.5', iconClassName.includes('text-') ? iconClassName.replace('text-', 'bg-').replace('blue-400', 'blue-900/40').replace('emerald-400', 'emerald-900/40').replace('amber-400', 'amber-900/40') : 'bg-blue-900/40')}>
-          {icon}
-        </span>
-        <p className={cn('text-lg font-medium', titleClassName)}>{title}</p>
+      {image && (
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover object-top"
+          loading="lazy"
+        />
+      )}
+      <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+        <h3 className={cn('text-lg md:text-xl font-bold', titleClassName)}>{title}</h3>
+        <p className="text-zinc-400 text-sm md:text-base mt-1 leading-relaxed">{description}</p>
       </div>
-      <p className="whitespace-nowrap text-lg text-foreground">{description}</p>
-      <p className="text-muted-foreground">{date}</p>
     </div>
   );
 }
@@ -47,25 +49,31 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
   const defaultCards = [
     {
       className:
-        '[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[""] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0',
+        'hover:-translate-y-4 hover:shadow-2xl hover:shadow-purple-600/10 z-30',
     },
     {
       className:
-        '[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[""] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0',
+        'translate-x-4 md:translate-x-8 translate-y-2 md:translate-y-4 hover:-translate-y-2 hover:shadow-xl z-20',
     },
     {
       className:
-        '[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10',
+        'translate-x-8 md:translate-x-16 translate-y-4 md:translate-y-8 hover:translate-y-2 hover:shadow-lg z-10',
+    },
+    {
+      className:
+        'translate-x-12 md:translate-x-24 translate-y-6 md:translate-y-12 hover:translate-y-6 hover:shadow-md z-0',
     },
   ];
 
   const displayCards = cards || defaultCards;
 
   return (
-    <div className="grid [grid-template-areas:\'stack\'] place-items-center opacity-100 animate-in fade-in-0 duration-700">
-      {displayCards.map((cardProps, index) => (
-        <DisplayCard key={index} {...cardProps} />
-      ))}
+    <div className="relative min-h-[32rem] md:min-h-[38rem] flex items-center justify-center">
+      <div className="grid [grid-template-areas:'stack'] place-items-center w-full max-w-lg">
+        {displayCards.map((cardProps, index) => (
+          <DisplayCard key={index} {...cardProps} />
+        ))}
+      </div>
     </div>
   );
 }

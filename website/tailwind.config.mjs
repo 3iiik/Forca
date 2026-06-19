@@ -13,17 +13,21 @@ export default {
         },
         border: '#27272a',
         accent: {
-          DEFAULT: '#3b82f6',
-          foreground: '#e0f2fe',
+          DEFAULT: '#8b5cf6',
+          foreground: '#ede9fe',
         },
         card: {
           DEFAULT: '#18181b',
           foreground: '#f4f4f5',
         },
       },
+      maxWidth: {
+        '7xl': '1280px',
+      },
       borderRadius: {
         xl: '0.75rem',
         '2xl': '1rem',
+        '3xl': '1.5rem',
       },
     },
   },

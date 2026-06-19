@@ -1,54 +1,55 @@
 import React from 'react';
-import { Zap, Shield, BarChart3 } from 'lucide-react';
 import DisplayCards from './ui/display-cards';
 
 const featureCards = [
   {
-    icon: <Zap className="size-5 text-blue-300" />,
+    image: '/Forca/screenshots/dashboard.png',
     title: 'Automatic Activation',
-    description: 'Focus zones auto-start when your meetings end. No toggling, no reminders, no friction.',
-    date: 'Calendar-aware · Google · iCal',
-    iconClassName: 'text-blue-400',
-    titleClassName: 'text-blue-400',
+    description: 'Focus zones start automatically when your meetings end — no toggling, no reminders, no friction.',
+    titleClassName: 'text-purple-300',
     className:
-      '[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[""] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0',
+      'hover:-translate-y-4 hover:shadow-2xl hover:shadow-purple-600/10 z-30',
   },
   {
-    icon: <Shield className="size-5 text-emerald-300" />,
+    image: '/Forca/screenshots/zone-creation.png',
+    title: 'Create Focus Zones',
+    description: 'Name your zone, set a duration, and choose which sites to block. Multiple zones for different work modes.',
+    titleClassName: 'text-purple-300',
+    className:
+      'translate-x-4 md:translate-x-8 translate-y-2 md:translate-y-4 hover:-translate-y-2 hover:shadow-xl z-20',
+  },
+  {
+    image: '/Forca/screenshots/blocked-page.png',
     title: 'Website Blocking',
-    description: 'Block distracting sites during focus sessions. YouTube, Reddit, Twitter — gone.',
-    date: 'Firefox · Chrome · Edge · Brave',
-    iconClassName: 'text-emerald-400',
-    titleClassName: 'text-emerald-400',
+    description: 'Block distracting sites during focus sessions. YouTube, Reddit, Twitter — gone until time is up.',
+    titleClassName: 'text-purple-300',
     className:
-      '[grid-area:stack] translate-x-12 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[""] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0',
+      'translate-x-8 md:translate-x-16 translate-y-4 md:translate-y-8 hover:translate-y-2 hover:shadow-lg z-10',
   },
   {
-    icon: <BarChart3 className="size-5 text-amber-300" />,
-    title: 'Focus Analytics',
-    description: 'Track your deep work hours, streaks, and patterns over time. See your progress.',
-    date: 'Daily · Weekly · Monthly reports',
-    iconClassName: 'text-amber-400',
-    titleClassName: 'text-amber-400',
+    image: '/Forca/screenshots/onboarding-complete.png',
+    title: 'Setup in Minutes',
+    description: 'Install the app, add browser extensions, create your first zone. Fast setup, no account required.',
+    titleClassName: 'text-purple-300',
     className:
-      '[grid-area:stack] translate-x-24 translate-y-20 hover:translate-y-10',
+      'translate-x-12 md:translate-x-24 translate-y-6 md:translate-y-12 hover:translate-y-6 hover:shadow-md z-0',
   },
 ];
 
 export function ForcaFeatures() {
   return (
-    <section className="py-16 md:py-20">
-      <div className="max-w-6xl mx-auto px-6 md:px-12">
-        <div className="text-center mb-12">
+    <section className="py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">
             Everything you need to stay focused
           </h2>
-          <p className="text-muted-foreground text-base max-w-lg mx-auto">
+          <p className="text-muted-foreground text-base md:text-lg max-w-lg mx-auto">
             Forca combines automatic triggers, powerful blocking, and insights to help you do your best work.
           </p>
         </div>
         <div className="flex justify-center">
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-xl">
             <DisplayCards cards={featureCards} />
           </div>
         </div>
