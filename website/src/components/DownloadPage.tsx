@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { DownloadButton } from './ui/button-download';
+import { DownloadCTAButton } from './ui/DownloadCTAButton';
 import { Icons } from './icons';
 
 interface ReleaseAsset {
@@ -102,9 +102,11 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
         ))}
       </ul>
 
-      <DownloadButton
+      <DownloadCTAButton
         href={platform.downloadUrl}
         label={`Download for ${platform.title}`}
+        showArrow={false}
+        className="w-full"
       />
     </motion.div>
   );

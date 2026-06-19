@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Icons } from './icons';
+import { DownloadCTAButton } from './ui/DownloadCTAButton';
 
 const steps = [
   {
@@ -82,12 +83,7 @@ export function HowItWorks() {
         </div>
 
         <div className="text-center mt-12">
-          <a
-            href="/Forca/download/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white text-sm font-semibold hover:bg-purple-400 hover:-translate-y-0.5 transition-all shadow-lg shadow-purple-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            Download Forca free &rarr;
-          </a>
+          <DownloadCTAButton size="lg" />
         </div>
       </div>
     </section>
