@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { ForcaHero } from '../components/ForcaHero';
+import { ProductShowcase } from '../components/ProductShowcase';
 import { ForcaFeatures } from '../components/ForcaFeatures';
+import { HowItWorks } from '../components/HowItWorks';
 
 const title = 'Forca — Automatic focus mode for deep work';
 const description = 'Block distractions automatically when your focus session starts. Open source website blocker and productivity app for Windows, Firefox, and Chromium browsers.';
@@ -11,56 +13,55 @@ const structuredData = {
   "@type": "SoftwareApplication",
   "name": "Forca",
   "applicationCategory": "Productivity",
-  "operatingSystem": "Windows",
+  "operatingSystem": "Windows, macOS, Linux",
   "description": description,
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "author": { "@type": "Person", "name": "3iiik" },
   "license": "https://opensource.org/licenses/MIT",
 };
+
+const faqs = [
+  {
+    q: 'Is Forca free?',
+    a: 'Yes. Forca is completely free and open source under the MIT License. There are no paid plans, subscriptions, hidden costs, or premium features. The app, browser extensions, and all future updates are free forever.',
+  },
+  {
+    q: 'Which browsers are supported?',
+    a: 'Forca provides a Firefox extension available on AMO. Chromium-based browsers (Chrome, Edge, Brave, Arc, Vivaldi, Opera) are supported via Developer Mode installation. The extension blocks websites during active focus sessions across all supported browsers.',
+  },
+  {
+    q: 'Does Forca require an account?',
+    a: 'No. Forca is local-first. Everything runs on your machine with no cloud dependency. No account creation, no sign-up, no personal data sent to servers. Your focus data stays on your device.',
+  },
+  {
+    q: 'Does my data leave my device?',
+    a: 'No. Forca is designed to be privacy-first. All focus session data, zone configurations, and usage statistics are stored locally on your machine. The only network requests are for checking the latest version and syncing calendar events (if you enable calendar integration).',
+  },
+  {
+    q: 'Does automatic activation require Google Calendar?',
+    a: 'Automatic activation works with both Google Calendar and iCal. You can choose which calendar to integrate. If you prefer, you can also start focus zones manually at any time — calendar integration is completely optional.',
+  },
+  {
+    q: 'Is Linux support planned?',
+    a: 'Yes! Linux support is actively planned. The desktop app currently supports Windows, and the browser extension works on all platforms. macOS and Linux builds are on the roadmap. Follow the GitHub repo for updates on new platform releases.',
+  },
+];
 ---
 
 <BaseLayout {title} {description} {structuredData}>
   <ForcaHero client:load />
 
-  <!-- How It Works -->
-  <section class="section" id="how-it-works">
-    <div class="container">
-      <h2 style="text-align: center;">How it works</h2>
-      <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px; font-size: 15px;">
-        Set up once. Focus forever.
-      </p>
-      <div class="steps">
-        <div class="step">
-          <div class="num">1</div>
-          <h3>Create a focus zone</h3>
-          <p>Name your zone (e.g. "Deep Work") and set a duration.</p>
-        </div>
-        <div class="step">
-          <div class="num">2</div>
-          <h3>Choose sites to block</h3>
-          <p>Add the websites that distract you. Multiple zones, different rules.</p>
-        </div>
-        <div class="step">
-          <div class="num">3</div>
-          <h3>Start focusing</h3>
-          <p>Launch a zone manually or let it auto-trigger after meetings.</p>
-        </div>
-        <div class="step">
-          <div class="num">4</div>
-          <h3>Forca keeps distractions away</h3>
-          <p>The browser extension blocks your list. Nothing gets through until time's up.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <ProductShowcase client:load />
 
   <ForcaFeatures client:load />
 
+  <HowItWorks client:load />
+
   <!-- Open Source -->
-  <section class="section" id="open-source">
-    <div class="container" style="text-align: center;">
+  <section class="section section-alt" style="text-align: center;">
+    <div class="container">
       <h2>Open source</h2>
-      <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 15px;">
+      <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 15px; max-width: 540px; margin-left: auto; margin-right: auto;">
         Forca is free and open source under the MIT License. No tracking, no ads, no paywalls.
       </p>
       <a href="https://github.com/3iiik/forca" class="btn btn-outline" target="_blank">
@@ -70,34 +71,21 @@ const structuredData = {
   </section>
 
   <!-- FAQ -->
-  <section class="section section-alt" id="faq">
+  <section class="section" id="faq">
     <div class="container-narrow">
       <h2 style="text-align: center;">Frequently asked questions</h2>
-      <div style="margin-top: 32px;">
-        <div class="faq-item">
-          <div class="faq-q">Is Forca free?</div>
-          <div class="faq-a">Yes. Forca is completely free and open source under the MIT License. There are no paid plans, subscriptions, or hidden costs.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Does Forca work on macOS or Linux?</div>
-          <div class="faq-a">Currently Forca is available for Windows. macOS and Linux support are on the roadmap. The browser extension works on all platforms.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Do I need an account?</div>
-          <div class="faq-a">No. Forca is local-first. Everything runs on your machine. No account, no cloud, no sign-up required.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Which browsers are supported?</div>
-          <div class="faq-a">Firefox (via AMO) and all Chromium browsers: Chrome, Edge, Brave, Arc, Vivaldi, and Opera. Chromium browsers require a one-time Developer Mode setup.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">How does automatic activation work?</div>
-          <div class="faq-a">Forca integrates with Google Calendar and iCal. When a meeting ends, it can automatically start a focus zone. No manual switching needed.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Can I use Forca without calendar integration?</div>
-          <div class="faq-a">Absolutely. You can start focus zones manually anytime. Calendar integration is optional.</div>
-        </div>
+      <div style="margin-top: 40px;">
+        {faqs.map((faq, i) => (
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false" data-index={i}>
+              {faq.q}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" /></svg>
+            </button>
+            <div class="faq-a" data-index={i}>
+              {faq.a}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -111,4 +99,13 @@ const structuredData = {
       if (el) el.textContent = 'v' + (d.tag_name || d.name || '1.0.1');
     })
     .catch(() => {});
+
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', !expanded);
+      const answer = btn.nextElementSibling;
+      answer.classList.toggle('open');
+    });
+  });
 </script>

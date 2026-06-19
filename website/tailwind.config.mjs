@@ -22,7 +22,7 @@ export default {
         },
       },
       maxWidth: {
-        '7xl': '1280px',
+        '7xl': '1400px',
       },
       borderRadius: {
         xl: '0.75rem',
