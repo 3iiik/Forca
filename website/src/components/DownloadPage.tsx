@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Monitor, AppWindowMac, Terminal } from 'lucide-react';
+import { Monitor } from 'lucide-react';
+import { DownloadButton } from './ui/button-download';
 
 interface ReleaseAsset {
   name: string;
@@ -12,77 +13,61 @@ interface Release {
   assets: ReleaseAsset[];
 }
 
-const platforms = [
+interface Platform {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: React.ReactNode;
+  recommended: boolean;
+  features: string[];
+  matchAsset: (name: string) => boolean;
+  downloadUrl: string;
+}
+
+const SvgIcon = ({ paths, viewBox = '0 0 24 24' }: { paths: string; viewBox?: string }) => (
+  <svg width="36" height="36" viewBox={viewBox} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    {paths.split('|').map((d, i) => (
+      <path key={i} d={d} />
+    ))}
+  </svg>
+);
+
+const platformTemplates: Omit<Platform, 'downloadUrl'>[] = [
   {
     id: 'windows',
     title: 'Windows',
     subtitle: 'Windows 10 & 11',
-    icon: Monitor,
+    icon: <SvgIcon paths="M3 5v14l8 2V3zM21 5v14l-8 2V3zM11 3v18M3 12h8M11 12h10" />,
     recommended: true,
-    features: [
-      'Native desktop app',
-      'Auto calendar detection',
-      'Browser extension support',
-      'Full focus automation',
-    ],
+    features: ['Native desktop app', 'Auto calendar detection', 'Browser extension support', 'Full focus automation'],
     matchAsset: (name: string) => name.includes('.exe') && !name.includes('blockmap'),
-    downloadUrl: '',
   },
   {
     id: 'mac',
     title: 'macOS',
     subtitle: 'Apple Silicon & Intel',
-    icon: AppWindowMac,
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 6 2.5 8.5.5 1.3 1.5 2.5 2.5 2.5s2-1.2 2.5-2.5C13 15 14.5 11.5 14.5 9a7 7 0 0 0-2.5-7z" />
+        <path d="M9 9h6" />
+      </svg>
+    ),
     recommended: false,
-    features: [
-      'Native desktop app',
-      'Calendar integration',
-      'Browser extension support',
-      'Full focus automation',
-    ],
+    features: ['Native desktop app', 'Calendar integration', 'Browser extension support', 'Full focus automation'],
     matchAsset: (name: string) => name.includes('.dmg'),
-    downloadUrl: '',
   },
   {
     id: 'linux',
     title: 'Linux',
     subtitle: 'AppImage',
-    icon: Terminal,
+    icon: <SvgIcon paths="M12 2L2 7v10l10 5 10-5V7zM2 7l10 5 10-5M12 22V12" />,
     recommended: false,
-    features: [
-      'Native desktop app',
-      'Browser extension support',
-      'Full focus automation',
-      'Open source friendly',
-    ],
+    features: ['Native desktop app', 'Browser extension support', 'Full focus automation', 'Open source friendly'],
     matchAsset: (name: string) => name.includes('.AppImage'),
-    downloadUrl: '',
   },
 ];
 
-function DownloadButton({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      className="group relative inline-flex items-center justify-center gap-3 w-full px-6 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white text-sm font-semibold overflow-hidden transition-all duration-300 hover:from-purple-500 hover:to-purple-400 hover:shadow-lg hover:shadow-purple-500/30 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-    >
-      <span className="relative z-10 flex items-center gap-2.5">
-        <Download className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-        {label}
-      </span>
-      <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    </a>
-  );
-}
-
-function PlatformCard({
-  platform,
-  index,
-}: {
-  platform: (typeof platforms)[0];
-  index: number;
-}) {
-  const Icon = platform.icon;
+function PlatformCard({ platform, index }: { platform: Platform; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -101,8 +86,8 @@ function PlatformCard({
       )}
 
       <div className="flex flex-col items-center text-center mb-6 md:mb-8 pt-2">
-        <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-accent/10 ring-1 ring-accent/20 mb-4 transition-all duration-300 group-hover:ring-accent/40 group-hover:bg-accent/15">
-          <Icon className="w-8 h-8 md:w-10 md:h-10 text-accent" />
+        <div className="flex items-center justify-center w-[72px] h-[72px] rounded-2xl bg-accent/10 ring-1 ring-accent/20 mb-4 text-accent transition-all duration-300 group-hover:ring-accent/40 group-hover:bg-accent/15 group-hover:shadow-lg group-hover:shadow-purple-600/20">
+          {platform.icon}
         </div>
         <h3 className="text-lg md:text-xl font-bold text-foreground mb-0.5">{platform.title}</h3>
         <p className="text-xs md:text-sm text-muted-foreground">{platform.subtitle}</p>
@@ -119,35 +104,37 @@ function PlatformCard({
         ))}
       </ul>
 
-      {platform.downloadUrl ? (
-        <DownloadButton href={platform.downloadUrl} label={`Download for ${platform.title}`} />
-      ) : (
-        <div className="w-full px-6 py-3.5 rounded-xl bg-[#27272a] text-muted-foreground text-sm font-semibold text-center">
-          Coming soon
-        </div>
-      )}
+      <DownloadButton
+        href={platform.downloadUrl}
+        label={`Download for ${platform.title}`}
+      />
     </motion.div>
   );
 }
 
 export function DownloadPage() {
   const [release, setRelease] = useState<Release | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [platforms, setPlatforms] = useState<Platform[]>(() =>
+    platformTemplates.map(p => ({ ...p, downloadUrl: '' }))
+  );
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch('https://api.github.com/repos/3iiik/forca/releases/latest')
       .then(r => r.json())
       .then((data: Release) => {
         if (data?.assets) {
-          const updated = platforms.map(p => ({
-            ...p,
-            downloadUrl: data.assets.find(a => p.matchAsset(a.name))?.browser_download_url || '',
-          }));
           setRelease(data);
+          setPlatforms(prev =>
+            prev.map(p => ({
+              ...p,
+              downloadUrl: data.assets.find(a => p.matchAsset(a.name))?.browser_download_url || '',
+            }))
+          );
         }
-        setLoading(false);
+        setLoaded(true);
       })
-      .catch(() => setLoading(false));
+      .catch(() => setLoaded(true));
   }, []);
 
   const version = release?.tag_name?.replace(/^v/, '') || '2.0.0';
@@ -177,16 +164,9 @@ export function DownloadPage() {
 
       <section className="-mt-6 relative z-10">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             {platforms.map((p, i) => (
-              <PlatformCard
-                key={p.id}
-                platform={{
-                  ...p,
-                  downloadUrl: release?.assets.find(a => p.matchAsset(a.name))?.browser_download_url || '',
-                }}
-                index={i}
-              />
+              <PlatformCard key={p.id} platform={p} index={i} />
             ))}
           </div>
         </div>
