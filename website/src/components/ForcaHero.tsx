@@ -64,7 +64,7 @@ export function ForcaHero() {
               Firefox Extension
             </a>
           </div>
-          <div className="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-xs text-accent font-medium">
+          <div className="flex flex-wrap items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-xs text-accent font-medium">
             <span>Free &amp; Open Source</span>
             <span className="text-accent/40" aria-hidden="true">&#183;</span>
             <span>MIT Licensed</span>
