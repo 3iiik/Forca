@@ -13,115 +13,238 @@ const structuredData = {
 ---
 
 <BaseLayout {title} {description} {structuredData}>
-  <section class="page-header">
-    <div class="container">
-      <h1>Documentation</h1>
-      <p>Everything you need to set up and use Forca.</p>
+  <section class="pt-16 md:pt-24 pb-12 md:pb-16 text-center bg-gradient-to-b from-background via-background to-[#0d0d12]">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <h1 class="text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] font-extrabold leading-[1.1] tracking-tight text-foreground mb-3">
+        Documentation
+      </h1>
+      <p class="text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
+        Everything you need to set up and use Forca.
+      </p>
     </div>
   </section>
 
-  <section class="page-content">
-    <div class="container-narrow">
+  <section class="-mt-6 relative z-10">
+    <div class="max-w-4xl mx-auto px-6 md:px-12">
+      <div class="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 mb-6">
+        <h2 id="installation" class="text-xl md:text-2xl font-bold text-foreground mb-4">Installation</h2>
 
-      <h2 id="installation">Installation</h2>
+        <h3 class="text-sm font-semibold text-foreground mb-2">System requirements</h3>
+        <ul class="space-y-1.5 mb-5">
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><path d="M20 6L9 17l-5-5" /></svg>
+            Windows 10 or later (64-bit)
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><path d="M20 6L9 17l-5-5" /></svg>
+            Firefox or a Chromium-based browser (Chrome, Edge, Brave, Arc, Vivaldi, Opera)
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><path d="M20 6L9 17l-5-5" /></svg>
+            ~50 MB disk space
+          </li>
+        </ul>
 
-      <h3>System requirements</h3>
-      <ul>
-        <li>Windows 10 or later (64-bit)</li>
-        <li>Firefox or a Chromium-based browser (Chrome, Edge, Brave, Arc, Vivaldi, Opera)</li>
-        <li>~50 MB disk space</li>
-      </ul>
+        <h3 class="text-sm font-semibold text-foreground mb-2">Desktop app</h3>
+        <ol class="space-y-2 mb-5">
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">1</span>
+            <span>Download the latest installer from the <a href="/Forca/download/" class="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">2</span>
+            <span>Run <code class="bg-[#27272a] px-1.5 py-0.5 rounded text-[13px]">Forca-Setup-x64.exe</code> and follow the setup wizard.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">3</span>
+            <span>Launch Forca. The onboarding wizard will guide you through the rest.</span>
+          </li>
+        </ol>
+      </div>
 
-      <h3>Desktop app</h3>
-      <ol>
-        <li>Download the latest installer from the <a href="/forca/download/">download page</a>.</li>
-        <li>Run <code>Forca-Setup-x64.exe</code> and follow the setup wizard.</li>
-        <li>Launch Forca. The onboarding wizard will guide you through the rest.</li>
-      </ol>
+      <div class="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 mb-6">
+        <h2 id="browser-extensions" class="text-xl md:text-2xl font-bold text-foreground mb-4">Browser extensions</h2>
 
-      <h2 id="browser-extensions">Browser extensions</h2>
+        <h3 class="text-sm font-semibold text-foreground mb-2">Firefox</h3>
+        <ol class="space-y-2 mb-5">
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">1</span>
+            <span>Visit the <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" target="_blank" class="text-accent hover:text-accent-hover underline underline-offset-2">Forca page on Firefox Add-ons</a>.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">2</span>
+            <span>Click <strong class="text-foreground">"Add to Firefox"</strong>.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">3</span>
+            <span>Grant the required permissions when prompted.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">4</span>
+            <span>Launch Forca. The app will detect and connect to the extension automatically.</span>
+          </li>
+        </ol>
 
-      <h3>Firefox</h3>
-      <ol>
-        <li>Visit the <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" target="_blank">Forca page on Firefox Add-ons</a>.</li>
-        <li>Click <strong>"Add to Firefox"</strong>.</li>
-        <li>Grant the required permissions when prompted.</li>
-        <li>Launch Forca. The app will detect and connect to the extension automatically.</li>
-      </ol>
+        <h3 id="chromium-setup" class="text-sm font-semibold text-foreground mb-2">Chromium browsers</h3>
+        <p class="text-sm text-muted-foreground leading-relaxed mb-3">Forca supports Chrome, Edge, Brave, Arc, Vivaldi, and Opera via Developer Mode loading.</p>
+        <ol class="space-y-2">
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">1</span>
+            <span>Install the Forca desktop app.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">2</span>
+            <span class="flex-1">Open your browser's extensions page:
+              <span class="block mt-1 space-y-0.5">
+                <span class="block text-xs"><code class="bg-[#27272a] px-1.5 py-0.5 rounded">chrome://extensions</code> (Chrome)</span>
+                <span class="block text-xs"><code class="bg-[#27272a] px-1.5 py-0.5 rounded">edge://extensions</code> (Edge)</span>
+                <span class="block text-xs"><code class="bg-[#27272a] px-1.5 py-0.5 rounded">brave://extensions</code> (Brave)</span>
+                <span class="block text-xs"><code class="bg-[#27272a] px-1.5 py-0.5 rounded">chrome://extensions</code> (Arc)</span>
+                <span class="block text-xs"><code class="bg-[#27272a] px-1.5 py-0.5 rounded">vivaldi://extensions</code> (Vivaldi)</span>
+                <span class="block text-xs"><code class="bg-[#27272a] px-1.5 py-0.5 rounded">opera://extensions</code> (Opera)</span>
+              </span>
+            </span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">3</span>
+            <span>Toggle <strong class="text-foreground">Developer mode</strong> in the top-right corner.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">4</span>
+            <span>In Forca (Settings &rarr; Extension), click <strong class="text-foreground">"Open Extension Folder"</strong>.</span>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">5</span>
+            <span>On the extensions page, click <strong class="text-foreground">"Load unpacked"</strong> and select the opened folder.</span>
+          </li>
+        </ol>
+      </div>
 
-      <h3 id="chromium-setup">Chromium browsers</h3>
-      <p>Forca supports Chrome, Edge, Brave, Arc, Vivaldi, and Opera via Developer Mode loading.</p>
-      <ol>
-        <li>Install the Forca desktop app.</li>
-        <li>Open your browser's extensions page:
-          <ul>
-            <li>Chrome: <code>chrome://extensions</code></li>
-            <li>Edge: <code>edge://extensions</code></li>
-            <li>Brave: <code>brave://extensions</code></li>
-            <li>Arc: <code>chrome://extensions</code></li>
-            <li>Vivaldi: <code>vivaldi://extensions</code></li>
-            <li>Opera: <code>opera://extensions</code></li>
-          </ul>
-        </li>
-        <li>Toggle <strong>Developer mode</strong> in the top-right corner.</li>
-        <li>In Forca (Settings → Extension), click <strong>"Open Extension Folder"</strong>.</li>
-        <li>On the extensions page, click <strong>"Load unpacked"</strong> and select the opened folder.</li>
-      </ol>
+      <div class="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 mb-6">
+        <h2 id="troubleshooting" class="text-xl md:text-2xl font-bold text-foreground mb-4">Troubleshooting</h2>
 
-      <h2 id="troubleshooting">Troubleshooting</h2>
+        <div class="space-y-5">
+          <div>
+            <h3 class="text-sm font-semibold text-foreground mb-2">Extension not connecting</h3>
+            <ul class="space-y-1.5">
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Make sure the Forca desktop app is running.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Reload the extension on your browser's extensions page.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                In Forca, go to Settings &rarr; Extension and click <strong class="text-foreground">Reconnect</strong>.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Restart both the desktop app and your browser.
+              </li>
+            </ul>
+          </div>
 
-      <h3>Extension not connecting</h3>
-      <ul>
-        <li>Make sure the Forca desktop app is running.</li>
-        <li>Reload the extension on your browser's extensions page.</li>
-        <li>In Forca, go to Settings → Extension and click <strong>Reconnect</strong>.</li>
-        <li>Restart both the desktop app and your browser.</li>
-      </ul>
+          <div>
+            <h3 class="text-sm font-semibold text-foreground mb-2">Websites not being blocked</h3>
+            <ul class="space-y-1.5">
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Verify the extension is installed and enabled.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Check that the site is in your zone's blocked list.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Make sure the zone is active (not paused or ended).
+              </li>
+            </ul>
+          </div>
 
-      <h3>Websites not being blocked</h3>
-      <ul>
-        <li>Verify the extension is installed and enabled.</li>
-        <li>Check that the site is in your zone's blocked list.</li>
-        <li>Make sure the zone is active (not paused or ended).</li>
-      </ul>
+          <div>
+            <h3 class="text-sm font-semibold text-foreground mb-2">Calendar not detected</h3>
+            <ul class="space-y-1.5">
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Go to Settings &rarr; Calendar and configure your provider.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                For Google Calendar, click "Connect Google Calendar" and authorize access.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                For iCal, paste your iCal URL in the settings.
+              </li>
+            </ul>
+          </div>
 
-      <h3>Calendar not detected</h3>
-      <ul>
-        <li>Go to Settings → Calendar and configure your provider.</li>
-        <li>For Google Calendar, click "Connect Google Calendar" and authorize access.</li>
-        <li>For iCal, paste your iCal URL in the settings.</li>
-      </ul>
+          <div>
+            <h3 class="text-sm font-semibold text-foreground mb-2">App won't start</h3>
+            <ul class="space-y-1.5">
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Ensure you're on Windows 10 or later.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Try reinstalling the latest version from the <a href="/Forca/download/" class="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.
+              </li>
+              <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                Check the logs at <code class="bg-[#27272a] px-1.5 py-0.5 rounded text-[13px]">%APPDATA%/forca/logs/</code>.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-      <h3>App won't start</h3>
-      <ul>
-        <li>Ensure you're on Windows 10 or later.</li>
-        <li>Try reinstalling the latest version from <a href="/forca/download/">forca/download</a>.</li>
-        <li>Check the logs at <code>%APPDATA%/forca/logs/</code> (if available).</li>
-      </ul>
+      <div class="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 mb-6">
+        <h2 id="faq" class="text-xl md:text-2xl font-bold text-foreground mb-4">FAQ</h2>
 
-      <h2 id="faq">FAQ</h2>
+        <div class="divide-y divide-[#27272a]">
+          <div class="py-3">
+            <h3 class="text-sm font-semibold text-foreground mb-1">Is Forca free?</h3>
+            <p class="text-sm text-muted-foreground">Yes. Forca is completely free and open source under the MIT License.</p>
+          </div>
+          <div class="py-3">
+            <h3 class="text-sm font-semibold text-foreground mb-1">Do I need an account?</h3>
+            <p class="text-sm text-muted-foreground">No. Forca is local-first. Everything runs on your machine with no account required.</p>
+          </div>
+          <div class="py-3">
+            <h3 class="text-sm font-semibold text-foreground mb-1">Does it work on macOS or Linux?</h3>
+            <p class="text-sm text-muted-foreground">Forca is now available on Windows, macOS, <em class="text-foreground">and</em> Linux. The browser extension works on all platforms. Download the latest version for your OS from the <a href="/Forca/download/" class="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.</p>
+          </div>
+          <div class="py-3">
+            <h3 class="text-sm font-semibold text-foreground mb-1">Can I use Forca offline?</h3>
+            <p class="text-sm text-muted-foreground">Yes. The desktop app and extension work entirely offline. Internet is only needed for calendar integration (optional).</p>
+          </div>
+          <div class="py-3">
+            <h3 class="text-sm font-semibold text-foreground mb-1">How do I update Forca?</h3>
+            <p class="text-sm text-muted-foreground">Forca checks for updates automatically on startup. When an update is available, you'll be prompted to download and install it. You can also download the latest version from the <a href="/Forca/download/" class="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.</p>
+          </div>
+          <div class="py-3">
+            <h3 class="text-sm font-semibold text-foreground mb-1">Is my data private?</h3>
+            <p class="text-sm text-muted-foreground">Yes. All data is stored locally on your computer. No data is sent to any server. Forca is open source, so you can verify this yourself. See our <a href="/Forca/privacy/" class="text-accent hover:text-accent-hover underline underline-offset-2">privacy page</a> for details.</p>
+          </div>
+          <div class="py-3">
+            <h3 class="text-sm font-semibold text-foreground mb-1">Can I contribute?</h3>
+            <p class="text-sm text-muted-foreground">Absolutely! Forca is open source. Visit the <a href="https://github.com/3iiik/forca" target="_blank" class="text-accent hover:text-accent-hover underline underline-offset-2">GitHub repository</a> to submit issues, feature requests, or pull requests.</p>
+          </div>
+        </div>
+      </div>
 
-      <h3>Is Forca free?</h3>
-      <p>Yes. Forca is completely free and open source under the MIT License.</p>
-
-      <h3>Do I need an account?</h3>
-      <p>No. Forca is local-first. Everything runs on your machine with no account required.</p>
-
-      <h3>Does it work on macOS or Linux?</h3>
-      <p>Currently Forca is Windows-only. macOS and Linux support are planned. The browser extension works on all platforms.</p>
-
-      <h3>Can I use Forca offline?</h3>
-      <p>Yes. The desktop app and extension work entirely offline. Internet is only needed for calendar integration (optional).</p>
-
-      <h3>How do I update Forca?</h3>
-      <p>Forca checks for updates automatically on startup. When an update is available, you'll be prompted to download and install it. You can also download the latest version from the <a href="/forca/download/">download page</a>.</p>
-
-      <h3>Is my data private?</h3>
-      <p>Yes. All data is stored locally on your computer. No data is sent to any server. Forca is open source, so you can verify this yourself. See our <a href="/forca/privacy/">privacy page</a> for details.</p>
-
-      <h3>Can I contribute?</h3>
-      <p>Absolutely! Forca is open source. Visit the <a href="https://github.com/3iiik/forca" target="_blank">GitHub repository</a> to submit issues, feature requests, or pull requests.</p>
-
+      <div class="text-center py-6">
+        <a
+          href="/Forca/download/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white text-sm font-semibold hover:bg-purple-400 hover:-translate-y-0.5 transition-all shadow-lg shadow-purple-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Download Forca free &rarr;
+        </a>
+      </div>
     </div>
   </section>
 </BaseLayout>
