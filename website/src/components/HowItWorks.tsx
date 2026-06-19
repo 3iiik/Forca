@@ -1,41 +1,26 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Icons } from './icons';
 
 const steps = [
   {
     num: 1,
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-        <path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" />
-      </svg>
-    ),
+    icon: Icons.CalendarClock,
     title: 'Connect Calendar',
     description: 'Link Google Calendar or iCal. Forca syncs your schedule automatically.',
   },
   {
     num: 2,
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-      </svg>
-    ),
+    icon: Icons.Layers,
     title: 'Create a Focus Zone',
     description: 'Set a duration, choose blocked sites, pick triggers. Name it "Deep Work."',
   },
   {
     num: 3,
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
-        <path d="M4 14h16" />
-        <circle cx="12" cy="17" r="3" />
+    icon: ({ size }: { size?: number }) => (
+      <svg width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
       </svg>
     ),
     title: 'Meeting Ends',
@@ -43,16 +28,35 @@ const steps = [
   },
   {
     num: 4,
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-    ),
-    title: 'Forca Activates Automatically',
+    icon: Icons.ShieldBan,
+    title: 'Activates Automatically',
     description: 'Distractions blocked. Timer counting. You\'re in the zone instantly.',
   },
 ];
+
+function StepCard({ step, index }: { step: (typeof steps)[0]; index: number }) {
+  const StepIcon = step.icon;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ delay: index * 0.12, duration: 0.45 }}
+      className="relative flex flex-col items-center text-center rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-7 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-600/10"
+    >
+      <span className="flex items-center justify-center w-7 h-7 rounded-full bg-accent text-white text-xs font-bold mb-5 shadow-sm">
+        {step.num}
+      </span>
+
+      <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 ring-1 ring-accent/20 text-accent mb-4">
+        <StepIcon size={24} />
+      </span>
+
+      <h3 className="text-base font-semibold text-foreground mb-2">{step.title}</h3>
+      <p className="text-sm text-muted-foreground leading-relaxed max-w-[220px]">{step.description}</p>
+    </motion.div>
+  );
+}
 
 export function HowItWorks() {
   return (
@@ -68,30 +72,11 @@ export function HowItWorks() {
         </div>
 
         <div className="relative">
-          <div className="hidden lg:block absolute top-24 left-[calc(12.5%+28px)] right-[calc(12.5%+28px)] h-0.5 bg-gradient-to-r from-accent/20 via-accent/40 to-accent/20" />
+          <div className="hidden lg:block absolute top-[88px] left-[calc(10%+36px)] right-[calc(10%+36px)] h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent pointer-events-none" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-5">
             {steps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ delay: i * 0.15, duration: 0.4 }}
-                className="relative flex flex-col items-center text-center"
-              >
-                <div className="relative mb-5">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-500 shadow-lg shadow-purple-600/20 text-white relative z-10">
-                    {step.icon}
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-accent text-white text-[11px] font-bold flex items-center justify-center shadow-lg shadow-purple-600/30 z-20">
-                    {step.num}
-                  </div>
-                </div>
-
-                <h3 className="text-base font-bold text-foreground mb-2">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">{step.description}</p>
-              </motion.div>
+              <StepCard key={i} step={step} index={i} />
             ))}
           </div>
         </div>
