@@ -31,7 +31,7 @@ export function ProductShowcase() {
   }, [selected, close]);
 
   return (
-    <section className="py-16 md:py-24" id="showcase">
+    <section className="py-12 md:py-24" id="showcase">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="text-center mb-10 md:mb-14">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">

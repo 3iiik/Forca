@@ -35,7 +35,7 @@ const features = [
 
 export function ForcaFeatures() {
   return (
-    <section className="py-16 md:py-24" id="features">
+    <section className="py-12 md:py-24" id="features">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">

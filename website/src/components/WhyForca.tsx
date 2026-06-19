@@ -11,7 +11,7 @@ const comparisons = [
 
 export function WhyForca() {
   return (
-    <section className="py-16 md:py-24 bg-card" id="why-forca">
+    <section className="py-12 md:py-24 bg-card" id="why-forca">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">
@@ -39,7 +39,7 @@ export function WhyForca() {
                   transition={{ delay: i * 0.06, duration: 0.3 }}
                   className="text-left py-3 md:py-4 flex items-center"
                 >
-                  <span className="text-sm text-muted-foreground">{c.blocker}</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">{c.blocker}</span>
                 </motion.div>
                 <div className="flex items-center justify-center py-3 md:py-4">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
@@ -51,7 +51,7 @@ export function WhyForca() {
                   transition={{ delay: i * 0.06, duration: 0.3 }}
                   className="text-right py-3 md:py-4 flex items-center justify-end"
                 >
-                  <span className="text-sm font-medium text-foreground">{c.forca}</span>
+                  <span className="text-xs sm:text-sm font-medium text-foreground">{c.forca}</span>
                 </motion.div>
               </React.Fragment>
             ))}

@@ -94,7 +94,8 @@ import '../styles/globals.css';
         border-radius: 5px;
         flex-shrink: 0;
       }
-      nav .links { display: flex; gap: 24px; align-items: center; }
+      nav .links { display: flex; gap: 12px; align-items: center; }
+      @media (min-width: 640px) { nav .links { gap: 24px; } }
       nav .links a { color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color .2s; }
       nav .links a:hover, nav .links a.active { color: var(--text); }
       nav .links a.nav-cta {
@@ -112,8 +113,11 @@ import '../styles/globals.css';
       }
       footer .footer-grid {
         max-width: 1400px; margin: 0 auto;
-        display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-        gap: 48px;
+        display: grid; grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      @media (min-width: 640px) {
+        footer .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
       }
       footer .footer-brand p { color: var(--text-dim); margin-top: 12px; line-height: 1.7; max-width: 320px; }
       footer h4 { color: var(--text); font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -123,8 +127,11 @@ import '../styles/globals.css';
       footer .footer-bottom {
         max-width: 1400px; margin: 32px auto 0; padding-top: 24px;
         border-top: 1px solid var(--border);
-        display: flex; justify-content: space-between; align-items: center;
+        display: flex; flex-direction: column; gap: 8px; align-items: center;
         color: var(--text-dim); font-size: 12px;
+      }
+      @media (min-width: 640px) {
+        footer .footer-bottom { flex-direction: row; justify-content: space-between; }
       }
       footer .footer-bottom a { color: var(--text-muted); }
       footer .footer-bottom a:hover { color: var(--text); }
@@ -150,6 +157,7 @@ import '../styles/globals.css';
         color: var(--text); background: none; border: none; text-align: left;
         font-family: inherit; transition: color .2s;
       }
+      .faq-q span { min-width: 0; flex: 1; word-break: break-word; }
       .faq-q:hover { color: var(--accent-hover); }
       .faq-icon { transition: transform .3s; flex-shrink: 0; color: var(--text-muted); }
       .faq-q[aria-expanded="true"] .faq-icon { transform: rotate(45deg); color: var(--accent); }
