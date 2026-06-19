@@ -38,9 +38,10 @@ export function WhyForca() {
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, amount: 0.3 }}
                   transition={{ delay: i * 0.06, duration: 0.3 }}
                   className="text-left py-3 md:py-4 flex items-center gap-2"
+                  style={{ willChange: 'transform' }}
                 >
                   <span className="text-red-400 shrink-0"><Icons.X size={14} /></span>
                   <span className="text-xs sm:text-sm text-muted-foreground">{c.blocker}</span>
@@ -53,9 +54,10 @@ export function WhyForca() {
                 <motion.div
                   initial={{ opacity: 0, x: 10 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, amount: 0.3 }}
                   transition={{ delay: i * 0.06, duration: 0.3 }}
                   className="text-right py-3 md:py-4 flex items-center justify-end gap-2"
+                  style={{ willChange: 'transform' }}
                 >
                   <span className="text-xs sm:text-sm font-medium text-foreground">{c.forca}</span>
                   <span className="text-green-500 shrink-0"><Icons.Check size={14} /></span>

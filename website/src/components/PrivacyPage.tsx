@@ -145,9 +145,10 @@ export function PrivacyPage() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: i * 0.1, duration: 0.4 }}
                 className="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-4 md:p-6 text-center"
+                style={{ willChange: 'transform' }}
               >
                 <div className="flex justify-center mb-2">{h.icon}</div>
                 <h3 className="text-sm font-semibold text-foreground mb-0.5">{h.title}</h3>
@@ -172,9 +173,10 @@ export function PrivacyPage() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: i * 0.06, duration: 0.4 }}
                 className="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6"
+                style={{ willChange: 'transform' }}
               >
                 <h3 className="text-base font-semibold text-foreground mb-3">{s.title}</h3>
                 {s.content}

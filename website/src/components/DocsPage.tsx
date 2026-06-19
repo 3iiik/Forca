@@ -223,9 +223,10 @@ export function DocsPage() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: i * 0.08, duration: 0.4 }}
                 className="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6"
+                style={{ willChange: 'transform' }}
               >
                 <div className="flex items-center gap-2.5 mb-4">
                   <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10 ring-1 ring-accent/20 text-accent">
@@ -241,7 +242,7 @@ export function DocsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.4 }}
             className="text-center mt-8"
           >

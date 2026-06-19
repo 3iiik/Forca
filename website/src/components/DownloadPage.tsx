@@ -64,9 +64,10 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.15, duration: 0.5 }}
-      className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-600/15"
+      className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 transition-transform duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-600/15"
+      style={{ willChange: 'transform' }}
     >
       {platform.recommended && (
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10">
@@ -177,9 +178,10 @@ export function DownloadPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5 }}
             className="rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left"
+            style={{ willChange: 'transform' }}
           >
             <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/20">
               <Icons.Firefox size={36} />

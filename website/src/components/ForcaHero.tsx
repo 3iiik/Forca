@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Icons } from './icons';
 
 const steps = [
@@ -95,11 +95,12 @@ export function ForcaHero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1, duration: 0.4 }}
-                    className={`relative rounded-2xl border p-4 md:p-5 transition-all duration-300 ${
+                    className={`relative rounded-2xl border p-4 md:p-5 ${
                       isActive
                         ? 'border-purple-500/60 bg-purple-500/10 shadow-lg shadow-purple-600/15'
                         : 'border-[#27272a] bg-[#18181b]'
                     }`}
+                    style={{ willChange: 'transform' }}
                   >
                     {i < steps.length - 1 && (
                       <div className="hidden lg:block absolute -right-[13px] top-1/2 -translate-y-1/2 z-10 text-zinc-600">
