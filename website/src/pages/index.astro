@@ -5,6 +5,7 @@ import { ProductShowcase } from '../components/ProductShowcase';
 import { WhyForca } from '../components/WhyForca';
 import { ForcaFeatures } from '../components/ForcaFeatures';
 import { HowItWorks } from '../components/HowItWorks';
+import TailarkFAQ from '../components/TailarkFAQ';
 
 const title = 'Forca — Automatic focus mode for deep work';
 const description = 'Block distractions automatically when your focus session starts. Open source website blocker and productivity app for Windows, macOS, Linux, and Firefox.';
@@ -19,42 +20,7 @@ const structuredData = {
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "author": { "@type": "Person", "name": "3iiik" },
   "license": "https://opensource.org/licenses/MIT",
-};
-
-const faqs = [
-  {
-    q: 'Is Forca free?',
-    a: 'Yes. Forca is completely free and open source under the MIT License. There are no paid plans, subscriptions, hidden costs, or premium features. The app, browser extensions, and all future updates are free forever.',
-  },
-  {
-    q: 'Which browsers are supported?',
-    a: 'Forca provides a Firefox extension available on AMO. Chromium-based browsers (Chrome, Edge, Brave, Arc, Vivaldi, Opera) are supported via Developer Mode installation. The extension blocks websites during active focus sessions across all supported browsers.',
-  },
-  {
-    q: 'Does Forca require an account?',
-    a: 'No. Forca is local-first. Everything runs on your machine with no cloud dependency. No account creation, no sign-up, no personal data sent to servers. Your focus data stays on your device.',
-  },
-  {
-    q: 'Does my data leave my device?',
-    a: 'No. Forca is designed to be privacy-first. All focus session data, zone configurations, and usage statistics are stored locally on your machine. The only network requests are for checking the latest version and syncing calendar events (if you enable calendar integration).',
-  },
-  {
-    q: 'Does automatic activation require Google Calendar?',
-    a: 'Automatic activation works with both Google Calendar and iCal. You can choose which calendar to integrate. If you prefer, you can also start focus zones manually at any time — calendar integration is completely optional.',
-  },
-  {
-    q: 'Does Forca support Linux?',
-    a: 'Yes! Forca fully supports Linux alongside Windows and macOS. The desktop app and all browser extensions work on Linux. Linux is a first-class platform — not an afterthought.',
-  },
-  {
-    q: 'How does Forca protect my privacy?',
-    a: 'Forca is designed privacy-first. All data — focus sessions, zone configurations, usage stats — is stored locally on your device. No cloud sync, no accounts, no tracking. The only network requests are for checking version updates and optional calendar sync.',
-  },
-  {
-    q: 'What platforms does Forca support?',
-    a: 'Forca runs on Windows, macOS, and Linux. The desktop app is available on all three platforms, and browser extensions work across Firefox and Chromium-based browsers (Chrome, Edge, Brave, Arc, Vivaldi, Opera).',
-  },
-];
+}
 ---
 
 <BaseLayout {title} {description} {structuredData}>
@@ -68,54 +34,5 @@ const faqs = [
 
   <HowItWorks client:load />
 
-  <!-- FAQ -->
-  <section class="py-16 md:py-24" id="faq">
-    <div class="max-w-5xl mx-auto px-6 md:px-12">
-      <div>
-        <h2 class="text-foreground text-4xl font-semibold tracking-tight mb-4">Frequently asked questions</h2>
-        <p class="text-muted-foreground text-balance text-lg max-w-xl">Quick answers to common questions about Forca, its features, and how it works.</p>
-      </div>
-      <div class="mt-12">
-        <div class="max-w-3xl mx-auto faq-wrapper">
-          {faqs.map((faq, i) => (
-            <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <span>{faq.q}</span>
-                <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-              <div class="faq-a">
-                <div class="faq-a-inner">{faq.a}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <p class="text-muted-foreground mt-6 text-center">
-          Can't find what you're looking for?{' '}
-          <a href="https://github.com/3iiik/forca/discussions" target="_blank" rel="noopener noreferrer" class="text-foreground font-medium hover:underline">
-            Open a discussion on GitHub
-          </a>
-        </p>
-      </div>
-    </div>
-  </section>
+  <TailarkFAQ client:load />
 </BaseLayout>
-
-<script>
-  document.querySelectorAll('.faq-q').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const parent = btn.closest('.faq-wrapper');
-      const was = btn.getAttribute('aria-expanded') === 'true';
-      parent.querySelectorAll('.faq-q').forEach(b => {
-        b.setAttribute('aria-expanded', 'false');
-        b.nextElementSibling?.classList.remove('open');
-      });
-      if (!was) {
-        btn.setAttribute('aria-expanded', 'true');
-        btn.nextElementSibling?.classList.add('open');
-      }
-    });
-  });
-</script>

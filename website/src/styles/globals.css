@@ -13,5 +13,16 @@
     --accent-foreground: #ede9fe;
     --card: #18181b;
     --card-foreground: #f4f4f5;
+    --radius: 12px;
   }
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
 }
