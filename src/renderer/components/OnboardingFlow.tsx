@@ -30,8 +30,6 @@ const CHROMIUM_STEP_PHASES: ChromiumPhase[] = [
   'load-unpacked',
 ];
 
-let analyticsTimer: ReturnType<typeof setTimeout> | null = null;
-
 export default function OnboardingFlow() {
   const { setOnboardingComplete, setCurrentView, setZones, setProfiles } = useAppStore();
   const [step, setStep] = useState(1);
@@ -56,7 +54,6 @@ export default function OnboardingFlow() {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
       if (elapsedRef.current) clearInterval(elapsedRef.current);
-      if (analyticsTimer) clearTimeout(analyticsTimer);
     };
   }, []);
 
@@ -495,7 +492,7 @@ export default function OnboardingFlow() {
                 {CHROMIUM_STEP_PHASES.map((phase, i) => {
                   const cur = chromiumPhase as string;
                   const active = cur === phase;
-                  const done = CHROMIUM_STEP_PHASES.indexOf(cur as any) > i ||
+                  const done = CHROMIUM_STEP_PHASES.indexOf(cur as ChromiumPhase) > i ||
                     cur === 'verifying' || cur === 'done' ||
                     (cur === 'load-unpacked' && i < 2);
                   return (
