@@ -3,14 +3,34 @@ import { useAppStore } from '../stores/appStore';
 import { ZoneProfile } from '../types';
 import { logger } from '../utils/logger';
 
-const BROWSERS = [
-  { id: 'chrome', name: 'Google Chrome', color: '#4285F4', letter: 'C' },
-  { id: 'brave', name: 'Brave', color: '#FB542B', letter: 'B' },
-  { id: 'edge', name: 'Microsoft Edge', color: '#0078D7', letter: 'E' },
-  { id: 'firefox', name: 'Firefox / Waterfox', color: '#FF7139', letter: 'F' },
+type ChromiumPhase =
+  | 'idle'
+  | 'detecting'
+  | 'picking'
+  | 'open-extensions'
+  | 'dev-mode'
+  | 'load-unpacked'
+  | 'verifying'
+  | 'done';
+
+interface DetectedBrowser {
+  id: string;
+  name: string;
+  exePath: string;
+  extensionsUrl: string;
+}
+
+function track(event: string, props?: Record<string, unknown>) {
+  window.electronAPI.analytics.track(event, props).catch(() => {});
+}
+
+const CHROMIUM_STEP_PHASES: ChromiumPhase[] = [
+  'open-extensions',
+  'dev-mode',
+  'load-unpacked',
 ];
 
-const CHROMIUM_IDS = new Set(['chrome', 'brave', 'edge']);
+let analyticsTimer: ReturnType<typeof setTimeout> | null = null;
 
 export default function OnboardingFlow() {
   const { setOnboardingComplete, setCurrentView, setZones, setProfiles } = useAppStore();
@@ -21,21 +41,34 @@ export default function OnboardingFlow() {
   const [selectedBrowser, setSelectedBrowser] = useState<string | null>(null);
   const [extensionConnected, setExtensionConnected] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [verifyElapsed, setVerifyElapsed] = useState(0);
   const [storeError, setStoreError] = useState<string | null>(null);
+  const [chromiumPhase, setChromiumPhase] = useState<ChromiumPhase>('idle');
+  const [detectedBrowsers, setDetectedBrowsers] = useState<DetectedBrowser[]>([]);
+  const [selectedChromium, setSelectedChromium] = useState<DetectedBrowser | null>(null);
+  const [chromiumStepIndex, setChromiumStepIndex] = useState(-1);
+  const [celebration, setCelebration] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    track('onboarding_step_1_view');
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
+      if (elapsedRef.current) clearInterval(elapsedRef.current);
+      if (analyticsTimer) clearTimeout(analyticsTimer);
     };
   }, []);
 
   useEffect(() => {
-    if (extensionConnected) {
-      const t = setTimeout(() => setStep(4), 1500);
+    if (celebration) {
+      const t = setTimeout(() => {
+        setCelebration(false);
+        setStep(4);
+      }, 2000);
       return () => clearTimeout(t);
     }
-  }, [extensionConnected]);
+  }, [celebration]);
 
   const handleCreateZone = async () => {
     try {
@@ -68,6 +101,7 @@ export default function OnboardingFlow() {
       };
       await window.electronAPI.profiles.save(profile);
 
+      track('onboarding_zone_created', { zoneName, siteCount: blockedSites.length });
       setStep(3);
     } catch (err) {
       logger.error('[onboarding] create zone failed', err);
@@ -75,9 +109,15 @@ export default function OnboardingFlow() {
     }
   };
 
-  const startVerification = () => {
+  const startPolling = () => {
     setVerifying(true);
+    setVerifyElapsed(0);
     let attempts = 0;
+
+    elapsedRef.current = setInterval(() => {
+      setVerifyElapsed(prev => prev + 2);
+    }, 2000);
+
     pollRef.current = setInterval(async () => {
       try {
         const count = await window.electronAPI.extension.getClientCount();
@@ -85,19 +125,28 @@ export default function OnboardingFlow() {
         if (count > 0) {
           setExtensionConnected(true);
           setVerifying(false);
+          setCelebration(true);
+          track('onboarding_extension_connected', { browser: selectedBrowser });
           if (pollRef.current) clearInterval(pollRef.current);
+          if (elapsedRef.current) clearInterval(elapsedRef.current);
           pollRef.current = null;
+          elapsedRef.current = null;
         } else if (attempts >= 60) {
           setVerifying(false);
+          track('onboarding_verify_timeout', { browser: selectedBrowser, elapsed: attempts * 2 });
           if (pollRef.current) clearInterval(pollRef.current);
+          if (elapsedRef.current) clearInterval(elapsedRef.current);
           pollRef.current = null;
+          elapsedRef.current = null;
         }
       } catch {
         attempts++;
         if (attempts >= 60) {
           setVerifying(false);
           if (pollRef.current) clearInterval(pollRef.current);
+          if (elapsedRef.current) clearInterval(elapsedRef.current);
           pollRef.current = null;
+          elapsedRef.current = null;
         }
       }
     }, 2000);
@@ -106,15 +155,88 @@ export default function OnboardingFlow() {
   const handleBrowserSelect = (browserId: string) => {
     setSelectedBrowser(browserId);
     setStoreError(null);
+    track('onboarding_browser_selected', { browser: browserId });
+
+    if (browserId === 'firefox') {
+      setChromiumPhase('idle');
+    } else if (browserId === 'chromium') {
+      setChromiumPhase('detecting');
+      detectAndPickBest();
+    }
+  };
+
+  const detectAndPickBest = async () => {
+    try {
+      const browsers = await window.electronAPI.extension.detectBrowsers();
+      setDetectedBrowsers(browsers);
+      track('onboarding_browsers_detected', { count: browsers.length, names: browsers.map(b => b.id) });
+
+      if (browsers.length === 0) {
+        setChromiumPhase('picking');
+      } else {
+        const best = await window.electronAPI.extension.pickBestBrowser();
+        if (best) {
+          setSelectedChromium(best);
+          setChromiumPhase('open-extensions');
+          setChromiumStepIndex(0);
+          track('onboarding_chromium_auto_selected', { browser: best.id });
+          await window.electronAPI.extension.openExtensionsPage(best.id);
+        } else {
+          setChromiumPhase('picking');
+        }
+      }
+    } catch (err) {
+      logger.error('[onboarding] detect browsers failed', err);
+      setDetectedBrowsers([]);
+      setChromiumPhase('picking');
+    }
+  };
+
+  const handleChromiumBrowserPick = async (b: DetectedBrowser) => {
+    setSelectedChromium(b);
+    setStoreError(null);
+    setChromiumPhase('open-extensions');
+    setChromiumStepIndex(0);
+    track('onboarding_chromium_picked', { browser: b.id });
+    try {
+      await window.electronAPI.extension.openExtensionsPage(b.id);
+    } catch (err) {
+      logger.error('[onboarding] open extensions page failed', err);
+      setStoreError('Could not open the extensions page. Try opening it manually.');
+    }
+  };
+
+  const handleDevModeDone = () => {
+    setChromiumPhase('load-unpacked');
+    setChromiumStepIndex(2);
+    openExtFolder();
+  };
+
+  const openExtFolder = async () => {
+    try {
+      const result = await window.electronAPI.extension.openExtensionFolder();
+      if (!result.success) {
+        setStoreError(result.details || 'Could not open extension folder');
+      }
+    } catch (err) {
+      logger.error('[onboarding] open extension folder failed', err);
+      setStoreError('Could not open extension folder');
+    }
+  };
+
+  const handleLoadUnpackedDone = () => {
+    setChromiumPhase('verifying');
+    track('onboarding_chromium_loaded', { browser: selectedChromium?.id });
+    startPolling();
   };
 
   const handleFirefoxInstall = async () => {
     try {
       const result = await window.electronAPI.extension.openStore('firefox');
       if (result.success) {
-        startVerification();
+        startPolling();
       } else {
-        setStoreError(result.details);
+        setStoreError(result.details || 'Could not open Firefox Add-ons');
       }
     } catch (err) {
       logger.error('[onboarding] open store failed', err);
@@ -122,33 +244,20 @@ export default function OnboardingFlow() {
     }
   };
 
-  const handleChromiumInstall = async () => {
-    setStoreError(null);
-    try {
-      const result = await window.electronAPI.extension.launchWithExtension(selectedBrowser!);
-      if (result.success) {
-        startVerification();
-      } else {
-        setStoreError(result.details);
-      }
-    } catch (err) {
-      logger.error('[onboarding] launch with extension failed', err);
-      setStoreError(String(err));
-    }
-  };
-
-  const isChromiumBrowser = (id: string | null) => id && CHROMIUM_IDS.has(id);
-
   const handleSkipExtension = () => {
     if (pollRef.current) clearInterval(pollRef.current);
+    if (elapsedRef.current) clearInterval(elapsedRef.current);
     pollRef.current = null;
+    elapsedRef.current = null;
     setVerifying(false);
     setExtensionConnected(true);
-    setStep(4);
+    setCelebration(true);
+    track('onboarding_extension_skipped', { browser: selectedBrowser });
   };
 
   const handleComplete = async () => {
     await window.electronAPI.app.completeOnboarding();
+    track('onboarding_completed');
     setOnboardingComplete(true);
     setCurrentView('today');
     const [zones, profiles] = await Promise.all([
@@ -161,9 +270,16 @@ export default function OnboardingFlow() {
     setProfiles(profiles);
   };
 
+  const goBack = (targetPhase: ChromiumPhase, stepIdx: number) => {
+    setChromiumPhase(targetPhase);
+    setChromiumStepIndex(stepIdx);
+    setStoreError(null);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950">
       <div className="max-w-lg w-full mx-4">
+        {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
           {[1, 2, 3, 4].map(s => (
             <div key={s} className="flex items-center gap-2">
@@ -179,6 +295,7 @@ export default function OnboardingFlow() {
           ))}
         </div>
 
+        {/* ── Step 1: Welcome ─────────────────────── */}
         {step === 1 && (
           <div className="text-center animate-fade-in">
             <div className="text-5xl mb-6">{'🎯'}</div>
@@ -188,17 +305,18 @@ export default function OnboardingFlow() {
               It blocks distracting websites via the Forca browser extension,
               enables Do Not Disturb, plays ambient sounds, and tracks your productivity.
             </p>
-            <button onClick={() => setStep(2)} className="btn-primary text-base px-8 py-3">
+            <button onClick={() => { track('onboarding_step_2_view'); setStep(2); }} className="btn-primary text-base px-8 py-3">
               Get Started
             </button>
           </div>
         )}
 
+        {/* ── Step 2: Create Zone ─────────────────── */}
         {step === 2 && (
           <div className="animate-fade-in">
             <h2 className="text-lg font-bold text-zinc-100 mb-6">Create Your First Zone</h2>
             {storeError && (
-              <div className="bg-zinc-900/50 p-4 border border-zinc-800 mb-4">
+              <div className="bg-zinc-900/50 p-4 border border-zinc-800 mb-4 rounded-lg">
                 <p className="text-xs text-zinc-500">{storeError}</p>
               </div>
             )}
@@ -218,7 +336,7 @@ export default function OnboardingFlow() {
                 <input
                   type="number"
                   value={duration}
-                  onChange={e => setDuration(parseInt(e.target.value) || 60)}
+                  onChange={e => setDuration(Math.max(5, parseInt(e.target.value) || 5))}
                   className="input-field"
                   min={5}
                   max={480}
@@ -238,103 +356,361 @@ export default function OnboardingFlow() {
               <button onClick={handleCreateZone} className="btn-primary w-full text-base py-3 mt-2">
                 Create Zone
               </button>
+              <button
+                onClick={() => setStep(1)}
+                className="w-full text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors mt-1"
+              >
+                Back
+              </button>
             </div>
           </div>
         )}
 
+        {/* ── Step 3: Browser extension ───────────── */}
         {step === 3 && (
           <div className="animate-fade-in">
-            <h2 className="text-lg font-bold text-zinc-100 mb-2">Install Browser Extension</h2>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              {BROWSERS.map(b => {
-                const isChromium = CHROMIUM_IDS.has(b.id);
-                const isSelected = selectedBrowser === b.id;
-                const isBusy = verifying || extensionConnected;
-                const isClickable = b.id === 'firefox' && !isBusy;
-                return (
+            {/* Browser selection cards */}
+            {chromiumPhase === 'idle' && (
+              <>
+                <h2 className="text-lg font-bold text-zinc-100 mb-2">Install Browser Extension</h2>
+                <p className="text-xs text-zinc-500 mb-5">Choose your browser to get started</p>
+                <div className="grid grid-cols-2 gap-3 mb-6">
                   <button
-                    key={b.id}
-                    onClick={() => isClickable && handleBrowserSelect(b.id)}
-                    disabled={!isClickable}
+                    onClick={() => handleBrowserSelect('firefox')}
                     className={`relative p-4 text-left transition-all border rounded-xl ${
-                      isSelected
+                      selectedBrowser === 'firefox'
                         ? 'border-primary-700 bg-primary-900/20'
-                        : isChromium
-                          ? 'border-zinc-800 bg-zinc-900/30 opacity-70'
-                          : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/70'
-                    } ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}
+                        : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/70'
+                    }`}
                   >
-                    {isChromium && (
-                      <span className="absolute top-2 right-2 text-[10px] font-medium text-yellow-500 bg-zinc-800 px-1.5 py-px">
-                        Coming Soon
-                      </span>
-                    )}
-                    <div
-                      className="w-9 h-9 flex items-center justify-center text-white font-bold text-base mb-2 rounded-md"
-                      style={{ backgroundColor: b.color }}
-                    >
-                      {b.letter}
+                    <span className="absolute top-2 right-2 text-[10px] font-medium text-green-500 bg-zinc-800 px-1.5 py-px rounded">
+                      Easy install
+                    </span>
+                    <div className="w-9 h-9 flex items-center justify-center text-white font-bold text-base mb-2 rounded-md bg-orange-500">
+                      F
                     </div>
-                    <div className="text-sm font-medium text-zinc-200">{b.name}</div>
-                    {isChromium
-                      ? <div className="text-[11px] text-zinc-500 mt-1">Requires $5 dev registration</div>
-                      : isSelected
-                        ? <div className="text-[11px] text-primary-400 mt-1">Selected</div>
-                        : <div className="text-[11px] text-zinc-500 mt-1">Install from store</div>}
+                    <div className="text-sm font-medium text-zinc-200">Firefox / Waterfox</div>
+                    <div className="text-[11px] text-zinc-500 mt-1">Install from Add-ons store</div>
                   </button>
-                );
-              })}
-            </div>
+                  <button
+                    onClick={() => handleBrowserSelect('chromium')}
+                    className={`relative p-4 text-left transition-all border rounded-xl ${
+                      selectedBrowser === 'chromium'
+                        ? 'border-primary-700 bg-primary-900/20'
+                        : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/70'
+                    }`}
+                  >
+                    <span className="absolute top-2 right-2 text-[10px] font-medium text-yellow-500 bg-zinc-800 px-1.5 py-px rounded">
+                      Manual setup
+                    </span>
+                    <div className="w-9 h-9 flex items-center justify-center text-white font-bold text-base mb-2 rounded-md bg-emerald-500">
+                      C
+                    </div>
+                    <div className="text-sm font-medium text-zinc-200">Chrome, Edge, Brave &amp; More</div>
+                    <div className="text-[11px] text-zinc-500 mt-1">Load via Developer Mode (~2 min)</div>
+                  </button>
+                </div>
 
-            {storeError && (
-              <div className="bg-zinc-900/50 p-4 border border-zinc-800 mb-4">
-                <p className="text-sm text-zinc-300 mb-1">Something went wrong</p>
-                <p className="text-xs text-zinc-500">{storeError}</p>
+                {storeError && (
+                  <div className="bg-zinc-900/50 p-4 border border-red-900/40 mb-4 rounded-lg">
+                    <p className="text-xs text-zinc-400">{storeError}</p>
+                  </div>
+                )}
+
+                {selectedBrowser === 'firefox' && !verifying && !extensionConnected && !celebration && (
+                  <button onClick={handleFirefoxInstall} className="btn-primary w-full py-3 text-sm">
+                    Open Firefox Add-ons
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Detecting spinner */}
+            {chromiumPhase === 'detecting' && (
+              <div className="flex flex-col items-center justify-center gap-3 py-12">
+                <div className="w-5 h-5 border border-primary-600 border-t-transparent animate-spin rounded-full" />
+                <span className="text-xs text-zinc-400">Looking for your browsers...</span>
               </div>
             )}
 
-            {selectedBrowser === 'firefox' && !verifying && !extensionConnected && (
-              <button
-                onClick={handleFirefoxInstall}
-                className="btn-primary w-full py-3 text-sm"
-              >
-                Install from Firefox Add-ons
-              </button>
+            {/* Browser picker (shown if none detected or only detected 0) */}
+            {chromiumPhase === 'picking' && (
+              <div>
+                {detectedBrowsers.length > 0 && (
+                  <>
+                    <h2 className="text-lg font-bold text-zinc-100 mb-1">Choose Your Browser</h2>
+                    <p className="text-xs text-zinc-500 mb-4">Pick which browser to install the extension in.</p>
+                    <div className="space-y-2 mb-6">
+                      {detectedBrowsers.map(b => (
+                        <button
+                          key={b.id}
+                          onClick={() => handleChromiumBrowserPick(b)}
+                          className="w-full p-3 text-left border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/70 transition-all rounded-lg"
+                        >
+                          <div className="text-sm font-medium text-zinc-200">{b.name}</div>
+                          <div className="text-[11px] text-zinc-500 mt-px truncate">{b.exePath}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {detectedBrowsers.length === 0 && (
+                  <div className="text-center py-6">
+                    <div className="text-3xl mb-3">{'🔍'}</div>
+                    <p className="text-sm text-zinc-400 mb-2">No supported browser detected</p>
+                    <p className="text-xs text-zinc-500 mb-5">Make sure Chrome, Edge, or Brave is installed, then try again.</p>
+                    <div className="flex flex-col gap-2">
+                      <button onClick={detectAndPickBest} className="btn-primary w-full py-2.5 text-sm">
+                        Try Again
+                      </button>
+                      <button
+                        onClick={() => { setSelectedBrowser(null); setChromiumPhase('idle'); }}
+                        className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
+                      >
+                        Choose a different browser
+                      </button>
+                      <button onClick={handleSkipExtension} className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+                        Skip this step
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {detectedBrowsers.length > 0 && (
+                  <button
+                    onClick={() => { setSelectedBrowser(null); setChromiumPhase('idle'); }}
+                    className="w-full text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    Go back
+                  </button>
+                )}
+              </div>
             )}
 
-            {verifying && !extensionConnected && (
+            {/* Chromium substep progress dots */}
+            {chromiumPhase !== 'idle' && chromiumPhase !== 'detecting' && chromiumPhase !== 'picking' && selectedChromium && (
+              <div className="flex items-center justify-center gap-1.5 mb-4">
+                {CHROMIUM_STEP_PHASES.map((phase, i) => {
+                  const cur = chromiumPhase as string;
+                  const active = cur === phase;
+                  const done = CHROMIUM_STEP_PHASES.indexOf(cur as any) > i ||
+                    cur === 'verifying' || cur === 'done' ||
+                    (cur === 'load-unpacked' && i < 2);
+                  return (
+                    <div
+                      key={phase}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        active ? 'bg-primary-600 w-4' : done ? 'bg-primary-800' : 'bg-zinc-700'
+                      }`}
+                    />
+                  );
+                })}
+                <span className="text-[10px] text-zinc-500 ml-2">
+                  Step {chromiumStepIndex + 1} of 3
+                </span>
+              </div>
+            )}
+
+            {/* Step 1/3: Open extensions page */}
+            {chromiumPhase === 'open-extensions' && selectedChromium && (
+              <div className="text-center">
+                <div className="w-12 h-12 flex items-center justify-center text-2xl mb-4 mx-auto bg-zinc-900 rounded-xl border border-zinc-800">
+                  {'🖥️'}
+                </div>
+                <h2 className="text-lg font-bold text-zinc-100 mb-2">Open Extensions Page</h2>
+                <p className="text-xs text-zinc-500 mb-5">
+                  A new tab should open with <code className="text-zinc-300 bg-zinc-800 px-1 py-0.5 rounded text-[11px]">{selectedChromium.extensionsUrl}</code>.
+                </p>
+                <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 mb-4 text-left">
+                  <p className="text-xs text-zinc-300 leading-relaxed">
+                    If it didn&apos;t open, type <code className="text-zinc-200 bg-zinc-800 px-1 rounded">{selectedChromium.extensionsUrl}</code> into your {selectedChromium.name} address bar manually.
+                  </p>
+                </div>
+
+                {storeError && (
+                  <div className="bg-zinc-900/50 p-4 border border-red-900/40 mb-4 rounded-lg">
+                    <p className="text-xs text-zinc-400">{storeError}</p>
+                  </div>
+                )}
+
+                <button onClick={() => { setChromiumPhase('dev-mode'); setChromiumStepIndex(1); }} className="btn-primary w-full py-3 text-sm">
+                  I see the Extensions Page
+                </button>
+                <p className="mt-2">
+                  <button
+                    onClick={() => window.electronAPI.extension.openExtensionsPage(selectedChromium.id)}
+                    className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    Re-open extensions page
+                  </button>
+                </p>
+              </div>
+            )}
+
+            {/* Step 2/3: Enable Developer Mode */}
+            {chromiumPhase === 'dev-mode' && (
+              <div className="text-center">
+                <div className="w-12 h-12 flex items-center justify-center text-2xl mb-4 mx-auto bg-zinc-900 rounded-xl border border-zinc-800">
+                  {'⚙️'}
+                </div>
+                <h2 className="text-lg font-bold text-zinc-100 mb-2">Enable Developer Mode</h2>
+                <p className="text-xs text-zinc-500 mb-5">
+                  Turn on <strong className="text-zinc-300">Developer mode</strong> so you can load extensions from a folder.
+                </p>
+                <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-between mb-3 px-2">
+                    <span className="text-xs text-zinc-400 font-medium">Extensions</span>
+                    <span className="text-[10px] text-zinc-500">Manage your extensions</span>
+                  </div>
+                  <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-lg p-3 flex items-center justify-between">
+                    <span className="text-xs text-zinc-300">Developer mode</span>
+                    <div className="w-9 h-5 bg-primary-700 rounded-full relative flex items-center px-0.5 transition-colors">
+                      <div className="w-4 h-4 bg-white rounded-full shadow ml-auto" />
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-zinc-500 mt-2">Toggle this switch on in the top-right corner</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => goBack('open-extensions', 0)}
+                    className="btn-secondary flex-1 py-3 text-sm"
+                  >
+                    Back
+                  </button>
+                  <button onClick={handleDevModeDone} className="btn-primary flex-[2] py-3 text-sm">
+                    Developer Mode is On
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3/3: Load unpacked */}
+            {chromiumPhase === 'load-unpacked' && (
+              <div className="text-center">
+                <div className="w-12 h-12 flex items-center justify-center text-2xl mb-4 mx-auto bg-zinc-900 rounded-xl border border-zinc-800">
+                  {'📂'}
+                </div>
+                <h2 className="text-lg font-bold text-zinc-100 mb-2">Load the Extension</h2>
+                <p className="text-xs text-zinc-500 mb-5">
+                  Click <strong className="text-zinc-300">Load unpacked</strong> on the extensions page and select the opened folder.
+                </p>
+
+                <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 mb-4 text-left space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-zinc-800 text-zinc-400 rounded-md shrink-0">1</div>
+                    <p className="text-xs text-zinc-300">Click <strong className="text-zinc-200">Load unpacked</strong> button that appeared after enabling Developer mode</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-zinc-800 text-zinc-400 rounded-md shrink-0">2</div>
+                    <p className="text-xs text-zinc-300">Select the <strong className="text-zinc-200">chromium-extension</strong> folder that just opened</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-zinc-800 text-zinc-400 rounded-md shrink-0">3</div>
+                    <p className="text-xs text-zinc-300">The FORCA extension should appear in your extensions list</p>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-800/30 border border-dashed border-zinc-700/60 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-center gap-2 text-zinc-600">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
+                    </svg>
+                    <span className="text-xs">The extension folder has been opened in your file manager</span>
+                  </div>
+                </div>
+
+                {storeError && (
+                  <div className="bg-zinc-900/50 p-4 border border-red-900/40 mb-4 rounded-lg">
+                    <p className="text-xs text-zinc-400">{storeError}</p>
+                  </div>
+                )}
+
+                <button onClick={handleLoadUnpackedDone} className="btn-primary w-full py-3 text-sm">
+                  I Loaded the Extension
+                </button>
+                <p className="mt-2">
+                  <button onClick={openExtFolder} className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+                    Reopen extension folder
+                  </button>
+                </p>
+              </div>
+            )}
+
+            {/* Verifying (Chromium) */}
+            {chromiumPhase === 'verifying' && !extensionConnected && !celebration && (
+              <div className="text-center">
+                <h2 className="text-lg font-bold text-zinc-100 mb-4">Waiting for Connection</h2>
+                <div className="bg-zinc-900 p-6 border border-zinc-800 space-y-4 rounded-2xl">
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="w-4 h-4 border border-primary-600 border-t-transparent animate-spin rounded-full" />
+                    <span className="text-xs text-zinc-400">
+                      Waiting for {selectedChromium?.name || 'browser'} extension to connect...
+                    </span>
+                  </div>
+                  {verifyElapsed >= 10 && (
+                    <p className="text-[10px] text-zinc-600">
+                      Still waiting after {verifyElapsed}s &mdash; make sure the extension is enabled
+                    </p>
+                  )}
+                  <div className="text-center space-y-2">
+                    <button
+                      onClick={handleSkipExtension}
+                      className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
+                    >
+                      Skip (I&apos;ll install later)
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Verifying (Firefox) */}
+            {verifying && selectedBrowser === 'firefox' && !extensionConnected && !celebration && (
               <div className="bg-zinc-900 p-6 border border-zinc-800 space-y-4 rounded-2xl">
                 <div className="flex items-center justify-center gap-3">
-                  <div className="w-4 h-4 border border-primary-600 border-t-transparent animate-spin" />
+                  <div className="w-4 h-4 border border-primary-600 border-t-transparent animate-spin rounded-full" />
                   <span className="text-xs text-zinc-400">
                     Waiting for Firefox extension to connect...
                   </span>
                 </div>
-                <div className="text-center">
+                {verifyElapsed >= 10 && (
+                  <p className="text-[10px] text-zinc-600 text-center">
+                    Still waiting after {verifyElapsed}s &mdash; make sure the extension is installed and enabled
+                  </p>
+                )}
+                <div className="text-center space-y-2">
                   <button
                     onClick={handleSkipExtension}
                     className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
                   >
                     Skip (I&apos;ll install later)
                   </button>
+                  <p>
+                    <button
+                      onClick={handleFirefoxInstall}
+                      className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
+                    >
+                      Re-open Firefox Add-ons
+                    </button>
+                  </p>
                 </div>
               </div>
             )}
 
-            {extensionConnected && (
-              <div className="text-center space-y-3">
-                <div className="text-green-400 text-xs flex items-center justify-center gap-2 py-3">
-                  <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Connected! Proceeding...
-                </div>
+            {/* Celebration */}
+            {celebration && (
+              <div className="text-center py-8 animate-fade-in">
+                <div className="text-5xl mb-4">{'🎉'}</div>
+                <h3 className="text-lg font-bold text-zinc-100 mb-1">Extension Connected!</h3>
+                <p className="text-xs text-zinc-500">Your browser is now linked to Forca.</p>
               </div>
             )}
           </div>
         )}
 
+        {/* ── Step 4: Complete ────────────────────── */}
         {step === 4 && (
           <div className="text-center animate-fade-in">
             <div className="text-5xl mb-6">{'✅'}</div>

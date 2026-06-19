@@ -31,6 +31,7 @@ import { registerProfilesIpc } from './ipc/profiles.ipc';
 import { registerSyncIpc } from './ipc/sync.ipc';
 import { registerAppIpc } from './ipc/app.ipc';
 import { registerExtensionIpc } from './ipc/extension.ipc';
+import { registerAnalyticsIpc } from './ipc/analytics.ipc';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -184,6 +185,7 @@ function createWindow() {
   registerSyncIpc(syncService);
   registerAppIpc(updaterService);
   registerExtensionIpc(wsServer);
+  registerAnalyticsIpc();
 
   // Setup tray
   setupTray();

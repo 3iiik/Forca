@@ -5,7 +5,8 @@ import { logger } from '../utils/logger';
 
 export default function SettingsPage() {
   const { settings, setSettings, zones, setZones } = useAppStore();
-  const [activeTab, setActiveTab] = useState<'general' | 'calendar' | 'zones' | 'notifications' | 'sounds' | 'sync'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'calendar' | 'zones' | 'notifications' | 'sounds' | 'sync' | 'analytics'>('general');
+  const [funnel, setFunnel] = useState<Array<{ label: string; count: number; conversion: number | null; dropOff: number | null }> | null>(null);
   const [newZone, setNewZone] = useState({ name: '', duration: 25 });
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingRef = useRef<AppSettings | null>(null);
@@ -18,6 +19,12 @@ export default function SettingsPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      window.electronAPI.analytics.getFunnel().then(setFunnel);
+    }
+  }, [activeTab]);
 
   const loadSettings = async () => {
     try {
@@ -82,6 +89,7 @@ export default function SettingsPage() {
     { id: 'notifications', label: 'Notifications' },
     { id: 'sounds', label: 'Sounds' },
     { id: 'sync', label: 'Sync' },
+    { id: 'analytics', label: 'Analytics' },
   ] as const;
 
   return (
@@ -365,6 +373,66 @@ export default function SettingsPage() {
                 className="w-full accent-primary-700"
               />
             </div>
+          </div>
+        )}
+
+        {activeTab === 'analytics' && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-semibold text-zinc-200">Onboarding Funnel</h2>
+
+            {funnel === null && (
+              <p className="text-xs text-zinc-500">Loading...</p>
+            )}
+
+            {funnel !== null && funnel.length === 0 && (
+              <p className="text-xs text-zinc-500 py-3">Not enough data yet.</p>
+            )}
+
+            {funnel !== null && funnel.length > 0 && (
+              <div className="space-y-3">
+                {funnel.map((step, i) => (
+                  <div key={step.label} className="flex items-center gap-4 py-2 px-3 border border-zinc-800 bg-zinc-900/50 rounded-lg">
+                    <div className="w-5 h-5 flex items-center justify-center text-[10px] font-bold bg-zinc-800 text-zinc-400 rounded shrink-0">
+                      {i + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-zinc-200">{step.label}</div>
+                      <div className="text-[11px] text-zinc-500">
+                        {step.count} {step.count === 1 ? 'user' : 'users'}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      {step.conversion !== null ? (
+                        <>
+                          <div className="text-sm font-medium text-zinc-200">{step.conversion}%</div>
+                          <div className="text-[10px] text-red-400">-{step.dropOff}% drop-off</div>
+                        </>
+                      ) : (
+                        <div className="text-sm font-medium text-zinc-400">baseline</div>
+                      )}
+                    </div>
+                    <div className="w-24 h-2 bg-zinc-800 rounded-full overflow-hidden shrink-0">
+                      {step.conversion !== null && (
+                        <div
+                          className="h-full bg-primary-700 rounded-full transition-all"
+                          style={{ width: `${step.conversion}%` }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              onClick={async () => {
+                const data = await window.electronAPI.analytics.getFunnel();
+                setFunnel(data);
+              }}
+              className="btn-ghost text-xs"
+            >
+              Refresh
+            </button>
           </div>
         )}
 

@@ -63,9 +63,17 @@ declare global {
         getIdentity: () => Promise<{ chrome: string; firefox: string; directory: string }>;
         getClientCount: () => Promise<number>;
         openStore: (browser: string) => Promise<{ method: string; success: boolean; details: string }>;
-        openFolder: (browser: string) => Promise<{ success: boolean; details: string }>;
-        launchWithExtension: (browser: string) => Promise<{ success: boolean; details: string }>;
+
         reconnect: () => Promise<{ success: boolean; clientCount: number }>;
+        detectBrowsers: () => Promise<Array<{ id: string; name: string; exePath: string; extensionsUrl: string }>>;
+        pickBestBrowser: () => Promise<{ id: string; name: string; exePath: string; extensionsUrl: string } | null>;
+        openExtensionsPage: (browserId: string) => Promise<{ method: string; success: boolean; details: string }>;
+        openExtensionFolder: () => Promise<{ success: boolean; details: string }>;
+      };
+      analytics: {
+        track: (event: string, properties?: Record<string, unknown>) => Promise<{ success: boolean }>;
+        getEvents: () => Promise<Array<{ event: string; properties: Record<string, unknown>; ts: string }>>;
+        getFunnel: () => Promise<Array<{ label: string; count: number; conversion: number | null; dropOff: number | null }>>;
       };
       app: {
         minimize: () => Promise<void>;

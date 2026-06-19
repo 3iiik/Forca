@@ -83,9 +83,19 @@ const api = {
     getIdentity: () => ipcRenderer.invoke('extension:identity'),
     getClientCount: () => ipcRenderer.invoke('extension:get-client-count'),
     openStore: (browser: string) => ipcRenderer.invoke('extension:open-store', browser),
-    openFolder: (browser: string) => ipcRenderer.invoke('extension:open-folder', browser),
-    launchWithExtension: (browser: string) => ipcRenderer.invoke('extension:launch-with-extension', browser),
+
     reconnect: () => ipcRenderer.invoke('extension:reconnect'),
+    detectBrowsers: () => ipcRenderer.invoke('extension:detect-browsers'),
+    pickBestBrowser: () => ipcRenderer.invoke('extension:pick-best-browser'),
+    openExtensionsPage: (browserId: string) => ipcRenderer.invoke('extension:open-extensions-page', browserId),
+    openExtensionFolder: () => ipcRenderer.invoke('extension:open-extension-folder'),
+  },
+
+  // Analytics
+  analytics: {
+    track: (event: string, properties?: Record<string, unknown>) => ipcRenderer.invoke('analytics:track', event, properties),
+    getEvents: () => ipcRenderer.invoke('analytics:get-events'),
+    getFunnel: () => ipcRenderer.invoke('analytics:get-funnel'),
   },
 
   // App
