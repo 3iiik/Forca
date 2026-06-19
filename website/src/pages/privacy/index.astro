@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Privacy — Forca is local-first and does not collect your data';
+const description = 'Forca privacy policy. No cloud account required, no data sold, local-first storage, fully open source under MIT License.';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Forca Privacy",
+  "description": description,
+};
+---
+
+<BaseLayout {title} {description} {structuredData}>
+  <section class="page-header">
+    <div class="container">
+      <h1>Privacy</h1>
+      <p>Your data belongs to you. Always has. Always will.</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container-narrow">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 48px;">
+        <div class="card" style="text-align: center; padding: 32px 16px;">
+          <div style="font-size: 32px; margin-bottom: 8px;">🔒</div>
+          <h3 style="font-size: 15px;">No cloud account</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">No sign-up, no login, no cloud dependency.</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 32px 16px;">
+          <div style="font-size: 32px; margin-bottom: 8px;">🚫</div>
+          <h3 style="font-size: 15px;">No data sold</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">We don't collect, sell, or share your data.</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 32px 16px;">
+          <div style="font-size: 32px; margin-bottom: 8px;">💾</div>
+          <h3 style="font-size: 15px;">Local-first</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">Everything stays on your computer.</p>
+        </div>
+        <div class="card" style="text-align: center; padding: 32px 16px;">
+          <div style="font-size: 32px; margin-bottom: 8px;">📖</div>
+          <h3 style="font-size: 15px;">Open source</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">Verify privacy in the source code yourself.</p>
+        </div>
+      </div>
+
+      <h2>Privacy Policy</h2>
+      <p><em>Last updated: June 2025</em></p>
+
+      <h3>Data collection</h3>
+      <p>Forca does <strong>not</strong> collect any personal data. The application runs entirely on your local machine. No data is transmitted to any server unless you explicitly choose to enable optional features:</p>
+      <ul>
+        <li><strong>Calendar integration</strong> — If you connect Google Calendar, Forca reads your calendar events locally. OAuth tokens are stored on your machine.</li>
+        <li><strong>Sync</strong> — If you enable optional multi-device sync, your settings and session data are stored in your chosen provider (Firebase or Supabase) under your account.</li>
+        <li><strong>Analytics</strong> — Forca collects anonymous onboarding funnel events stored <em>locally</em> on your machine. This data never leaves your computer and is only used to improve the onboarding experience.</li>
+      </ul>
+
+      <h3>What we DON'T do</h3>
+      <ul>
+        <li>❌ Sell your data</li>
+        <li>❌ Share your data with third parties</li>
+        <li>❌ Require an account</li>
+        <li>❌ Track your browsing history</li>
+        <li>❌ Include analytics scripts or tracking pixels</li>
+        <li>❌ Send telemetry</li>
+      </ul>
+
+      <h3>Local storage</h3>
+      <p>Forca uses <code>electron-store</code> to persist data locally on your machine. All files are stored in your user data directory (<code>%APPDATA%/forca/</code> on Windows). You can delete this directory at any time to erase all Forca data.</p>
+
+      <h3>Browser extension</h3>
+      <p>The Forca browser extension communicates with the desktop app over a local WebSocket connection (127.0.0.1:7432). No external network requests are made by the extension. It only receives block lists and focus state from the local desktop app.</p>
+
+      <h3>Third-party services</h3>
+      <p>Forca has no embedded third-party services, trackers, or analytics scripts. Optional features that connect to external services (Google Calendar, Firebase sync) only activate with your explicit consent.</p>
+
+      <h3>Open source</h3>
+      <p>Forca is fully open source under the MIT License. The complete source code is available on <a href="https://github.com/3iiik/forca" target="_blank">GitHub</a>. Anyone can audit, verify, and contribute to the code.</p>
+
+      <h3>Contact</h3>
+      <p>If you have questions about this privacy policy, please open an issue on the <a href="https://github.com/3iiik/forca/issues" target="_blank">GitHub repository</a>.</p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Documentation — Installation, browser extensions, and troubleshooting';
+const description = 'Forca documentation covering installation, Firefox and Chromium extension setup, troubleshooting common issues, and frequently asked questions.';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Forca Documentation",
+  "description": description,
+};
+---
+
+<BaseLayout {title} {description} {structuredData}>
+  <section class="page-header">
+    <div class="container">
+      <h1>Documentation</h1>
+      <p>Everything you need to set up and use Forca.</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container-narrow">
+
+      <h2 id="installation">Installation</h2>
+
+      <h3>System requirements</h3>
+      <ul>
+        <li>Windows 10 or later (64-bit)</li>
+        <li>Firefox or a Chromium-based browser (Chrome, Edge, Brave, Arc, Vivaldi, Opera)</li>
+        <li>~50 MB disk space</li>
+      </ul>
+
+      <h3>Desktop app</h3>
+      <ol>
+        <li>Download the latest installer from the <a href="/forca/download/">download page</a>.</li>
+        <li>Run <code>Forca-Setup-x64.exe</code> and follow the setup wizard.</li>
+        <li>Launch Forca. The onboarding wizard will guide you through the rest.</li>
+      </ol>
+
+      <h2 id="browser-extensions">Browser extensions</h2>
+
+      <h3>Firefox</h3>
+      <ol>
+        <li>Visit the <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" target="_blank">Forca page on Firefox Add-ons</a>.</li>
+        <li>Click <strong>"Add to Firefox"</strong>.</li>
+        <li>Grant the required permissions when prompted.</li>
+        <li>Launch Forca. The app will detect and connect to the extension automatically.</li>
+      </ol>
+
+      <h3 id="chromium-setup">Chromium browsers</h3>
+      <p>Forca supports Chrome, Edge, Brave, Arc, Vivaldi, and Opera via Developer Mode loading.</p>
+      <ol>
+        <li>Install the Forca desktop app.</li>
+        <li>Open your browser's extensions page:
+          <ul>
+            <li>Chrome: <code>chrome://extensions</code></li>
+            <li>Edge: <code>edge://extensions</code></li>
+            <li>Brave: <code>brave://extensions</code></li>
+            <li>Arc: <code>chrome://extensions</code></li>
+            <li>Vivaldi: <code>vivaldi://extensions</code></li>
+            <li>Opera: <code>opera://extensions</code></li>
+          </ul>
+        </li>
+        <li>Toggle <strong>Developer mode</strong> in the top-right corner.</li>
+        <li>In Forca (Settings → Extension), click <strong>"Open Extension Folder"</strong>.</li>
+        <li>On the extensions page, click <strong>"Load unpacked"</strong> and select the opened folder.</li>
+      </ol>
+
+      <h2 id="troubleshooting">Troubleshooting</h2>
+
+      <h3>Extension not connecting</h3>
+      <ul>
+        <li>Make sure the Forca desktop app is running.</li>
+        <li>Reload the extension on your browser's extensions page.</li>
+        <li>In Forca, go to Settings → Extension and click <strong>Reconnect</strong>.</li>
+        <li>Restart both the desktop app and your browser.</li>
+      </ul>
+
+      <h3>Websites not being blocked</h3>
+      <ul>
+        <li>Verify the extension is installed and enabled.</li>
+        <li>Check that the site is in your zone's blocked list.</li>
+        <li>Make sure the zone is active (not paused or ended).</li>
+      </ul>
+
+      <h3>Calendar not detected</h3>
+      <ul>
+        <li>Go to Settings → Calendar and configure your provider.</li>
+        <li>For Google Calendar, click "Connect Google Calendar" and authorize access.</li>
+        <li>For iCal, paste your iCal URL in the settings.</li>
+      </ul>
+
+      <h3>App won't start</h3>
+      <ul>
+        <li>Ensure you're on Windows 10 or later.</li>
+        <li>Try reinstalling the latest version from <a href="/forca/download/">forca/download</a>.</li>
+        <li>Check the logs at <code>%APPDATA%/forca/logs/</code> (if available).</li>
+      </ul>
+
+      <h2 id="faq">FAQ</h2>
+
+      <h3>Is Forca free?</h3>
+      <p>Yes. Forca is completely free and open source under the MIT License.</p>
+
+      <h3>Do I need an account?</h3>
+      <p>No. Forca is local-first. Everything runs on your machine with no account required.</p>
+
+      <h3>Does it work on macOS or Linux?</h3>
+      <p>Currently Forca is Windows-only. macOS and Linux support are planned. The browser extension works on all platforms.</p>
+
+      <h3>Can I use Forca offline?</h3>
+      <p>Yes. The desktop app and extension work entirely offline. Internet is only needed for calendar integration (optional).</p>
+
+      <h3>How do I update Forca?</h3>
+      <p>Forca checks for updates automatically on startup. When an update is available, you'll be prompted to download and install it. You can also download the latest version from the <a href="/forca/download/">download page</a>.</p>
+
+      <h3>Is my data private?</h3>
+      <p>Yes. All data is stored locally on your computer. No data is sent to any server. Forca is open source, so you can verify this yourself. See our <a href="/forca/privacy/">privacy page</a> for details.</p>
+
+      <h3>Can I contribute?</h3>
+      <p>Absolutely! Forca is open source. Visit the <a href="https://github.com/3iiik/forca" target="_blank">GitHub repository</a> to submit issues, feature requests, or pull requests.</p>
+
+    </div>
+  </section>
+</BaseLayout>

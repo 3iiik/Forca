@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Download Forca — Windows installer and browser extensions';
+const description = 'Download Forca for Windows. Get the Firefox extension from AMO or set up Chromium browser support. Free and open source.';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Download Forca",
+  "description": description,
+};
+---
+
+<BaseLayout {title} {description} {structuredData}>
+  <section class="page-header">
+    <div class="container">
+      <h1>Download</h1>
+      <p>Get Forca on your device. Free forever.</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+
+      <!-- Desktop app -->
+      <h2>Desktop application</h2>
+      <div class="download-card">
+        <div class="info">
+          <h3>Forca for Windows</h3>
+          <p>Windows 10 or later · 64-bit · Installer (NSIS)</p>
+        </div>
+        <a href="https://github.com/3iiik/forca/releases/latest/download/Forca-Setup-x64.exe" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
+          Download Installer
+        </a>
+      </div>
+
+      <!-- Firefox extension -->
+      <h2 style="margin-top: 40px;">Browser extensions</h2>
+
+      <div class="download-card">
+        <div class="info">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <h3 style="margin-bottom: 0;">Firefox</h3>
+            <span class="badge badge-green">One-click install</span>
+          </div>
+          <p>Available on Firefox Add-ons (AMO). Installs directly from Mozilla's store.</p>
+        </div>
+        <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" class="btn btn-outline" target="_blank">
+          Install from AMO →
+        </a>
+      </div>
+
+      <div class="download-card">
+        <div class="info">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <h3 style="margin-bottom: 0;">Chrome, Edge, Brave &amp; more</h3>
+            <span class="badge badge-yellow">Developer Mode</span>
+          </div>
+          <p>Install via Developer Mode. Supported: Chrome, Edge, Brave, Arc, Vivaldi, Opera.</p>
+        </div>
+        <a href="/forca/docs/#chromium-setup" class="btn btn-outline">
+          Setup guide →
+        </a>
+      </div>
+
+      <!-- GitHub releases -->
+      <h2 style="margin-top: 40px;">GitHub releases</h2>
+      <p style="margin-bottom: 16px;">All releases, source code, and release notes are available on GitHub.</p>
+      <a href="https://github.com/3iiik/forca/releases" class="btn btn-outline" target="_blank">
+        View all releases →
+      </a>
+
+      <!-- Installation instructions -->
+      <h2 style="margin-top: 56px;">Installation instructions</h2>
+
+      <h3>Windows</h3>
+      <div class="install-step">
+        <div class="num">1</div>
+        <div class="content">
+          <strong>Download the installer</strong>
+          <p>Click the "Download Installer" button above to get the NSIS installer.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="num">2</div>
+        <div class="content">
+          <strong>Run the installer</strong>
+          <p>Double-click the downloaded <code>Forca-Setup-x64.exe</code> file and follow the setup wizard.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="num">3</div>
+        <div class="content">
+          <strong>Install the browser extension</strong>
+          <p>Launch Forca and follow the built-in onboarding. It will guide you through installing the extension for Firefox or your Chromium browser.</p>
+        </div>
+      </div>
+
+      <h3>Firefox extension</h3>
+      <div class="install-step">
+        <div class="num">1</div>
+        <div class="content">
+          <strong>Visit Firefox Add-ons</strong>
+          <p>Go to the <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" target="_blank">Forca page on AMO</a>.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="num">2</div>
+        <div class="content">
+          <strong>Click "Add to Firefox"</strong>
+          <p>The extension installs with a single click. Grant the required permissions.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="num">3</div>
+        <div class="content">
+          <strong>Launch Forca</strong>
+          <p>Open the desktop app. It will automatically detect and connect to the extension.</p>
+        </div>
+      </div>
+
+      <h3 id="chromium-setup">Chromium browsers (Chrome, Edge, Brave, etc.)</h3>
+      <div class="install-step">
+        <div class="num">1</div>
+        <div class="content">
+          <strong>Install the desktop app</strong>
+          <p>Download and install Forca for Windows first. The app manages the extension for you.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="num">2</div>
+        <div class="content">
+          <strong>Open your browser's extensions page</strong>
+          <p>Navigate to <code>chrome://extensions</code> (Chrome), <code>edge://extensions</code> (Edge), or <code>brave://extensions</code> (Brave).</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="num">3</div>
+        <div class="content">
+          <strong>Enable Developer Mode</strong>
+          <p>Toggle "Developer mode" in the top-right corner of the extensions page.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="num">4</div>
+        <div class="content">
+          <strong>Load the extension</strong>
+          <p>In Forca (during onboarding or in Settings), click "Open Extension Folder." Then click <strong>"Load unpacked"</strong> in the browser and select the opened folder.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>

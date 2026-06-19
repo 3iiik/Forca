@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://3iiik.github.io/forca/sitemap-index.xml

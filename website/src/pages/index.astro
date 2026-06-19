@@ -1,0 +1,198 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Forca — Automatic focus mode for deep work';
+const description = 'Block distractions automatically when your focus session starts. Open source website blocker and productivity app for Windows, Firefox, and Chromium browsers.';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Forca",
+  "applicationCategory": "Productivity",
+  "operatingSystem": "Windows",
+  "description": description,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "3iiik" },
+  "license": "https://opensource.org/licenses/MIT",
+};
+---
+
+<BaseLayout {title} {description} {structuredData}>
+  <!-- Hero -->
+  <section class="hero">
+    <div style="font-size: 64px; margin-bottom: 16px; font-weight: 800; letter-spacing: -2px;">
+      F<span style="color: var(--accent);">○</span>rca
+    </div>
+    <h1>Automatic focus mode<br />for people who actually<br />want to get work done.</h1>
+    <p>
+      Block distractions automatically when your focus session starts.
+      Forca detects meeting endings and triggers focus zones — no manual
+      switching, no excuses, no friction.
+    </p>
+    <div class="actions">
+      <a href="/forca/download/" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
+        Download for Windows
+      </a>
+      <a href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/" class="btn btn-outline" target="_blank">
+        Firefox Extension
+      </a>
+      <a href="https://github.com/3iiik/forca" class="btn btn-ghost" target="_blank">
+        View on GitHub →
+      </a>
+    </div>
+  </section>
+
+  <!-- Screenshots -->
+  <section class="section">
+    <div class="container">
+      <div class="screenshot">
+        <div>
+          <div style="font-size: 48px; margin-bottom: 12px;">🎯</div>
+          <div style="font-weight: 600; margin-bottom: 4px;">Focus Zone Active</div>
+          <div style="font-size: 12px;">Deep Work · 45:00 remaining · 3 sites blocked</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="container">
+      <h2 style="text-align: center;">Everything you need to stay focused</h2>
+      <div class="grid-3" style="margin-top: 32px;">
+        <div class="card">
+          <div class="feature-icon">⚡</div>
+          <h3>Automatic activation</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Focus zones auto-start when your meetings end. No toggling, no reminders, no friction.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon">🚫</div>
+          <h3>Website blocking</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Block distracting sites during focus sessions via the browser extension. YouTube, Reddit, Twitter — gone.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon">🎯</div>
+          <h3>Focus zones</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Create multiple zones with different durations, blocked sites, and triggers for different work modes.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon">🦊</div>
+          <h3>Firefox support</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Available on Firefox Add-ons. One-click install from the store.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon">🌐</div>
+          <h3>Chromium support</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Works with Chrome, Edge, Brave, Arc, Vivaldi, and Opera via Developer Mode.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon">🔒</div>
+          <h3>Local-first</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">All data stays on your machine. No cloud account required. No data leaves your computer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section section-alt" id="how-it-works">
+    <div class="container">
+      <h2 style="text-align: center;">How it works</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px; font-size: 15px;">
+        Set up once. Focus forever.
+      </p>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Create a focus zone</h3>
+          <p>Name your zone (e.g. "Deep Work") and set a duration.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Choose sites to block</h3>
+          <p>Add the websites that distract you. Multiple zones, different rules.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Start focusing</h3>
+          <p>Launch a zone manually or let it auto-trigger after meetings.</p>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <h3>Forca keeps distractions away</h3>
+          <p>The browser extension blocks your list. Nothing gets through until time's up.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open Source -->
+  <section class="section" id="open-source">
+    <div class="container" style="text-align: center;">
+      <h2>Open source</h2>
+      <p style="color: var(--text-muted); margin-bottom: 40px; font-size: 15px;">
+        Forca is free and open source under the MIT License. No tracking, no ads, no paywalls.
+      </p>
+      <div class="stats-row" style="margin-bottom: 40px;">
+        <div class="stat">
+          <div class="num">★</div>
+          <div class="label">GitHub Stars</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="latest-release">v1.0.1</div>
+          <div class="label">Latest Release</div>
+        </div>
+        <div class="stat">
+          <div class="num">MIT</div>
+          <div class="label">License</div>
+        </div>
+      </div>
+      <a href="https://github.com/3iiik/forca" class="btn btn-outline" target="_blank">
+        View source on GitHub →
+      </a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section-alt" id="faq">
+    <div class="container-narrow">
+      <h2 style="text-align: center;">Frequently asked questions</h2>
+      <div style="margin-top: 32px;">
+        <div class="faq-item">
+          <div class="faq-q">Is Forca free?</div>
+          <div class="faq-a">Yes. Forca is completely free and open source under the MIT License. There are no paid plans, subscriptions, or hidden costs.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Does Forca work on macOS or Linux?</div>
+          <div class="faq-a">Currently Forca is available for Windows. macOS and Linux support are on the roadmap. The browser extension works on all platforms.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Do I need an account?</div>
+          <div class="faq-a">No. Forca is local-first. Everything runs on your machine. No account, no cloud, no sign-up required.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Which browsers are supported?</div>
+          <div class="faq-a">Firefox (via AMO) and all Chromium browsers: Chrome, Edge, Brave, Arc, Vivaldi, and Opera. Chromium browsers require a one-time Developer Mode setup.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How does automatic activation work?</div>
+          <div class="faq-a">Forca integrates with Google Calendar and iCal. When a meeting ends, it can automatically start a focus zone. No manual switching needed.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I use Forca without calendar integration?</div>
+          <div class="faq-a">Absolutely. You can start focus zones manually anytime. Calendar integration is optional.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  fetch('https://api.github.com/repos/3iiik/forca')
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('latest-release').textContent = 'v' + (d.tag_name || d.name || '1.0.1');
+    })
+    .catch(() => {});
+</script>

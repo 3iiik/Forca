@@ -1,0 +1,272 @@
+---
+const { title, description, structuredData } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/forca/favicon.png" />
+    <meta name="theme-color" content="#09090b" />
+
+    <!-- SEO -->
+    <title>{title} · Forca</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content="focus app, website blocker, productivity app, distraction blocker, focus mode, deep work, study app" />
+    <meta name="author" content="3iiik" />
+    <link rel="canonical" href={`https://3iiik.github.io/forca${Astro.url.pathname}`} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Forca" />
+    <meta property="og:title" content={`${title} · Forca`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={`https://3iiik.github.io/forca${Astro.url.pathname}`} />
+    <meta property="og:image" content="https://3iiik.github.io/forca/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} · Forca`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://3iiik.github.io/forca/og-image.png" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
+
+    <style>
+      :root {
+        --bg: #09090b;
+        --bg-card: #18181b;
+        --bg-hover: #27272a;
+        --border: #27272a;
+        --text: #f4f4f5;
+        --text-muted: #a1a1aa;
+        --text-dim: #52525b;
+        --primary: #1e3a5f;
+        --primary-hover: #1e4d7a;
+        --primary-text: #e0f2fe;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+        --success: #22c55e;
+        --radius: 12px;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { color: var(--accent-hover); }
+      img { max-width: 100%; height: auto; }
+
+      .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+      .container-narrow { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+      nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 24px; max-width: 1100px; margin: 0 auto;
+        border-bottom: 1px solid var(--border);
+      }
+      nav .logo { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+      nav .logo span { color: var(--accent); }
+      nav .links { display: flex; gap: 24px; align-items: center; }
+      nav .links a { color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color .2s; }
+      nav .links a:hover, nav .links a.active { color: var(--text); }
+      nav .links a.nav-cta {
+        background: var(--accent); color: #fff; padding: 8px 16px; border-radius: 8px;
+        font-weight: 600; font-size: 13px;
+      }
+      nav .links a.nav-cta:hover { background: var(--accent-hover); color: #fff; }
+
+      h1 { font-size: 48px; font-weight: 800; letter-spacing: -1px; line-height: 1.15; }
+      h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 16px; }
+      h3 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 14px 28px; border-radius: var(--radius); font-size: 15px;
+        font-weight: 600; transition: all .2s; cursor: pointer; border: none;
+      }
+      .btn-primary { background: var(--accent); color: #fff; }
+      .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+      .btn-outline {
+        background: transparent; color: var(--text); border: 1px solid var(--border);
+      }
+      .btn-outline:hover { background: var(--bg-hover); border-color: var(--text-dim); }
+      .btn-ghost { background: transparent; color: var(--text-muted); padding: 8px 16px; }
+      .btn-ghost:hover { color: var(--text); background: var(--bg-hover); }
+
+      .card {
+        background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+        padding: 24px; transition: border-color .2s;
+      }
+      .card:hover { border-color: var(--text-dim); }
+
+      footer {
+        border-top: 1px solid var(--border); padding: 48px 24px 32px;
+        text-align: center; color: var(--text-dim); font-size: 13px;
+      }
+      footer .links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
+      footer .links a { color: var(--text-muted); font-size: 13px; }
+      footer .links a:hover { color: var(--text); }
+
+      .hero { text-align: center; padding: 80px 0 64px; }
+      .hero h1 { margin-bottom: 16px; }
+      .hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 32px; }
+      .hero .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+      .section { padding: 80px 0; }
+      .section-alt { background: var(--bg-card); }
+
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+      .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
+
+      .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; counter-reset: step; }
+      .step { counter-increment: step; }
+      .step .num {
+        width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+        background: var(--accent); color: #fff; border-radius: 10px; font-weight: 700; font-size: 16px;
+        margin-bottom: 12px;
+      }
+      .step h3 { font-size: 16px; }
+      .step p { font-size: 14px; color: var(--text-muted); }
+
+      .feature-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+        background: var(--primary); color: var(--primary-text); border-radius: var(--radius); font-size: 20px;
+        margin-bottom: 12px; }
+
+      .faq-item { border-bottom: 1px solid var(--border); padding: 20px 0; }
+      .faq-item:first-child { padding-top: 0; }
+      .faq-q { font-weight: 600; font-size: 15px; margin-bottom: 8px; cursor: pointer; color: var(--text); }
+      .faq-a { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+      .screenshot {
+        background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+        padding: 40px; text-align: center; color: var(--text-dim); font-size: 14px;
+        aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
+        background-image: radial-gradient(circle at 20% 50%, var(--primary) 0%, transparent 50%);
+      }
+
+      .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+      .badge-green { background: #14532d; color: #86efac; }
+      .badge-blue { background: #1e3a5f; color: #93c5fd; }
+      .badge-yellow { background: #422006; color: #fde68a; }
+
+      .stats-row { display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; }
+      .stat { text-align: center; }
+      .stat .num { font-size: 36px; font-weight: 800; color: var(--text); }
+      .stat .label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+      .page-header { padding: 64px 0 32px; }
+      .page-header h1 { font-size: 36px; }
+      .page-header p { color: var(--text-muted); font-size: 16px; }
+
+      .download-card {
+        background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+        padding: 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+        margin-bottom: 16px;
+      }
+      .download-card .info h3 { margin-bottom: 4px; }
+      .download-card .info p { color: var(--text-muted); font-size: 13px; }
+
+      .install-step { display: flex; gap: 16px; margin-bottom: 24px; }
+      .install-step .num {
+        width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        background: var(--accent); color: #fff; border-radius: 8px; font-weight: 700; font-size: 14px;
+      }
+      .install-step .content { flex: 1; }
+      .install-step .content p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+
+      pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; }
+      code { background: var(--bg-hover); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+      pre { background: #0f0f11; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; overflow-x: auto; margin: 12px 0; }
+      pre code { background: none; padding: 0; }
+
+      .page-content { padding-bottom: 80px; }
+      .page-content h2 { font-size: 24px; margin-top: 40px; margin-bottom: 12px; }
+      .page-content h3 { font-size: 18px; margin-top: 28px; margin-bottom: 8px; }
+      .page-content p, .page-content li { font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+      .page-content ul, .page-content ol { padding-left: 20px; margin: 12px 0; }
+      .page-content li { margin-bottom: 6px; }
+
+      @media (max-width: 768px) {
+        h1 { font-size: 32px; }
+        h2 { font-size: 24px; }
+        .hero { padding: 48px 0 40px; }
+        .hero p { font-size: 16px; }
+        .section { padding: 48px 0; }
+        .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        .steps { grid-template-columns: 1fr 1fr; }
+        nav .links { gap: 12px; }
+        nav .links a { font-size: 13px; }
+        .download-card { flex-direction: column; text-align: center; }
+        .stats-row { gap: 24px; }
+        .stat .num { font-size: 28px; }
+      }
+
+      @media (max-width: 480px) {
+        .steps { grid-template-columns: 1fr; }
+        .container, .container-narrow { padding: 0 16px; }
+        nav { padding: 12px 16px; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/forca/" class="logo">F<span>○</span>rca</a>
+      <div class="links">
+        <a href="/forca/">Home</a>
+        <a href="/forca/features/">Features</a>
+        <a href="/forca/download/">Download</a>
+        <a href="/forca/docs/">Docs</a>
+        <a href="/forca/privacy/">Privacy</a>
+        <a href="https://github.com/3iiik/forca" class="nav-cta" target="_blank">GitHub</a>
+      </div>
+    </nav>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <div class="links">
+        <a href="/forca/">Home</a>
+        <a href="/forca/features/">Features</a>
+        <a href="/forca/download/">Download</a>
+        <a href="/forca/docs/">Docs</a>
+        <a href="/forca/privacy/">Privacy</a>
+        <a href="https://github.com/3iiik/forca" target="_blank">GitHub</a>
+      </div>
+      <p>MIT License · © {new Date().getFullYear()} 3iiik · Open source focus app</p>
+    </footer>
+  </body>
+</html>
+
+<script>
+  // Highlight active nav link
+  const path = location.pathname.replace(/\/$/, '');
+  document.querySelectorAll('nav .links a').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href && !href.startsWith('http') && href !== '/forca/' && path.startsWith(href)) {
+      a.style.color = 'var(--text)';
+    }
+    if (href === '/forca/' && path === '/forca' || path === '/forca/') {
+      if (href === '/forca/') a.style.color = 'var(--text)';
+    }
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const a = q.nextElementSibling;
+      a.style.display = a.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+</script>
