@@ -78,36 +78,40 @@ const faqs = [
   </section>
 
   <!-- FAQ -->
-  <section class="py-16 md:py-24" id="faq">
-    <div class="max-w-3xl mx-auto px-6 md:px-12">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">Frequently asked questions</h2>
-        <p class="text-muted-foreground text-base">Quick answers to common questions about Forca.</p>
-      </div>
-      <div class="space-y-3">
-        {faqs.map((faq, i) => (
-          <div class="faq-item">
-            <button class="faq-q" aria-expanded="false" data-index={i}>
-              <span class="text-left">{faq.q}</span>
-              <svg class="faq-icon shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </button>
-            <div class="faq-a" data-index={i}>
-              <div class="faq-a-inner">{faq.a}</div>
+  <section class="py-16 md:py-32" id="faq">
+    <div class="mx-auto max-w-5xl px-6">
+      <div class="grid gap-y-12 px-2 lg:[grid-template-columns:1fr_auto]">
+        <div class="text-center lg:text-left">
+          <h2 class="text-3xl font-semibold md:text-4xl">
+            Frequently <br class="hidden lg:block" /> Asked <br class="hidden lg:block" />
+            Questions
+          </h2>
+          <p class="text-muted-foreground mt-4">Quick answers to common questions about Forca.</p>
+        </div>
+
+        <div class="divide-y divide-dashed sm:mx-auto sm:max-w-lg lg:mx-0">
+          {faqs.map((faq, i) => (
+            <div>
+              <button class="faq-q" aria-expanded="false" data-index={i}>
+                <span class="text-left">{faq.q}</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <div class="faq-a" data-index={i}>
+                <div class="faq-a-inner">{faq.a}</div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      <div class="text-center mt-10 pt-8 border-t border-[#27272a]">
-        <p class="text-sm text-muted-foreground">
-          Can't find what you're looking for?{' '}
-          <a href="https://github.com/3iiik/forca/discussions" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-accent-hover underline underline-offset-2">
-            Open a discussion on GitHub
-          </a>
-        </p>
-      </div>
+      <p class="text-muted-foreground mt-6 text-center lg:text-left px-2">
+        Can't find what you're looking for?{' '}
+        <a href="https://github.com/3iiik/forca/discussions" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-accent-hover font-medium hover:underline">
+          Open a discussion on GitHub
+        </a>
+      </p>
     </div>
   </section>
 </BaseLayout>
@@ -117,8 +121,7 @@ const faqs = [
     btn.addEventListener('click', () => {
       const expanded = btn.getAttribute('aria-expanded') === 'true';
       btn.setAttribute('aria-expanded', !expanded);
-      const answer = btn.nextElementSibling;
-      answer.classList.toggle('open');
+      btn.nextElementSibling?.classList.toggle('open');
     });
   });
 </script>
