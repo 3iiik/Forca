@@ -80,25 +80,33 @@ const faqs = [
   <!-- FAQ -->
   <section class="py-16 md:py-24" id="faq">
     <div class="max-w-3xl mx-auto px-6 md:px-12">
-      <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-12">Frequently asked questions</h2>
-      {faqs.map((faq, i) => (
-        <div class="faq-item">
-          <button class="faq-q" aria-expanded="false" data-index={i}>
-            {faq.q}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" /></svg>
-          </button>
-          <div class="faq-a" data-index={i}>
-            {faq.a}
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">Frequently asked questions</h2>
+        <p class="text-muted-foreground text-base">Quick answers to common questions about Forca.</p>
+      </div>
+      <div class="space-y-3">
+        {faqs.map((faq, i) => (
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false" data-index={i}>
+              <span class="text-left">{faq.q}</span>
+              <svg class="faq-icon shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+            <div class="faq-a" data-index={i}>
+              <div class="faq-a-inner">{faq.a}</div>
+            </div>
           </div>
-        </div>
-      ))}
-      <div class="text-center mt-10">
-        <a
-          href="/Forca/download/"
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white text-sm font-semibold hover:bg-purple-400 hover:-translate-y-0.5 transition-all shadow-lg shadow-purple-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          Download Forca free &rarr;
-        </a>
+        ))}
+      </div>
+      <div class="text-center mt-10 pt-8 border-t border-[#27272a]">
+        <p class="text-sm text-muted-foreground">
+          Can't find what you're looking for?{' '}
+          <a href="https://github.com/3iiik/forca/discussions" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-accent-hover underline underline-offset-2">
+            Open a discussion on GitHub
+          </a>
+        </p>
       </div>
     </div>
   </section>
