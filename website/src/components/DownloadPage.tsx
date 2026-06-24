@@ -34,7 +34,7 @@ const platformTemplates: Omit<Platform, 'downloadUrl'>[] = [
     icon: Icons.Windows,
     recommended: true,
     features: ['Windows 10 & 11 support', 'Auto calendar detection', 'Browser extension included', 'Full focus automation'],
-    matchAsset: (name: string) => name.includes('.exe') && !name.includes('blockmap'),
+    matchAsset: (name: string) => name.includes('Setup') && !name.includes('blockmap'),
   },
   {
     id: 'mac',
