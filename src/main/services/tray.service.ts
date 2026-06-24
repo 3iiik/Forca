@@ -159,7 +159,7 @@ export class TrayService {
     } else {
       template.push(
         {
-          label: '▶ Start Focus',
+          label: 'Start Focus',
           click: () => this.callbacks.onStartFocus?.(),
         }
       );
@@ -168,11 +168,11 @@ export class TrayService {
     template.push(
       { type: 'separator' },
       {
-        label: '📅 View Schedule',
+        label: 'View Schedule',
         click: () => this.callbacks.onShowSchedule?.(),
       },
       {
-        label: '⚙ Settings',
+        label: 'Settings',
         click: () => this.callbacks.onOpenSettings?.(),
       },
       { type: 'separator' },

@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { CalendarEvent } from '../types';
 import { logger } from '../utils/logger';
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 function parseEvents(events: CalendarEvent[]): CalendarEvent[] {
   return events.map(e => ({
@@ -65,8 +66,8 @@ export default function CalendarView() {
 
       {/* Date navigator */}
       <div className="flex items-center justify-between focus-card">
-        <button onClick={() => navigateDay(-1)} className="btn-ghost text-xs">
-          ← Previous
+        <button onClick={() => navigateDay(-1)} className="btn-ghost text-xs flex items-center gap-1">
+          <ChevronLeft className="w-3.5 h-3.5" /> Previous
         </button>
         <div className="text-center">
           <div className="text-sm font-semibold text-zinc-200">
@@ -78,8 +79,8 @@ export default function CalendarView() {
             <span className="text-[11px] text-primary-400 font-medium">Today</span>
           )}
         </div>
-        <button onClick={() => navigateDay(1)} className="btn-ghost text-xs">
-          Next →
+        <button onClick={() => navigateDay(1)} className="btn-ghost text-xs flex items-center gap-1">
+          Next <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -91,7 +92,11 @@ export default function CalendarView() {
           </div>
         ) : events.length === 0 ? (
           <div className="text-center py-8">
-            <div className="text-3xl mb-2">📅</div>
+            <div className="flex justify-center mb-2">
+              <div className="w-10 h-10 rounded-xl bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-zinc-500" />
+              </div>
+            </div>
             <p className="text-xs text-zinc-500">No events for this day</p>
           </div>
         ) : (

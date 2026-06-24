@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { logger } from '../utils/logger';
+import { X } from 'lucide-react';
 
 export default function BlockRules() {
   const { zones, setZones } = useAppStore();
@@ -123,8 +124,8 @@ export default function BlockRules() {
                           await updateZone({ blockedSites: selectedZone.blockedSites.filter(s => s !== site) });
                         }
                       }}
-                      className="text-zinc-500 hover:text-red-400 text-xs transition-colors"
-                    >✕</button>
+                      className="text-zinc-500 hover:text-red-400 transition-colors"
+                    ><X className="w-3.5 h-3.5" /></button>
                   </div>
                 ))
               ) : (

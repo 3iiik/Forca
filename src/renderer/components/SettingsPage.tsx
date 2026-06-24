@@ -2,6 +2,8 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { AppSettings, FocusZone } from '../types';
 import { logger } from '../utils/logger';
+import { Play, X } from 'lucide-react';
+import ToggleSwitch from './ToggleSwitch';
 
 export default function SettingsPage() {
   const { settings, setSettings, zones, setZones } = useAppStore();
@@ -265,7 +267,7 @@ export default function SettingsPage() {
                         }}
                         className="btn-ghost text-xs"
                       >
-                        ▶ Start
+                        <Play className="w-3 h-3" /> Start
                       </button>
                       <button
                         onClick={async () => {
@@ -274,7 +276,7 @@ export default function SettingsPage() {
                         }}
                         className="btn-ghost text-xs text-zinc-500 hover:text-red-400"
                       >
-                        ✕
+                        <X className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
@@ -499,23 +501,12 @@ const ToggleSetting = memo(function ToggleSetting({ label, description, checked,
   label: string; description?: string; checked: boolean; onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between py-1">
-      <div>
+    <div className="flex items-center justify-between py-1.5">
+      <div className="pr-3">
         <div className="text-sm text-zinc-200">{label}</div>
-        {description && <div className="text-[11px] text-zinc-500">{description}</div>}
+        {description && <div className="text-[11px] text-zinc-500 mt-0.5">{description}</div>}
       </div>
-      <button
-        onClick={() => onChange(!checked)}
-        className={`relative w-9 h-5 transition-colors ${
-          checked ? 'bg-primary-800' : 'bg-zinc-700'
-        }`}
-      >
-        <div
-          className={`absolute top-0.5 left-0.5 w-4 h-4 bg-zinc-100 transition-transform ${
-            checked ? 'translate-x-4' : ''
-          }`}
-        />
-      </button>
+      <ToggleSwitch checked={checked} onChange={onChange} />
     </div>
   );
 });

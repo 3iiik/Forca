@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { ZoneProfile } from '../types';
 import { logger } from '../utils/logger';
+import { Target, Search, Monitor, Settings, FolderOpen, PartyPopper, CheckCircle } from 'lucide-react';
 
 type ChromiumPhase =
   | 'idle'
@@ -89,7 +90,7 @@ export default function OnboardingFlow() {
       const profile: ZoneProfile = {
         id: crypto.randomUUID(),
         name: zoneName || 'Deep Work',
-        icon: '🎯',
+        icon: 'target',
         blockedSites,
         ambientSound: null,
         ambientVolume: 50,
@@ -275,19 +276,30 @@ export default function OnboardingFlow() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950">
-      <div className="max-w-lg w-full mx-4">
+      {/* Background glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-900/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary-800/5 rounded-full blur-3xl" />
+      </div>
+      <div className="max-w-lg w-full mx-4 relative z-10">
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
           {[1, 2, 3, 4].map(s => (
             <div key={s} className="flex items-center gap-2">
-              <div className={`w-7 h-7 flex items-center justify-center text-xs font-semibold transition-colors rounded-md ${
+              <div className={`w-8 h-8 flex items-center justify-center text-xs font-bold transition-all duration-300 rounded-lg ${
                 s <= step
-                  ? 'bg-primary-800 text-zinc-100'
-                  : 'bg-zinc-800 text-zinc-500'
+                  ? 'bg-primary-700 text-zinc-100 shadow-lg shadow-primary-900/40'
+                  : 'bg-zinc-800 text-zinc-500 border border-zinc-700/50'
               }`}>
                 {s}
               </div>
-              {s < 4 && <div className={`w-10 h-px ${s < step ? 'bg-primary-800' : 'bg-zinc-800'}`} />}
+              {s < 4 && (
+                <div className={`w-12 h-0.5 rounded-full transition-all duration-300 ${
+                  s < step
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-400'
+                    : 'bg-zinc-800'
+                }`} />
+              )}
             </div>
           ))}
         </div>
@@ -295,14 +307,18 @@ export default function OnboardingFlow() {
         {/* ── Step 1: Welcome ─────────────────────── */}
         {step === 1 && (
           <div className="text-center animate-fade-in">
-            <div className="text-5xl mb-6">{'🎯'}</div>
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-primary-900/30 border border-primary-700/40 flex items-center justify-center shadow-xl shadow-primary-900/20">
+                <Target className="w-8 h-8 text-primary-400" />
+              </div>
+            </div>
             <h1 className="text-2xl font-bold text-zinc-100 mb-3">Welcome to Forca</h1>
-            <p className="text-sm text-zinc-500 mb-6 leading-relaxed">
+            <p className="text-sm text-zinc-500 mb-6 leading-relaxed max-w-md mx-auto">
               Forca detects when your meetings end and automatically starts focus zones.
               It blocks distracting websites via the Forca browser extension,
               enables Do Not Disturb, plays ambient sounds, and tracks your productivity.
             </p>
-            <button onClick={() => { track('onboarding_step_2_view'); setStep(2); }} className="btn-primary text-base px-8 py-3">
+            <button onClick={() => { track('onboarding_step_2_view'); setStep(2); }} className="btn-primary text-base px-8 py-3 shadow-lg shadow-primary-900/30">
               Get Started
             </button>
           </div>
@@ -313,8 +329,8 @@ export default function OnboardingFlow() {
           <div className="animate-fade-in">
             <h2 className="text-lg font-bold text-zinc-100 mb-6">Create Your First Zone</h2>
             {storeError && (
-              <div className="bg-zinc-900/50 p-4 border border-zinc-800 mb-4 rounded-lg">
-                <p className="text-xs text-zinc-500">{storeError}</p>
+              <div className="bg-zinc-900/80 p-4 border border-red-900/50 mb-4 rounded-xl">
+                <p className="text-xs text-zinc-400">{storeError}</p>
               </div>
             )}
             <div className="space-y-4">
@@ -350,7 +366,7 @@ export default function OnboardingFlow() {
                 />
                 <p className="text-[11px] text-zinc-500 mt-1">Domain names separated by commas</p>
               </div>
-              <button onClick={handleCreateZone} className="btn-primary w-full text-base py-3 mt-2">
+              <button onClick={handleCreateZone} className="btn-primary w-full text-base py-3 mt-2 shadow-lg shadow-primary-900/30">
                 Create Zone
               </button>
               <button
@@ -377,14 +393,14 @@ export default function OnboardingFlow() {
                     onClick={() => handleBrowserSelect('firefox')}
                     className={`relative p-4 text-left transition-all border rounded-xl ${
                       selectedBrowser === 'firefox'
-                        ? 'border-primary-700 bg-primary-900/20'
-                        : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/70'
+                        ? 'border-primary-600 bg-primary-900/20 shadow-lg shadow-primary-900/20'
+                        : 'border-zinc-800 bg-zinc-900/80 hover:border-zinc-700 hover:bg-zinc-900 hover:shadow-lg hover:shadow-zinc-900/30'
                     }`}
                   >
-                    <span className="absolute top-2 right-2 text-[10px] font-medium text-green-500 bg-zinc-800 px-1.5 py-px rounded">
+                    <span className="absolute top-2 right-2 text-[10px] font-medium text-green-400 bg-zinc-800/80 px-1.5 py-px rounded border border-green-900/30">
                       Easy install
                     </span>
-                    <div className="w-9 h-9 flex items-center justify-center text-white font-bold text-base mb-2 rounded-md bg-orange-500">
+                    <div className="w-9 h-9 flex items-center justify-center text-white font-bold text-base mb-2 rounded-md bg-gradient-to-br from-orange-500 to-orange-600 shadow-md">
                       F
                     </div>
                     <div className="text-sm font-medium text-zinc-200">Firefox / Waterfox</div>
@@ -394,14 +410,14 @@ export default function OnboardingFlow() {
                     onClick={() => handleBrowserSelect('chromium')}
                     className={`relative p-4 text-left transition-all border rounded-xl ${
                       selectedBrowser === 'chromium'
-                        ? 'border-primary-700 bg-primary-900/20'
-                        : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/70'
+                        ? 'border-primary-600 bg-primary-900/20 shadow-lg shadow-primary-900/20'
+                        : 'border-zinc-800 bg-zinc-900/80 hover:border-zinc-700 hover:bg-zinc-900 hover:shadow-lg hover:shadow-zinc-900/30'
                     }`}
                   >
-                    <span className="absolute top-2 right-2 text-[10px] font-medium text-yellow-500 bg-zinc-800 px-1.5 py-px rounded">
+                    <span className="absolute top-2 right-2 text-[10px] font-medium text-amber-400 bg-zinc-800/80 px-1.5 py-px rounded border border-amber-900/30">
                       Manual setup
                     </span>
-                    <div className="w-9 h-9 flex items-center justify-center text-white font-bold text-base mb-2 rounded-md bg-emerald-500">
+                    <div className="w-9 h-9 flex items-center justify-center text-white font-bold text-base mb-2 rounded-md bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-md">
                       C
                     </div>
                     <div className="text-sm font-medium text-zinc-200">Chrome, Edge, Brave &amp; More</div>
@@ -410,13 +426,13 @@ export default function OnboardingFlow() {
                 </div>
 
                 {storeError && (
-                  <div className="bg-zinc-900/50 p-4 border border-red-900/40 mb-4 rounded-lg">
+                  <div className="bg-zinc-900/80 p-4 border border-red-900/50 mb-4 rounded-xl">
                     <p className="text-xs text-zinc-400">{storeError}</p>
                   </div>
                 )}
 
                 {selectedBrowser === 'firefox' && !verifying && !extensionConnected && !celebration && (
-                  <button onClick={handleFirefoxInstall} className="btn-primary w-full py-3 text-sm">
+                  <button onClick={handleFirefoxInstall} className="btn-primary w-full py-3 text-sm shadow-lg shadow-primary-900/30">
                     Open Firefox Add-ons
                   </button>
                 )}
@@ -426,7 +442,7 @@ export default function OnboardingFlow() {
             {/* Detecting spinner */}
             {chromiumPhase === 'detecting' && (
               <div className="flex flex-col items-center justify-center gap-3 py-12">
-                <div className="w-5 h-5 border border-primary-600 border-t-transparent animate-spin rounded-full" />
+                <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent animate-spin rounded-full" />
                 <span className="text-xs text-zinc-400">Looking for your browsers...</span>
               </div>
             )}
@@ -443,7 +459,7 @@ export default function OnboardingFlow() {
                         <button
                           key={b.id}
                           onClick={() => handleChromiumBrowserPick(b)}
-                          className="w-full p-3 text-left border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/70 transition-all rounded-lg"
+                          className="w-full p-3 text-left border border-zinc-800 bg-zinc-900/80 hover:border-zinc-700 hover:bg-zinc-900 transition-all rounded-xl"
                         >
                           <div className="text-sm font-medium text-zinc-200">{b.name}</div>
                           <div className="text-[11px] text-zinc-500 mt-px truncate">{b.exePath}</div>
@@ -455,11 +471,15 @@ export default function OnboardingFlow() {
 
                 {detectedBrowsers.length === 0 && (
                   <div className="text-center py-6">
-                    <div className="text-3xl mb-3">{'🔍'}</div>
+                    <div className="flex justify-center mb-3">
+                      <div className="w-12 h-12 rounded-xl bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center">
+                        <Search className="w-6 h-6 text-zinc-500" />
+                      </div>
+                    </div>
                     <p className="text-sm text-zinc-400 mb-2">No supported browser detected</p>
                     <p className="text-xs text-zinc-500 mb-5">Make sure Chrome, Edge, or Brave is installed, then try again.</p>
                     <div className="flex flex-col gap-2">
-                      <button onClick={detectAndPickBest} className="btn-primary w-full py-2.5 text-sm">
+                      <button onClick={detectAndPickBest} className="btn-primary w-full py-2.5 text-sm shadow-lg shadow-primary-900/30">
                         Try Again
                       </button>
                       <button
@@ -498,8 +518,8 @@ export default function OnboardingFlow() {
                   return (
                     <div
                       key={phase}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        active ? 'bg-primary-600 w-4' : done ? 'bg-primary-800' : 'bg-zinc-700'
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        active ? 'bg-primary-500 w-6 shadow-sm shadow-primary-500/40' : done ? 'bg-primary-700 w-2' : 'bg-zinc-700 w-2'
                       }`}
                     />
                   );
@@ -513,26 +533,26 @@ export default function OnboardingFlow() {
             {/* Step 1/3: Open extensions page */}
             {chromiumPhase === 'open-extensions' && selectedChromium && (
               <div className="text-center">
-                <div className="w-12 h-12 flex items-center justify-center text-2xl mb-4 mx-auto bg-zinc-900 rounded-xl border border-zinc-800">
-                  {'🖥️'}
+                <div className="w-14 h-14 flex items-center justify-center mb-4 mx-auto bg-zinc-900/80 rounded-2xl border border-zinc-800 shadow-lg">
+                  <Monitor className="w-6 h-6 text-zinc-300" />
                 </div>
                 <h2 className="text-lg font-bold text-zinc-100 mb-2">Open Extensions Page</h2>
                 <p className="text-xs text-zinc-500 mb-5">
                   A new tab should open with <code className="text-zinc-300 bg-zinc-800 px-1 py-0.5 rounded text-[11px]">{selectedChromium.extensionsUrl}</code>.
                 </p>
-                <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 mb-4 text-left">
+                <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 mb-4 text-left">
                   <p className="text-xs text-zinc-300 leading-relaxed">
                     If it didn&apos;t open, type <code className="text-zinc-200 bg-zinc-800 px-1 rounded">{selectedChromium.extensionsUrl}</code> into your {selectedChromium.name} address bar manually.
                   </p>
                 </div>
 
                 {storeError && (
-                  <div className="bg-zinc-900/50 p-4 border border-red-900/40 mb-4 rounded-lg">
+                  <div className="bg-zinc-900/80 p-4 border border-red-900/50 mb-4 rounded-xl">
                     <p className="text-xs text-zinc-400">{storeError}</p>
                   </div>
                 )}
 
-                <button onClick={() => { setChromiumPhase('dev-mode'); setChromiumStepIndex(1); }} className="btn-primary w-full py-3 text-sm">
+                <button onClick={() => { setChromiumPhase('dev-mode'); setChromiumStepIndex(1); }} className="btn-primary w-full py-3 text-sm shadow-lg shadow-primary-900/30">
                   I see the Extensions Page
                 </button>
                 <p className="mt-2">
@@ -549,22 +569,22 @@ export default function OnboardingFlow() {
             {/* Step 2/3: Enable Developer Mode */}
             {chromiumPhase === 'dev-mode' && (
               <div className="text-center">
-                <div className="w-12 h-12 flex items-center justify-center text-2xl mb-4 mx-auto bg-zinc-900 rounded-xl border border-zinc-800">
-                  {'⚙️'}
+                <div className="w-14 h-14 flex items-center justify-center mb-4 mx-auto bg-zinc-900/80 rounded-2xl border border-zinc-800 shadow-lg">
+                  <Settings className="w-6 h-6 text-zinc-300" />
                 </div>
                 <h2 className="text-lg font-bold text-zinc-100 mb-2">Enable Developer Mode</h2>
                 <p className="text-xs text-zinc-500 mb-5">
                   Turn on <strong className="text-zinc-300">Developer mode</strong> so you can load extensions from a folder.
                 </p>
-                <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 mb-4">
+                <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 mb-4">
                   <div className="flex items-center justify-between mb-3 px-2">
                     <span className="text-xs text-zinc-400 font-medium">Extensions</span>
                     <span className="text-[10px] text-zinc-500">Manage your extensions</span>
                   </div>
                   <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-lg p-3 flex items-center justify-between">
                     <span className="text-xs text-zinc-300">Developer mode</span>
-                    <div className="w-9 h-5 bg-primary-700 rounded-full relative flex items-center px-0.5 transition-colors">
-                      <div className="w-4 h-4 bg-white rounded-full shadow ml-auto" />
+                    <div className="w-10 h-6 bg-primary-600 rounded-full relative flex items-center transition-colors shadow-sm">
+                      <div className="w-[18px] h-[18px] bg-white rounded-full shadow-sm ml-auto mr-[3px]" />
                     </div>
                   </div>
                   <p className="text-[10px] text-zinc-500 mt-2">Toggle this switch on in the top-right corner</p>
@@ -576,7 +596,7 @@ export default function OnboardingFlow() {
                   >
                     Back
                   </button>
-                  <button onClick={handleDevModeDone} className="btn-primary flex-[2] py-3 text-sm">
+                  <button onClick={handleDevModeDone} className="btn-primary flex-[2] py-3 text-sm shadow-lg shadow-primary-900/30">
                     Developer Mode is On
                   </button>
                 </div>
@@ -586,31 +606,31 @@ export default function OnboardingFlow() {
             {/* Step 3/3: Load unpacked */}
             {chromiumPhase === 'load-unpacked' && (
               <div className="text-center">
-                <div className="w-12 h-12 flex items-center justify-center text-2xl mb-4 mx-auto bg-zinc-900 rounded-xl border border-zinc-800">
-                  {'📂'}
+                <div className="w-14 h-14 flex items-center justify-center mb-4 mx-auto bg-zinc-900/80 rounded-2xl border border-zinc-800 shadow-lg">
+                  <FolderOpen className="w-6 h-6 text-zinc-300" />
                 </div>
                 <h2 className="text-lg font-bold text-zinc-100 mb-2">Load the Extension</h2>
                 <p className="text-xs text-zinc-500 mb-5">
                   Click <strong className="text-zinc-300">Load unpacked</strong> on the extensions page and select the opened folder.
                 </p>
 
-                <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 mb-4 text-left space-y-3">
+                <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 mb-4 text-left space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-zinc-800 text-zinc-400 rounded-md shrink-0">1</div>
+                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-primary-800 text-zinc-100 rounded-md shrink-0 shadow-sm">1</div>
                     <p className="text-xs text-zinc-300">Click <strong className="text-zinc-200">Load unpacked</strong> button that appeared after enabling Developer mode</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-zinc-800 text-zinc-400 rounded-md shrink-0">2</div>
+                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-primary-800 text-zinc-100 rounded-md shrink-0 shadow-sm">2</div>
                     <p className="text-xs text-zinc-300">Select the <strong className="text-zinc-200">chromium-extension</strong> folder that just opened</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-zinc-800 text-zinc-400 rounded-md shrink-0">3</div>
+                    <div className="w-6 h-6 flex items-center justify-center text-xs font-bold bg-primary-800 text-zinc-100 rounded-md shrink-0 shadow-sm">3</div>
                     <p className="text-xs text-zinc-300">The FORCA extension should appear in your extensions list</p>
                   </div>
                 </div>
 
-                <div className="bg-zinc-800/30 border border-dashed border-zinc-700/60 rounded-xl p-4 mb-4">
-                  <div className="flex items-center justify-center gap-2 text-zinc-600">
+                <div className="bg-zinc-900/60 border border-dashed border-zinc-700/50 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-center gap-2 text-zinc-500">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
                     </svg>
@@ -619,12 +639,12 @@ export default function OnboardingFlow() {
                 </div>
 
                 {storeError && (
-                  <div className="bg-zinc-900/50 p-4 border border-red-900/40 mb-4 rounded-lg">
+                  <div className="bg-zinc-900/80 p-4 border border-red-900/50 mb-4 rounded-xl">
                     <p className="text-xs text-zinc-400">{storeError}</p>
                   </div>
                 )}
 
-                <button onClick={handleLoadUnpackedDone} className="btn-primary w-full py-3 text-sm">
+                <button onClick={handleLoadUnpackedDone} className="btn-primary w-full py-3 text-sm shadow-lg shadow-primary-900/30">
                   I Loaded the Extension
                 </button>
                 <p className="mt-2">
@@ -639,9 +659,9 @@ export default function OnboardingFlow() {
             {chromiumPhase === 'verifying' && !extensionConnected && !celebration && (
               <div className="text-center">
                 <h2 className="text-lg font-bold text-zinc-100 mb-4">Waiting for Connection</h2>
-                <div className="bg-zinc-900 p-6 border border-zinc-800 space-y-4 rounded-2xl">
+                <div className="bg-zinc-900/80 p-6 border border-zinc-800 space-y-4 rounded-2xl shadow-xl">
                   <div className="flex items-center justify-center gap-3">
-                    <div className="w-4 h-4 border border-primary-600 border-t-transparent animate-spin rounded-full" />
+                    <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent animate-spin rounded-full" />
                     <span className="text-xs text-zinc-400">
                       Waiting for {selectedChromium?.name || 'browser'} extension to connect...
                     </span>
@@ -665,9 +685,9 @@ export default function OnboardingFlow() {
 
             {/* Verifying (Firefox) */}
             {verifying && selectedBrowser === 'firefox' && !extensionConnected && !celebration && (
-              <div className="bg-zinc-900 p-6 border border-zinc-800 space-y-4 rounded-2xl">
+              <div className="bg-zinc-900/80 p-6 border border-zinc-800 space-y-4 rounded-2xl shadow-xl">
                 <div className="flex items-center justify-center gap-3">
-                  <div className="w-4 h-4 border border-primary-600 border-t-transparent animate-spin rounded-full" />
+                  <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent animate-spin rounded-full" />
                   <span className="text-xs text-zinc-400">
                     Waiting for Firefox extension to connect...
                   </span>
@@ -699,7 +719,11 @@ export default function OnboardingFlow() {
             {/* Celebration */}
             {celebration && (
               <div className="text-center py-8 animate-fade-in">
-                <div className="text-5xl mb-4">{'🎉'}</div>
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-primary-900/30 border border-primary-700/40 flex items-center justify-center shadow-xl shadow-primary-900/20">
+                    <PartyPopper className="w-8 h-8 text-primary-400" />
+                  </div>
+                </div>
                 <h3 className="text-lg font-bold text-zinc-100 mb-1">Extension Connected!</h3>
                 <p className="text-xs text-zinc-500">Your browser is now linked to Forca.</p>
               </div>
@@ -710,14 +734,18 @@ export default function OnboardingFlow() {
         {/* ── Step 4: Complete ────────────────────── */}
         {step === 4 && (
           <div className="text-center animate-fade-in">
-            <div className="text-5xl mb-6">{'✅'}</div>
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-primary-900/30 border border-primary-700/40 flex items-center justify-center shadow-xl shadow-primary-900/20">
+                <CheckCircle className="w-8 h-8 text-primary-400" />
+              </div>
+            </div>
             <h2 className="text-lg font-bold text-zinc-100 mb-3">You&apos;re All Set!</h2>
-            <p className="text-sm text-zinc-500 mb-6 leading-relaxed">
+            <p className="text-sm text-zinc-500 mb-6 leading-relaxed max-w-md mx-auto">
               Forca will auto-start this zone after your meetings end.
               The browser extension will block distracting sites during focus mode.
               You can create more zones and track your stats anytime.
             </p>
-            <button onClick={handleComplete} className="btn-primary text-base px-8 py-3">
+            <button onClick={handleComplete} className="btn-primary text-base px-8 py-3 shadow-lg shadow-primary-900/30">
               Start Using Forca
             </button>
           </div>

@@ -7,6 +7,7 @@ import StreakCounter from './StreakCounter';
 import AmbientSoundControl from './AmbientSoundControl';
 import BreakReminder from './BreakReminder';
 import { logger } from '../utils/logger';
+import { Bell, Sparkles } from 'lucide-react';
 
 function parseEvents(events: CalendarEvent[]): CalendarEvent[] {
   return events.map(e => ({
@@ -83,7 +84,7 @@ export default function TodayView() {
       {/* Notification toast */}
       {notification && (
         <div className="animate-slide-up bg-primary-900 text-zinc-100 px-4 py-3 flex items-center gap-3 border border-zinc-800">
-          <span className="text-lg">🔔</span>
+          <Bell className="w-4 h-4 shrink-0" />
           <div>
             <div className="font-medium text-sm">{notification.title}</div>
             <div className="text-xs text-zinc-400">{notification.body}</div>
@@ -157,7 +158,7 @@ export default function TodayView() {
           {suggestions.length > 0 && (
             <div className="focus-card">
               <h3 className="text-sm font-semibold text-zinc-200 mb-3 flex items-center gap-2">
-                <span>✨</span> Suggestions
+                <Sparkles className="w-4 h-4 text-primary-400" /> Suggestions
               </h3>
               <div className="space-y-2">
                 {suggestions.slice(0, 3).map((s) => (

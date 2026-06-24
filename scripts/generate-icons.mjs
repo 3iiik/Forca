@@ -8,15 +8,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const iconsDir = path.resolve(__dirname, '..', 'assets', 'icons');
 
 const SVG = `<svg width="512" height="512" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-  <rect width="96" height="96" rx="22" fill="#1A1035"/>
-  <circle cx="48" cy="48" r="26" fill="none" stroke="#3D2FA8" stroke-width="3.5"/>
+  <rect width="96" height="96" rx="22" fill="#1C1917"/>
+  <circle cx="48" cy="48" r="26" fill="none" stroke="#44403C" stroke-width="3.5"/>
   <circle cx="48" cy="48" r="26" fill="none" stroke="#1D9E75" stroke-width="3.5"
     stroke-dasharray="81 163" stroke-dashoffset="41" stroke-linecap="round"/>
   <circle cx="48" cy="48" r="7" fill="#1D9E75"/>
-  <rect x="46.5" y="18" width="3" height="11" rx="1.5" fill="#6B5FD4"/>
-  <rect x="46.5" y="67" width="3" height="11" rx="1.5" fill="#6B5FD4"/>
-  <rect x="18" y="46.5" width="11" height="3" rx="1.5" fill="#6B5FD4"/>
-  <rect x="67" y="46.5" width="11" height="3" rx="1.5" fill="#6B5FD4"/>
+  <rect x="46.5" y="18" width="3" height="11" rx="1.5" fill="#78716C"/>
+  <rect x="46.5" y="67" width="3" height="11" rx="1.5" fill="#78716C"/>
+  <rect x="18" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
+  <rect x="67" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
 </svg>`;
 
 async function main() {

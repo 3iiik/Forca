@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { useAppStore } from '../stores/appStore';
+import { Zap, Coffee, X, Play, Pause } from 'lucide-react';
 
 const ActiveZoneCard = memo(function ActiveZoneCard() {
   const { activeZone, breakTimer, zones, setCurrentView } = useAppStore();
@@ -28,7 +29,11 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
   if (!activeZone && !breakTimer.isBreak) {
     return (
       <div className="focus-card text-center py-8">
-        <div className="text-4xl mb-3">🧘</div>
+        <div className="flex justify-center mb-3">
+          <div className="w-12 h-12 rounded-xl bg-primary-900/20 border border-primary-800/40 flex items-center justify-center">
+            <Zap className="w-6 h-6 text-primary-400" />
+          </div>
+        </div>
         <h2 className="text-lg font-semibold text-zinc-200 mb-2">No Active Zone</h2>
         <p className="text-xs text-zinc-500 mb-4">
           Start a focus zone from the list or wait for an auto-trigger
@@ -52,7 +57,11 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
 
     return (
       <div className="focus-card text-center py-8 border-amber-700 bg-zinc-900/80">
-        <div className="text-4xl mb-3">☕</div>
+        <div className="flex justify-center mb-3">
+          <div className="w-12 h-12 rounded-xl bg-amber-900/20 border border-amber-800/40 flex items-center justify-center">
+            <Coffee className="w-6 h-6 text-amber-400" />
+          </div>
+        </div>
         <h2 className="text-lg font-semibold text-zinc-200 mb-1">Break Time</h2>
         <p className="text-xs text-zinc-500 mb-4">Take a moment to recharge</p>
 
@@ -99,8 +108,8 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
             </p>
           </div>
         </div>
-        <button onClick={handleStop} className="btn-secondary text-xs px-3 py-1.5">
-          ✕ End
+        <button onClick={handleStop} className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1">
+          <X className="w-3 h-3" /> End
         </button>
       </div>
 
@@ -129,8 +138,9 @@ const ActiveZoneCard = memo(function ActiveZoneCard() {
 
       {/* Controls */}
       <div className="flex items-center justify-center gap-3 mt-2">
-        <button onClick={handlePause} className="btn-secondary px-6 text-xs">
-          {isPaused ? '▶ Resume' : '⏸ Pause'}
+        <button onClick={handlePause} className="btn-secondary px-6 text-xs flex items-center gap-1.5">
+          {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+          {isPaused ? 'Resume' : 'Pause'}
         </button>
       </div>
     </div>

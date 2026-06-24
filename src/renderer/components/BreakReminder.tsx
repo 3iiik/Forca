@@ -1,11 +1,11 @@
 import { memo, useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
+import { Clock } from 'lucide-react';
 
 const BreakReminder = memo(function BreakReminder() {
   const { settings, breakTimer, activeZone } = useAppStore();
   const [focusMinutes, setFocusMinutes] = useState(0);
 
-  // Track how long the user has been in focus mode
   useEffect(() => {
     if (!breakTimer.isBreak && activeZone) {
       const interval = setInterval(() => {
@@ -26,7 +26,7 @@ const BreakReminder = memo(function BreakReminder() {
   return (
     <div className={`focus-card ${isDue ? 'border-amber-700 bg-zinc-900/80' : ''}`}>
       <h3 className="text-sm font-semibold text-zinc-200 flex items-center gap-2 mb-3">
-        <span>⏰</span> Break Reminder
+        <Clock className="w-4 h-4 text-amber-400" /> Break Reminder
       </h3>
 
       {breakTimer.isBreak ? (

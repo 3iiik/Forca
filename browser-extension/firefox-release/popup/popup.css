@@ -1,7 +1,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   width: 320px;
-  background: #1A1035;
+  background: #1C1917;
   color: #F1EFE8;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13px;
@@ -13,7 +13,7 @@ body {
   gap: 10px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #2C2C2A;
+  border-bottom: 1px solid #292524;
 }
 .logo { width: 28px; height: 28px; }
 .header h1 { font-size: 15px; font-weight: 700; color: #F1EFE8; }
@@ -28,7 +28,7 @@ body {
 }
 .status.active { background: rgba(29, 158, 117, 0.12); border: 1px solid rgba(29, 158, 117, 0.3); }
 .status.paused { background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3); }
-.status.idle { background: rgba(107, 95, 212, 0.1); border: 1px solid rgba(107, 95, 212, 0.2); }
+.status.idle { background: rgba(120, 113, 108, 0.1); border: 1px solid rgba(120, 113, 108, 0.2); }
 .status.disconnected { background: rgba(107, 114, 128, 0.1); border: 1px solid rgba(107, 114, 128, 0.2); }
 .status.connecting { background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.2); }
 
@@ -40,13 +40,13 @@ body {
 }
 .status-dot.green { background: #1D9E75; box-shadow: 0 0 6px rgba(29, 158, 117, 0.6); }
 .status-dot.yellow { background: #EAB308; box-shadow: 0 0 6px rgba(234, 179, 8, 0.6); }
-.status-dot.blue { background: #6B5FD4; }
+.status-dot.blue { background: #78716C; }
 .status-dot.gray { background: #6B7280; }
 
 .status-content { flex: 1; }
 .status-label { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
-.zone-name { font-size: 12px; color: #AFA9EC; }
-.sites-count { font-size: 11px; color: #6B5FD4; margin-top: 2px; }
+.zone-name { font-size: 12px; color: #A8A29E; }
+.sites-count { font-size: 11px; color: #A8A29E; margin-top: 2px; }
 .time-remaining { font-size: 18px; font-weight: 700; color: #1D9E75; margin-top: 4px; }
 
 .btn, .btn-small, .btn-text, .btn-secondary {
@@ -57,7 +57,7 @@ body {
 .btn {
   display: block;
   width: 100%;
-  background: #3D2FA8;
+  background: #1D9E75;
   color: #F1EFE8;
   padding: 10px;
   border-radius: 6px;
@@ -65,19 +65,19 @@ body {
   font-weight: 600;
   transition: background 0.2s;
 }
-.btn:hover { background: #6B5FD4; }
+.btn:hover { background: #059669; }
 .btn-secondary {
   background: transparent;
-  color: #AFA9EC;
-  border: 1px solid #3D2FA8;
+  color: #A8A29E;
+  border: 1px solid #44403C;
   padding: 10px;
   border-radius: 6px;
   font-size: 13px;
   margin-top: 6px;
 }
-.btn-secondary:hover { background: rgba(61, 47, 168, 0.15); }
+.btn-secondary:hover { background: rgba(68, 64, 60, 0.15); }
 .btn-small {
-  background: #3D2FA8;
+  background: #1D9E75;
   color: #F1EFE8;
   padding: 4px 10px;
   border-radius: 4px;
@@ -86,14 +86,14 @@ body {
 }
 .btn-text {
   background: none;
-  color: #6B5FD4;
+  color: #A8A29E;
   font-size: 12px;
   padding: 4px;
 }
-.btn-text:hover { color: #AFA9EC; }
+.btn-text:hover { color: #D6D3D1; }
 
 .actions { margin-top: 12px; }
-.footer { margin-top: 12px; text-align: center; padding-top: 10px; border-top: 1px solid #2C2C2A; }
+.footer { margin-top: 12px; text-align: center; padding-top: 10px; border-top: 1px solid #292524; }
 
 .spinner {
   width: 12px;

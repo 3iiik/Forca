@@ -56,26 +56,31 @@ function applyZoneInfo(data) {
 
   const reloadLink = document.getElementById('reloadLink');
 
+  const playSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+  const pauseSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  const stopSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+
   if (zoneStatus === 'paused') {
-    pauseBtn.textContent = '▶ Resume Zone';
+    pauseBtn.innerHTML = playSvg + ' <span class="btn-text">Resume Zone</span>';
     pauseBtn.className = 'btn';
     statusDot.style.background = '#F59E0B';
     subtitle.textContent = 'Focus Zone — Paused';
     if (reloadLink) reloadLink.style.display = 'block';
   } else if (zoneStatus === 'active') {
     if (reloadLink) reloadLink.style.display = 'none';
-    pauseBtn.textContent = '⏸ Pause Zone';
+    pauseBtn.innerHTML = pauseSvg + ' <span class="btn-text">Pause Zone</span>';
     pauseBtn.className = 'btn';
     statusDot.style.background = '#1D9E75';
     subtitle.textContent = "You're in Focus Mode";
   } else {
-    pauseBtn.textContent = '⏸ Zone Ended';
+    pauseBtn.innerHTML = pauseSvg + ' <span class="btn-text">Zone Ended</span>';
     pauseBtn.className = 'btn btn-disabled';
     pauseBtn.disabled = true;
-    document.getElementById('endBtn').disabled = true;
-    document.getElementById('endBtn').textContent = '✓ Zone Ended';
+    const endBtn = document.getElementById('endBtn');
+    endBtn.disabled = true;
+    endBtn.innerHTML = stopSvg + ' <span class="btn-text">Zone Ended</span>';
     if (reloadLink) reloadLink.style.display = 'none';
-    statusDot.style.background = '#6B5FD4';
+    statusDot.style.background = '#78716C';
     subtitle.textContent = 'Focus session complete';
   }
 }

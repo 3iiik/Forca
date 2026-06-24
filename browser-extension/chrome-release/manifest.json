@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Forca — Focus Mode Blocker",
-  "version": "2.0.0-beta.1",
+  "version": "2.1.0",
   "description": "Blocks distracting websites during Forca focus zones via WebSocket sync with the Forca desktop app.",
   "permissions": [
     "declarativeNetRequest",

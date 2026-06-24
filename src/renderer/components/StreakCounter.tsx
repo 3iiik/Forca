@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { StreakData } from '../types';
+import { Flame } from 'lucide-react';
 
 interface StreakCounterProps {
   streak: StreakData;
@@ -10,7 +11,7 @@ const StreakCounter = memo(function StreakCounter({ streak }: StreakCounterProps
 
   return (
     <div className="flex items-center gap-1.5 px-2 py-1 border border-zinc-800 bg-zinc-900/50">
-      <span className="text-sm">🔥</span>
+      <Flame className="w-3.5 h-3.5 text-orange-400" />
       <span className="text-xs font-semibold text-zinc-300">
         {streak.currentStreak}
       </span>

@@ -6,6 +6,7 @@ import {
 import { useAppStore } from '../stores/appStore';
 import { FocusSession } from '../types';
 import { logger } from '../utils/logger';
+import { Trophy, Target, Timer, Flame } from 'lucide-react';
 
 export default function StatsPage() {
   const { focusScore, setFocusScore, weeklySummary, setWeeklySummary, streak } = useAppStore();
@@ -34,7 +35,6 @@ export default function StatsPage() {
     }
   };
 
-  // Prepare chart data
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (6 - i));
@@ -111,7 +111,7 @@ export default function StatsPage() {
                   color: '#e4e4e7',
                 }}
               />
-              <Bar dataKey="hours" fill="#5b21b6" />
+              <Bar dataKey="hours" fill="#1D9E75" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -137,9 +137,9 @@ export default function StatsPage() {
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#7c3aed"
+                stroke="#1D9E75"
                 strokeWidth={2}
-                dot={{ fill: '#7c3aed', r: 3 }}
+                dot={{ fill: '#1D9E75', r: 3 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -149,24 +149,26 @@ export default function StatsPage() {
       {/* Milestones */}
       {sessions.length > 0 && (
         <div className="focus-card">
-          <h2 className="text-sm font-semibold text-zinc-200 mb-3">🏆 Milestones</h2>
+          <h2 className="text-sm font-semibold text-zinc-200 mb-3 flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-amber-400" /> Milestones
+          </h2>
           <div className="grid grid-cols-3 gap-3">
             <MilestoneCard
               title="Total Sessions"
               value={sessions.length.toString()}
-              icon="🎯"
+              icon={Target}
               unlocked={sessions.length >= 10}
             />
             <MilestoneCard
               title="Deep Work Hours"
               value={Math.round(sessions.reduce((a, s) => a + s.durationCompleted, 0) / 60).toString()}
-              icon="⏱"
+              icon={Timer}
               unlocked={true}
             />
             <MilestoneCard
               title="Streak"
               value={`${streak.currentStreak} days`}
-              icon="🔥"
+              icon={Flame}
               unlocked={streak.currentStreak >= 3}
             />
           </div>
@@ -195,12 +197,14 @@ const SummaryItem = memo(function SummaryItem({ label, value }: { label: string;
   );
 });
 
-const MilestoneCard = memo(function MilestoneCard({ title, value, icon, unlocked }: {
-  title: string; value: string; icon: string; unlocked: boolean;
+const MilestoneCard = memo(function MilestoneCard({ title, value, icon: Icon, unlocked }: {
+  title: string; value: string; icon: typeof Target; unlocked: boolean;
 }) {
   return (
     <div className={`p-3 text-center border ${unlocked ? 'border-primary-800 bg-primary-900/10' : 'border-zinc-800 bg-zinc-900/50 opacity-50'}`}>
-      <div className="text-xl mb-1">{icon}</div>
+      <div className="flex justify-center mb-1">
+        <Icon className={`w-5 h-5 ${unlocked ? 'text-primary-400' : 'text-zinc-600'}`} />
+      </div>
       <div className="font-semibold text-sm text-zinc-200">{value}</div>
       <div className="text-[11px] text-zinc-500">{title}</div>
     </div>

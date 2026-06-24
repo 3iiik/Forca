@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blocked by Forca</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧘</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='7' fill='none' stroke='%231D9E75' stroke-width='1.5'/><circle cx='8' cy='8' r='2.5' fill='%231D9E75'/></svg>">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #1A1035;
+      background: #1C1917;
       color: #F1EFE8;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       display: flex;
@@ -21,15 +21,15 @@
       text-align: center;
       max-width: 460px;
     }
-    .icon { font-size: 4rem; margin-bottom: 1.5rem; }
+    .icon { margin-bottom: 1.5rem; }
     h1 {
-      color: #3D2FA8;
+      color: #1D9E75;
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
     }
     .subtitle {
-      color: #AFA9EC;
+      color: #A8A29E;
       font-size: 1rem;
       margin-bottom: 2rem;
     }
@@ -55,7 +55,7 @@
     }
     .timer-text .label {
       font-size: 0.8rem;
-      color: #6B5FD4;
+      color: #A8A29E;
       margin-top: 0.25rem;
     }
     .zone-name {
@@ -65,13 +65,17 @@
       margin-bottom: 1.5rem;
     }
     .info {
-      color: #AFA9EC;
+      color: #A8A29E;
       font-size: 0.85rem;
       line-height: 1.6;
       margin-bottom: 2rem;
     }
     .btn {
-      background: #3D2FA8;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      background: #1D9E75;
       color: #F1EFE8;
       border: none;
       padding: 0.75rem 2rem;
@@ -81,11 +85,15 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn:hover { background: #6B5FD4; }
+    .btn:hover { background: #059669; }
     .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
       background: transparent;
-      color: #AFA9EC;
-      border: 1px solid #3D2FA8;
+      color: #A8A29E;
+      border: 1px solid #44403C;
       padding: 0.75rem 2rem;
       border-radius: 0.5rem;
       font-size: 0.85rem;
@@ -93,10 +101,10 @@
       margin-top: 0.75rem;
       transition: background 0.2s;
     }
-    .btn-secondary:hover { background: rgba(61, 47, 168, 0.15); }
+    .btn-secondary:hover { background: rgba(68, 64, 60, 0.15); }
     .btn-disabled {
-      background: #3D2FA8;
-      color: #6B5FD4;
+      background: #292524;
+      color: #78716C;
       opacity: 0.5;
       cursor: default;
     }
@@ -125,13 +133,23 @@
     .footer {
       margin-top: 2rem;
       font-size: 0.75rem;
-      color: #6B5FD4;
+      color: #57534E;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="icon">🧘</div>
+    <div class="icon">
+      <svg width="64" height="64" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="48" cy="48" r="26" fill="none" stroke="#44403C" stroke-width="3.5"/>
+        <circle cx="48" cy="48" r="26" fill="none" stroke="#1D9E75" stroke-width="3.5" stroke-dasharray="81 163" stroke-dashoffset="41" stroke-linecap="round"/>
+        <circle cx="48" cy="48" r="7" fill="#1D9E75"/>
+        <rect x="46.5" y="18" width="3" height="11" rx="1.5" fill="#78716C"/>
+        <rect x="46.5" y="67" width="3" height="11" rx="1.5" fill="#78716C"/>
+        <rect x="18" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
+        <rect x="67" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
+      </svg>
+    </div>
     <h1>Blocked by Forca</h1>
     <p class="subtitle">You're in Focus Mode</p>
 
@@ -139,7 +157,7 @@
 
     <div class="timer-ring">
       <svg width="200" height="200" viewBox="0 0 200 200">
-        <circle cx="100" cy="100" r="85" fill="none" stroke="#2C2C2A" stroke-width="6"/>
+            <circle cx="100" cy="100" r="85" fill="none" stroke="#292524" stroke-width="6"/>
         <circle id="progressCircle" cx="100" cy="100" r="85" fill="none" stroke="#1D9E75" stroke-width="6"
           stroke-linecap="round" stroke-dasharray="534.07" stroke-dashoffset="0"/>
       </svg>
@@ -153,9 +171,15 @@
       To access this site, pause or end your focus zone in the Forca desktop app.
     </div>
 
-    <button class="btn" id="pauseBtn">⏸ Pause Zone</button>
+    <button class="btn" id="pauseBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      <span class="btn-text">Pause Zone</span>
+    </button>
     <br/>
-    <button class="btn-secondary" id="endBtn">⏹ End Zone</button>
+    <button class="btn-secondary" id="endBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+      <span class="btn-text">End Zone</span>
+    </button>
     <br/>
     <a href="#" id="reloadLink" class="reload-link" style="display:none" target="_top">Continue to site →</a>
 
