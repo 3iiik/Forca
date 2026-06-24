@@ -4,6 +4,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        heading: ['Josefin Sans', 'sans-serif'],
+        body: ['DM Sans', 'sans-serif'],
+      },
       colors: {
         background: '#09090b',
         foreground: '#f4f4f5',
