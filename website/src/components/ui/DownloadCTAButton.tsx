@@ -10,7 +10,7 @@ interface DownloadCTAButtonProps {
 }
 
 export function DownloadCTAButton({
-  href = '/download/',
+  href = `${import.meta.env.BASE_URL}download/`,
   label = 'Download Forca free',
   size = 'md',
   className = '',

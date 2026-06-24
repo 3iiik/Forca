@@ -45,14 +45,6 @@ const lu = {
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   ),
-  gitBranch: (size: number) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="6" y1="3" x2="6" y2="15" />
-      <circle cx="18" cy="6" r="3" />
-      <circle cx="6" cy="18" r="3" />
-      <path d="M18 9a9 9 0 0 1-9 9" />
-    </svg>
-  ),
   layers: (size: number) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="12 2 2 7 12 12 22 7 12 2" />
@@ -71,12 +63,6 @@ const lu = {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="5" y1="12" x2="19" y2="12" />
       <polyline points="12 5 19 12 12 19" />
-    </svg>
-  ),
-  arrowDown: (size: number) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <polyline points="5 12 12 19 19 12" />
     </svg>
   ),
   check: (size: number) => (
@@ -106,11 +92,9 @@ export const Icons = {
   ShieldBan: ({ size = 24 }: { size?: number }) => <>{lu.shieldBan(size)}</>,
   ChartBar: ({ size = 24 }: { size?: number }) => <>{lu.chartBar(size)}</>,
   Lock: ({ size = 24 }: { size?: number }) => <>{lu.lock(size)}</>,
-  GitBranch: ({ size = 24 }: { size?: number }) => <>{lu.gitBranch(size)}</>,
   Layers: ({ size = 24 }: { size?: number }) => <>{lu.layers(size)}</>,
   Monitor: ({ size = 24 }: { size?: number }) => <>{lu.monitor(size)}</>,
   ArrowRight: ({ size = 24 }: { size?: number }) => <>{lu.arrowRight(size)}</>,
-  ArrowDown: ({ size = 24 }: { size?: number }) => <>{lu.arrowDown(size)}</>,
   Check: ({ size = 24 }: { size?: number }) => <>{lu.check(size)}</>,
   X: ({ size = 24 }: { size?: number }) => <>{lu.x(size)}</>,
   Firefox: ({ size = 24 }: { size?: number }) => <>{lu.firefox(size)}</>,

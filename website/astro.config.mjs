@@ -4,8 +4,8 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  site: 'https://forca.hexname.com',
-  base: '/',
+  site: 'https://3iiik.github.io',
+  base: '/Forca/',
   outDir: './dist',
   publicDir: './public',
   integrations: [

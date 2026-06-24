@@ -48,7 +48,7 @@ export function ForcaHero() {
                 return (
                   <a
                     key={p.id}
-                    href="/download/"
+                    href={import.meta.env.BASE_URL + 'download/'}
                     className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       p.id === platform
                         ? 'bg-accent text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-400 hover:-translate-y-0.5'
