@@ -159,7 +159,10 @@ import '../styles/globals.css';
         position: relative;
         background: linear-gradient(180deg, rgba(6,78,59,0.18) 0%, rgba(29,158,117,0.06) 120px, transparent 450px);
         min-height: 100vh;
+        user-select: none;
       }
+      .selectable, .selectable * { user-select: text; }
+      code, pre, input, textarea { user-select: text; }
 
       .section { padding: 64px 0; }
       .section-alt { background: var(--bg-card); }
