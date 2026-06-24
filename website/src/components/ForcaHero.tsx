@@ -33,7 +33,7 @@ export function ForcaHero() {
 
   return (
     <section className="relative py-20 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/10 via-transparent to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -53,7 +53,7 @@ export function ForcaHero() {
                     href="/download/"
                     className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       p.id === platform
-                        ? 'bg-accent text-white shadow-lg shadow-purple-600/20 hover:bg-purple-400 hover:-translate-y-0.5'
+                        ? 'bg-accent text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-400 hover:-translate-y-0.5'
                         : 'border border-[#27272a] text-muted-foreground hover:text-foreground hover:bg-[#27272a]'
                     }`}
                   >
@@ -84,7 +84,7 @@ export function ForcaHero() {
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 via-purple-500/5 to-transparent rounded-3xl blur-xl" />
+            <div className="absolute -inset-4 bg-gradient-to-br from-emerald-600/20 via-emerald-500/5 to-transparent rounded-3xl blur-xl" />
             <div className="relative grid grid-cols-2 gap-3">
               {steps.map((step, i) => {
                 const StepIcon = step.icon;
@@ -97,7 +97,7 @@ export function ForcaHero() {
                     transition={{ delay: i * 0.1, duration: 0.4 }}
                     className={`relative rounded-2xl border p-4 md:p-5 ${
                       isActive
-                        ? 'border-purple-500/60 bg-purple-500/10 shadow-lg shadow-purple-600/15'
+                        ? 'border-emerald-500/60 bg-emerald-500/10 shadow-lg shadow-emerald-600/15'
                         : 'border-[#27272a] bg-[#18181b]'
                     }`}
                     style={{ willChange: 'transform' }}

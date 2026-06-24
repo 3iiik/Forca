@@ -154,7 +154,7 @@ const sections = [
             <ul className="space-y-1.5">
               {group.items.map((item: any, ii: number) => (
                 <li key={ii} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
                   {typeof item === 'string' ? item : (
                     <span>
                       {item.text}
@@ -201,7 +201,7 @@ const sections = [
 
 export function DocsPage() {
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-purple-900/15 via-background to-background">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-emerald-900/15 via-background to-background">
       <section className="pt-16 md:pt-24 pb-12 md:pb-16 text-center">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

@@ -25,7 +25,7 @@ export function DownloadCTAButton({
   return (
     <a
       href={href}
-      className={`inline-flex items-center justify-center ${sizeClasses[size]} rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-600/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background select-none ${className}`}
+      className={`inline-flex items-center justify-center ${sizeClasses[size]} rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-600/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background select-none ${className}`}
     >
       <Download className={size === 'sm' ? 'w-3.5 h-3.5' : size === 'lg' ? 'w-5 h-5' : 'w-4 h-4'} />
       {label}

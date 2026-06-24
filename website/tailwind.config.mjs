@@ -13,8 +13,8 @@ export default {
         },
         border: '#27272a',
         accent: {
-          DEFAULT: '#8b5cf6',
-          foreground: '#ede9fe',
+          DEFAULT: '#1D9E75',
+          foreground: '#d1fae5',
         },
         card: {
           DEFAULT: '#18181b',

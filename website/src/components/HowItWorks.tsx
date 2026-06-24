@@ -43,7 +43,7 @@ function StepCard({ step, index }: { step: (typeof steps)[0]; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.12, duration: 0.45 }}
-      className="relative flex flex-col items-center text-center rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-7 transition-transform duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-600/10"
+      className="relative flex flex-col items-center text-center rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-7 transition-transform duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-600/10"
       style={{ willChange: 'transform' }}
     >
       <span className="flex items-center justify-center w-7 h-7 rounded-full bg-accent text-white text-xs font-bold mb-5 shadow-sm">
@@ -74,7 +74,7 @@ export function HowItWorks() {
         </div>
 
         <div className="relative">
-          <div className="hidden lg:block absolute top-[88px] left-[calc(10%+36px)] right-[calc(10%+36px)] h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent pointer-events-none" />
+          <div className="hidden lg:block absolute top-[88px] left-[calc(10%+36px)] right-[calc(10%+36px)] h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent pointer-events-none" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-5">
             {steps.map((step, i) => (

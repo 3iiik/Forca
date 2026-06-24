@@ -59,12 +59,12 @@ export function DownloadButton({ href, label, className = '' }: DownloadButtonPr
         <span
           className={`absolute inset-0 transition-all duration-500 ${
             status === 'idle'
-              ? 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400'
+              ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400'
               : status === 'downloading'
-                ? 'bg-purple-600/50'
+                ? 'bg-emerald-600/50'
                 : status === 'downloaded'
                   ? 'bg-green-600'
-                  : 'bg-gradient-to-r from-purple-600 to-purple-500'
+                  : 'bg-gradient-to-r from-emerald-600 to-emerald-500'
           }`}
         />
 
@@ -72,7 +72,7 @@ export function DownloadButton({ href, label, className = '' }: DownloadButtonPr
 
         {status === 'downloading' && (
           <span
-            className="absolute bottom-0 left-0 h-full bg-purple-500 transition-all duration-200 ease-linear z-[3]"
+            className="absolute bottom-0 left-0 h-full bg-emerald-500 transition-all duration-200 ease-linear z-[3]"
             style={{ width: `${progress}%` }}
           />
         )}

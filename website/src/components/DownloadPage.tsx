@@ -66,12 +66,12 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.15, duration: 0.5 }}
-      className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 transition-transform duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-600/15"
+      className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 transition-transform duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-600/15"
       style={{ willChange: 'transform' }}
     >
       {platform.recommended && (
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10">
-          <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-accent text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-purple-600/30">
+          <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-accent text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-emerald-600/30">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
             Recommended
           </span>
@@ -79,7 +79,7 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
       )}
 
       <div className="flex flex-col items-center text-center mb-6 md:mb-8 pt-2">
-        <div className="flex items-center justify-center w-20 h-20 rounded-2xl bg-accent/10 ring-1 ring-accent/20 mb-4 text-accent transition-all duration-300 group-hover:ring-accent/40 group-hover:bg-accent/15 group-hover:shadow-lg group-hover:shadow-purple-600/20">
+        <div className="flex items-center justify-center w-20 h-20 rounded-2xl bg-accent/10 ring-1 ring-accent/20 mb-4 text-accent transition-all duration-300 group-hover:ring-accent/40 group-hover:bg-accent/15 group-hover:shadow-lg group-hover:shadow-emerald-600/20">
           <PlatformIcon size={40} />
         </div>
         <h3 className="text-lg md:text-xl font-bold text-foreground mb-0.5">{platform.title}</h3>
@@ -141,7 +141,7 @@ export function DownloadPage() {
   const version = release?.tag_name?.replace(/^v/, '') || '2.0.0';
 
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-purple-900/15 via-background to-background">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-emerald-900/15 via-background to-background">
       <section className="pt-20 pb-12 text-center">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <motion.div

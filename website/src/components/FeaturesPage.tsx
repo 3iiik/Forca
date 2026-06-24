@@ -54,7 +54,7 @@ function FeatureCard({ feature, index }: { feature: (typeof features)[0]; index:
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.1, duration: 0.4 }}
-      className="rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6 transition-transform duration-300 hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-600/10"
+      className="rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6 transition-transform duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-600/10"
       style={{ willChange: 'transform' }}
     >
       <div className="flex items-center gap-3 mb-4">
@@ -81,7 +81,7 @@ function FeatureCard({ feature, index }: { feature: (typeof features)[0]; index:
 
 export function FeaturesPage() {
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-purple-900/15 via-background to-background">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-emerald-900/15 via-background to-background">
       <section className="pt-20 pb-12 text-center">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
