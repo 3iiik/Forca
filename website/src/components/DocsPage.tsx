@@ -29,7 +29,7 @@ const sections = [
         <h3 className="text-sm font-semibold text-foreground mb-2">Desktop app</h3>
         <ol className="space-y-2">
           {[
-            ['Download the latest installer from the', { type: 'link', href: '/Forca/download/', text: 'download page' }, '.'],
+            ['Download the latest installer from the', { type: 'link', href: '/download/', text: 'download page' }, '.'],
             ['Run ', { type: 'code', text: 'Forca-Setup-x64.exe' }, ' and follow the setup wizard.'],
             ['Launch Forca. The onboarding wizard will guide you through the rest.'],
           ].map((parts, i) => (
@@ -146,7 +146,7 @@ const sections = [
           },
           {
             title: 'App won\'t start',
-            items: ['Ensure you\'re on Windows 10 or later.', { text: 'Try reinstalling the latest version from the ', link: { href: '/Forca/download/', text: 'download page' }, suffix: '.' }, { text: 'Check the logs at ', code: '%APPDATA%/forca/logs/', suffix: '.' }],
+            items: ['Ensure you\'re on Windows 10 or later.', { text: 'Try reinstalling the latest version from the ', link: { href: '/download/', text: 'download page' }, suffix: '.' }, { text: 'Check the logs at ', code: '%APPDATA%/forca/logs/', suffix: '.' }],
           },
         ].map((group, gi) => (
           <div key={gi}>
@@ -183,10 +183,10 @@ const sections = [
         {[
           { q: 'Is Forca free?', a: 'Yes. Forca is completely free and open source under the MIT License.' },
           { q: 'Do I need an account?', a: 'No. Forca is local-first. Everything runs on your machine with no account required.' },
-          { q: 'Does it work on macOS or Linux?', a: <>Forca is now available on Windows, macOS, <em className="text-foreground">and</em> Linux. The browser extension works on all platforms. Download the latest version for your OS from the <a href="/Forca/download/" className="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.</> },
+          { q: 'Does it work on macOS or Linux?', a: <>Forca is now available on Windows, macOS, <em className="text-foreground">and</em> Linux. The browser extension works on all platforms. Download the latest version for your OS from the <a href="/download/" className="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.</> },
           { q: 'Can I use Forca offline?', a: 'Yes. The desktop app and extension work entirely offline. Internet is only needed for calendar integration (optional).' },
-          { q: 'How do I update Forca?', a: <>Forca checks for updates automatically on startup. When an update is available, you&apos;ll be prompted to download and install it. You can also download the latest version from the <a href="/Forca/download/" className="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.</> },
-          { q: 'Is my data private?', a: <>Yes. All data is stored locally on your computer. No data is sent to any server. Forca is open source, so you can verify this yourself. See our <a href="/Forca/privacy/" className="text-accent hover:text-accent-hover underline underline-offset-2">privacy page</a> for details.</> },
+          { q: 'How do I update Forca?', a: <>Forca checks for updates automatically on startup. When an update is available, you&apos;ll be prompted to download and install it. You can also download the latest version from the <a href="/download/" className="text-accent hover:text-accent-hover underline underline-offset-2">download page</a>.</> },
+          { q: 'Is my data private?', a: <>Yes. All data is stored locally on your computer. No data is sent to any server. Forca is open source, so you can verify this yourself. See our <a href="/privacy/" className="text-accent hover:text-accent-hover underline underline-offset-2">privacy page</a> for details.</> },
           { q: 'Can I contribute?', a: <>Absolutely! Forca is open source. Visit the <a href="https://github.com/3iiik/forca" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover underline underline-offset-2">GitHub repository</a> to submit issues, feature requests, or pull requests.</> },
         ].map((faq, i) => (
           <div key={i} className="py-3 first:pt-0 last:pb-0">
