@@ -1,6 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200" fill="none">
-  <circle cx="100" cy="100" r="88" stroke="#1D9E75" stroke-width="11"/>
-  <circle cx="100" cy="100" r="57" stroke="#1D9E75" stroke-width="9"/>
-  <circle cx="100" cy="100" r="27" fill="#1D9E75"/>
-  <text x="220" y="128" font-family="'Josefin Sans', 'Segoe UI', sans-serif" font-size="88" font-weight="700" fill="#f4f4f5" letter-spacing="-2">Forca</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="160" viewBox="0 0 260 96">
+  <circle cx="48" cy="48" r="26" fill="none" stroke="#3D2FA8" stroke-width="3.5"/>
+  <circle cx="48" cy="48" r="26" fill="none" stroke="#1D9E75" stroke-width="3.5" stroke-dasharray="81 163" stroke-dashoffset="41" stroke-linecap="round"/>
+  <circle cx="48" cy="48" r="7" fill="#1D9E75"/>
+  <rect x="46.5" y="18" width="3" height="11" rx="1.5" fill="#6B5FD4"/>
+  <rect x="46.5" y="67" width="3" height="11" rx="1.5" fill="#6B5FD4"/>
+  <rect x="18" y="46.5" width="11" height="3" rx="1.5" fill="#6B5FD4"/>
+  <rect x="67" y="46.5" width="11" height="3" rx="1.5" fill="#6B5FD4"/>
+  <text x="110" y="66" font-family="'Josefin Sans','Segoe UI',sans-serif" font-size="48" font-weight="700" fill="#f4f4f5" letter-spacing="-1">Forca</text>
 </svg>
