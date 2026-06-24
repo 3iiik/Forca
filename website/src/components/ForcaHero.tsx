@@ -37,7 +37,7 @@ export function ForcaHero() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="z-10">
             <h1 className="text-[2.25rem] md:text-[3rem] lg:text-[3.25rem] font-extrabold leading-[1.1] tracking-tight text-foreground mb-5 max-w-lg">
-              Automatic focus mode for people who actually want to get work done.
+              Automatic focus mode for people who actually want to get work <span className="text-accent italic">done</span>.
             </h1>
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-md">
               Forca detects when meetings end and automatically starts your focus zone — blocking distractions instantly. No manual switching, no excuses, no friction.
