@@ -1,6 +1,6 @@
 <div align="center">
   <br />
-  <img src="assets/icons/icon.png" alt="Forca Logo" width="128" height="128" />
+  <img src="assets/branding/forca-app-icon.svg" alt="Forca Logo" width="128" height="128" />
   <h1>Forca</h1>
   <p>
     <strong>Your calendar knows when you're free.<br />Forca makes sure you actually use that time.</strong>

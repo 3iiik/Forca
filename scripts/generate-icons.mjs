@@ -6,35 +6,43 @@ import pngToIco from 'png-to-ico';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const iconsDir = path.resolve(__dirname, '..', 'assets', 'icons');
+const brandingDir = path.resolve(__dirname, '..', 'assets', 'branding');
+const websitePublicDir = path.resolve(__dirname, '..', 'website', 'public');
+const browserExtensionIconsDir = path.resolve(__dirname, '..', 'browser-extension', 'icons');
+const chromeReleaseIconsDir = path.resolve(__dirname, '..', 'browser-extension', 'chrome-release', 'icons');
+const firefoxReleaseIconsDir = path.resolve(__dirname, '..', 'browser-extension', 'firefox-release', 'icons');
 
-const SVG = `<svg width="512" height="512" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-  <rect width="96" height="96" rx="22" fill="#1C1917"/>
-  <circle cx="48" cy="48" r="26" fill="none" stroke="#44403C" stroke-width="3.5"/>
-  <circle cx="48" cy="48" r="26" fill="none" stroke="#1D9E75" stroke-width="3.5"
-    stroke-dasharray="81 163" stroke-dashoffset="41" stroke-linecap="round"/>
-  <circle cx="48" cy="48" r="7" fill="#1D9E75"/>
-  <rect x="46.5" y="18" width="3" height="11" rx="1.5" fill="#78716C"/>
-  <rect x="46.5" y="67" width="3" height="11" rx="1.5" fill="#78716C"/>
-  <rect x="18" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
-  <rect x="67" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
-</svg>`;
+async function readCanonicalSvg(name) {
+  const svgPath = path.join(brandingDir, name);
+  const content = await fs.readFile(svgPath, 'utf-8');
+  return content;
+}
 
 async function main() {
   console.log('Generating Forca icons...\n');
 
   await fs.mkdir(iconsDir, { recursive: true });
+  await fs.mkdir(websitePublicDir, { recursive: true });
+  await fs.mkdir(browserExtensionIconsDir, { recursive: true });
+  await fs.mkdir(chromeReleaseIconsDir, { recursive: true });
+  await fs.mkdir(firefoxReleaseIconsDir, { recursive: true });
 
-  // 1. Generate 512x512 PNG
+  const appIconSvg = await readCanonicalSvg('forca-app-icon.svg');
+  const markSvg = await readCanonicalSvg('forca-mark.svg');
+
+  // 1. Generate 512x512 PNG (app icon + website icon)
   console.log('Main icon:');
-  const png512 = await sharp(Buffer.from(SVG)).png().toBuffer();
+  const png512 = await sharp(Buffer.from(appIconSvg)).png().toBuffer();
   await fs.writeFile(path.join(iconsDir, 'icon.png'), png512);
-  console.log('  ✓ icon.png');
+  console.log('  ✓ assets/icons/icon.png');
+  await fs.writeFile(path.join(websitePublicDir, 'icon.png'), png512);
+  console.log('  ✓ website/public/icon.png');
 
   // 2. Generate .ico (Windows)
   console.log('\nWindows icon:');
   const icoBuf = await pngToIco(png512);
   await fs.writeFile(path.join(iconsDir, 'icon.ico'), icoBuf);
-  console.log('  ✓ icon.ico');
+  console.log('  ✓ assets/icons/icon.ico');
 
   // 3. Generate .icns (macOS)
   console.log('\nmacOS icon:');
@@ -67,7 +75,7 @@ async function main() {
     ['ic09', resized512],
   ]);
   await fs.writeFile(path.join(iconsDir, 'icon.icns'), icnsBuf);
-  console.log('  ✓ icon.icns');
+  console.log('  ✓ assets/icons/icon.icns');
 
   // 4. Generate tray variant icons (16x16)
   console.log('\nTray icons (16x16):');
@@ -85,7 +93,18 @@ async function main() {
   for (const [name, color] of [['gray', '#6b7280'], ['green', '#1D9E75'], ['yellow', '#eab308']]) {
     const buf = await sharp(Buffer.from(traySvg(color))).png().toBuffer();
     await fs.writeFile(path.join(iconsDir, `icon-${name}.png`), buf);
-    console.log(`  ✓ icon-${name}.png`);
+    console.log(`  ✓ assets/icons/icon-${name}.png`);
+  }
+
+  // 5. Generate browser extension icons (16, 48, 128)
+  console.log('\nBrowser extension icons:');
+  const sizes = [16, 48, 128];
+  for (const size of sizes) {
+    const buf = await sharp(Buffer.from(markSvg)).resize(size).png().toBuffer();
+    for (const dir of [browserExtensionIconsDir, chromeReleaseIconsDir, firefoxReleaseIconsDir]) {
+      await fs.writeFile(path.join(dir, `icon-${size}.png`), buf);
+    }
+    console.log(`  ✓ icon-${size}.png (all 3 extension dirs)`);
   }
 
   console.log('\nDone!');
