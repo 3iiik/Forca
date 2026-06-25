@@ -32,10 +32,6 @@
 - **Focus Streaks** — consecutive day tracking with milestone rewards.
 - **Auto-Updater** — seamless updates delivered via GitHub Releases.
 
-## Screenshots
-
-![Forca App](assets/screenshots/Forca%20AD%20(2).png)
-
 ## Installation
 
 ### 🪟 Windows
