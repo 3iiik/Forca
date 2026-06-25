@@ -30,98 +30,67 @@ jobs:
           INPUT_VERSION: ${{ github.event.inputs.test_version }}
           INPUT_BODY: ${{ github.event.inputs.test_body }}
         run: |
-          # Build the download links from release assets
-          ASSETS=""
-          if [ -n "$ASSETS_URL" ]; then
-            ASSETS=$(curl -s "$ASSETS_URL" | jq -r '.[] | "\(.name): \(.browser_download_url)"' | head -10)
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "DISCORD_WEBHOOK_URL not set, skipping"
+            exit 0
           fi
 
-          # Format release notes (truncate to keep within Discord's 6000-char embed limit)
-          NOTES=$(echo "$BODY" | head -50 | python3 -c "
-import sys, json
-text = sys.stdin.read()
-if len(text) > 3500:
-    text = text[:3500] + '\n\n...'
-print(json.dumps(text))
-")
+          if [ "$EVENT_NAME" = "release" ]; then
+            VERSION="$RELEASE_TAG"
+            RNAME="${RELEASE_NAME:-$RELEASE_TAG}"
+            RURL="$RELEASE_URL"
+            BODY="$RELEASE_BODY"
+            AURL="$ASSETS_URL"
+          else
+            VERSION="$INPUT_VERSION"
+            RNAME="$INPUT_VERSION"
+            RURL="https://github.com/3iiik/Forca/releases"
+            BODY="$INPUT_BODY"
+            AURL=""
+          fi
 
-          # Build the download links field
-          DL_FIELD=$(echo "$ASSETS" | head -6 | python3 -c "
-import sys, json
-lines = [l.strip() for l in sys.stdin if l.strip()]
-if not lines:
-    print(json.dumps('Available on GitHub'))
-else:
-    text = '\n'.join(lines)
-    print(json.dumps(text))
-")
+          VERSION="${VERSION:-unknown}"
+          RNAME="${RNAME:-$VERSION}"
+          RURL="${RURL:-https://github.com/3iiik/Forca/releases}"
 
-          python3 -c "
-import json, os
+          echo "Sending announcement for $VERSION"
 
-webhook_url = os.environ['DISCORD_WEBHOOK_URL']
-event_name = os.environ.get('EVENT_NAME', '')
+          DOWNLOADS="Available on GitHub"
+          if [ -n "$AURL" ]; then
+            DL_JSON=$(curl -s "$AURL" | jq -r '.[:6] | .[] | "\(.name): \(.browser_download_url)"')
+            if [ -n "$DL_JSON" ]; then
+              DOWNLOADS="$DL_JSON"
+            fi
+          fi
 
-# Determine if this is a real release or manual test
-if event_name == 'release':
-    version = os.environ.get('RELEASE_TAG', 'unknown')
-    release_name = os.environ.get('RELEASE_NAME', '') or version
-    release_url = os.environ.get('RELEASE_URL', '')
-else:
-    version = os.environ.get('INPUT_VERSION', 'v0.0.0-test')
-    release_name = version
-    release_url = os.environ.get('RELEASE_URL', 'https://github.com/3iiik/Forca/releases')
+          BODY_TRUNC="$BODY"
+          if [ ${#BODY_TRUNC} -gt 3500 ]; then
+            BODY_TRUNC="${BODY_TRUNC:0:3500}
+            ..."
+          fi
 
-notes = os.environ.get('NOTES', '')
-download_field = os.environ.get('DL_FIELD', '')
+          jq -n \
+            --arg version "$VERSION" \
+            --arg rname "$RNAME" \
+            --arg rurl "$RURL" \
+            --arg body "$BODY_TRUNC" \
+            --arg downloads "$DOWNLOADS" \
+            '{
+              content: "@here **Forca \($version)** has been released!",
+              embeds: [{
+                title: "Release \($version)",
+                url: $rurl,
+                color: 1949301,
+                fields: ([
+                  (if $rname != $version then {name: "Release", value: $rname, inline: true} else null end),
+                  {name: "Version", value: $version, inline: true},
+                  (if $body != "" then {name: "What'\''s New", value: $body} else null end),
+                  {name: "Downloads", value: $downloads},
+                  {name: "GitHub Release", value: $rurl}
+                ] | map(select(. != null)))
+              }]
+            }' > /tmp/discord-payload.json
 
-embed = {
-    'title': f'Release {version}',
-    'url': release_url,
-    'color': 0x1D9E75,
-    'fields': []
-}
-
-if release_name and release_name != version:
-    embed['fields'].append({
-        'name': 'Release',
-        'value': release_name,
-        'inline': True
-    })
-
-embed['fields'].append({
-    'name': 'Version',
-    'value': version,
-    'inline': True
-})
-
-if notes:
-    embed['fields'].append({
-        'name': 'What\'s New',
-        'value': notes
-    })
-
-if download_field:
-    embed['fields'].append({
-        'name': 'Downloads',
-        'value': download_field
-    })
-
-embed['fields'].append({
-    'name': 'GitHub Release',
-    'value': release_url
-})
-
-payload = {
-    'content': f'@here **Forca {version}** has been released!',
-    'embeds': [embed]
-}
-
-import urllib.request
-req = urllib.request.Request(
-    webhook_url,
-    data=json.dumps(payload).encode('utf-8'),
-    headers={'Content-Type': 'application/json'}
-)
-urllib.request.urlopen(req)
-"
+          curl -s -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/discord-payload.json && echo "Discord webhook sent"
