@@ -93,7 +93,9 @@ vite.config.ts.timestamp-*
 # ESLint cache
 .eslintcache
 
-# Local Agent Context (tracked — see FORCA_AGENT.md)
+# Local Agent Context
+FORCA_AGENT.md
+**/FORCA_AGENT.md
 
 # yarn v3
 .pnp.*
