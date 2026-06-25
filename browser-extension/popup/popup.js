@@ -4,6 +4,19 @@ function showStatus(id) {
   });
 }
 
+function createSvgEl(html) {
+  return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
+}
+
+const pauseSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+const playSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+
+function setPauseBtnContent(svgHtml, text) {
+  const btn = document.getElementById('pauseActionBtn');
+  const svg = createSvgEl(svgHtml);
+  btn.replaceChildren(svg, document.createTextNode(' ' + text));
+}
+
 function updateUI(data) {
   const zoneInfo = data.zoneInfo || { status: 'idle', zoneName: '', sites: [], remaining: 0 };
   const wsStatus = data.wsStatus || 'disconnected';
@@ -30,16 +43,14 @@ function updateUI(data) {
         `${(zoneInfo.sites || []).length} sites blocked`;
       document.getElementById('activeTimeRemaining').textContent = formatTime(zoneInfo.remaining || 0);
       actionsContainer.style.display = 'flex';
-      document.getElementById('pauseActionBtn').innerHTML =
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause Zone';
+      setPauseBtnContent(pauseSvg, 'Pause Zone');
       break;
 
     case 'paused':
       showStatus('statusPaused');
       document.getElementById('pausedZoneName').textContent = zoneInfo.zoneName || 'Focus';
       actionsContainer.style.display = 'flex';
-      document.getElementById('pauseActionBtn').innerHTML =
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume Zone';
+      setPauseBtnContent(playSvg, 'Resume Zone');
       break;
 
     default:

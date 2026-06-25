@@ -38,6 +38,21 @@ function stopTick() {
   if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
 }
 
+function createSvgEl(html) {
+  return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
+}
+
+function setButtonContent(btn, svgHtml, text) {
+  const svg = createSvgEl(svgHtml);
+  const span = document.createElement('span');
+  span.textContent = text;
+  btn.replaceChildren(svg, span);
+}
+
+const playSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+const pauseSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+const stopSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+
 function applyZoneInfo(data) {
   if (!data || !data.zoneName) return;
 
@@ -56,29 +71,25 @@ function applyZoneInfo(data) {
 
   const reloadLink = document.getElementById('reloadLink');
 
-  const playSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-  const pauseSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
-  const stopSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
-
   if (zoneStatus === 'paused') {
-    pauseBtn.innerHTML = playSvg + ' <span>Resume Zone</span>';
+    setButtonContent(pauseBtn, playSvg, 'Resume Zone');
     pauseBtn.className = 'btn';
     statusDot.style.background = '#F59E0B';
     subtitle.textContent = 'Focus Mode — Paused';
     if (reloadLink) reloadLink.style.display = 'block';
   } else if (zoneStatus === 'active') {
     if (reloadLink) reloadLink.style.display = 'none';
-    pauseBtn.innerHTML = pauseSvg + ' <span>Pause Zone</span>';
+    setButtonContent(pauseBtn, pauseSvg, 'Pause Zone');
     pauseBtn.className = 'btn';
     statusDot.style.background = '#1D9E75';
     subtitle.textContent = 'Focus Mode Active';
   } else {
-    pauseBtn.innerHTML = pauseSvg + ' <span>Zone Ended</span>';
+    setButtonContent(pauseBtn, pauseSvg, 'Zone Ended');
     pauseBtn.className = 'btn btn-disabled';
     pauseBtn.disabled = true;
     const endBtn = document.getElementById('endBtn');
     endBtn.disabled = true;
-    endBtn.innerHTML = stopSvg + ' <span>Zone Ended</span>';
+    setButtonContent(endBtn, stopSvg, 'Zone Ended');
     if (reloadLink) reloadLink.style.display = 'none';
     statusDot.style.background = '#78716C';
     subtitle.textContent = 'Focus session complete';
