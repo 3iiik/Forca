@@ -3,6 +3,16 @@ name: Discord Release Announcement
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      test_version:
+        description: 'Test version number (e.g. v2.1.1-test)'
+        required: true
+        default: 'v0.0.0-test'
+      test_body:
+        description: 'Test release notes'
+        required: false
+        default: 'Test announcement from workflow_dispatch'
 
 jobs:
   notify:
@@ -11,14 +21,20 @@ jobs:
       - name: Send Discord webhook
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          VERSION: ${{ github.event.release.tag_name }}
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
           RELEASE_NAME: ${{ github.event.release.name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
-          BODY: ${{ github.event.release.body }}
-          DOWNLOAD_URL: ${{ github.event.release.zipball_url }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+          ASSETS_URL: ${{ github.event.release.assets_url }}
+          INPUT_VERSION: ${{ github.event.inputs.test_version }}
+          INPUT_BODY: ${{ github.event.inputs.test_body }}
         run: |
           # Build the download links from release assets
-          ASSETS=$(curl -s "${{ github.event.release.assets_url }}" | jq -r '.[] | "\(.name): \(.browser_download_url)"' | head -10)
+          ASSETS=""
+          if [ -n "$ASSETS_URL" ]; then
+            ASSETS=$(curl -s "$ASSETS_URL" | jq -r '.[] | "\(.name): \(.browser_download_url)"' | head -10)
+          fi
 
           # Format release notes (truncate to keep within Discord's 6000-char embed limit)
           NOTES=$(echo "$BODY" | head -50 | python3 -c "
@@ -44,9 +60,18 @@ else:
 import json, os
 
 webhook_url = os.environ['DISCORD_WEBHOOK_URL']
-version = os.environ['VERSION']
-release_name = os.environ.get('RELEASE_NAME', '') or version
-release_url = os.environ['RELEASE_URL']
+event_name = os.environ.get('EVENT_NAME', '')
+
+# Determine if this is a real release or manual test
+if event_name == 'release':
+    version = os.environ.get('RELEASE_TAG', 'unknown')
+    release_name = os.environ.get('RELEASE_NAME', '') or version
+    release_url = os.environ.get('RELEASE_URL', '')
+else:
+    version = os.environ.get('INPUT_VERSION', 'v0.0.0-test')
+    release_name = version
+    release_url = os.environ.get('RELEASE_URL', 'https://github.com/3iiik/Forca/releases')
+
 notes = os.environ.get('NOTES', '')
 download_field = os.environ.get('DL_FIELD', '')
 
