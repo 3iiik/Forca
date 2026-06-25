@@ -1,9 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { DownloadPage } from '../../components/DownloadPage';
+import pkg from '../../../../package.json';
 
 const title = 'Download Forca — Windows, macOS, and Linux desktop app';
 const description = 'Download Forca for Windows, macOS, or Linux. Free and open source focus app with automatic distraction blocking.';
+
+const fallbackVersion = pkg.version;
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -14,5 +17,5 @@ const structuredData = {
 ---
 
 <BaseLayout {title} {description} {structuredData}>
-  <DownloadPage client:load />
+  <DownloadPage client:load fallbackVersion={fallbackVersion} />
 </BaseLayout>

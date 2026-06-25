@@ -113,7 +113,7 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
   );
 }
 
-export function DownloadPage() {
+export function DownloadPage({ fallbackVersion = '2.0.0' }: { fallbackVersion?: string }) {
   const [release, setRelease] = useState<Release | null>(null);
   const [platforms, setPlatforms] = useState<Platform[]>(() =>
     platformTemplates.map(p => ({ ...p, downloadUrl: '' }))
@@ -138,7 +138,7 @@ export function DownloadPage() {
       .catch(() => setLoaded(true));
   }, []);
 
-  const version = release?.tag_name?.replace(/^v/, '') || '2.0.0';
+  const version = release?.tag_name?.replace(/^v/, '') || fallbackVersion;
 
   return (
     <div className="min-h-screen pb-24 bg-gradient-to-b from-emerald-900/15 via-background to-background">
