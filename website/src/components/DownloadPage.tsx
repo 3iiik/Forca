@@ -113,7 +113,7 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
   );
 }
 
-export function DownloadPage({ fallbackVersion = '2.0.0' }: { fallbackVersion?: string }) {
+export function DownloadPage({ fallbackVersion }: { fallbackVersion: string }) {
   const [release, setRelease] = useState<Release | null>(null);
   const [platforms, setPlatforms] = useState<Platform[]>(() =>
     platformTemplates.map(p => ({ ...p, downloadUrl: '' }))
