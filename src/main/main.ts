@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, Notification } from 'electron';
+import { app, BrowserWindow, dialog, Menu, Notification } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
 import { autoUpdater } from 'electron-updater';
@@ -96,11 +96,28 @@ function createWindow() {
     mainWindow?.webContents.setBackgroundThrottling(false);
   });
 
-  mainWindow.on('close', (event) => {
+  mainWindow.on('close', async (event) => {
     const settings = store.get('settings');
     if (settings.general?.closeToTray) {
-      event.preventDefault();
-      mainWindow?.hide();
+      if (!store.get('trayEducationShown') && mainWindow) {
+        event.preventDefault();
+        const result = await dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'Forca is still running',
+          message: 'Forca will continue running in the background',
+          detail: 'You can access Forca from the system tray. Close this window anytime — your focus sessions will keep running.',
+          checkboxLabel: 'Don\'t show this message again',
+          checkboxChecked: false,
+          buttons: ['Got it'],
+        });
+        if (result.checkboxChecked) {
+          store.set('trayEducationShown', true);
+        }
+        mainWindow?.hide();
+      } else {
+        event.preventDefault();
+        mainWindow?.hide();
+      }
     }
   });
 

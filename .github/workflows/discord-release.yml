@@ -18,79 +18,115 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare release variables
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            echo "RELEASE_NAME=${{ github.event.release.name }}" >> $GITHUB_OUTPUT
+            echo "RELEASE_URL=${{ github.event.release.html_url }}" >> $GITHUB_OUTPUT
+            echo "RELEASE_BODY<<BODYEOF" >> $GITHUB_OUTPUT
+            echo "${{ github.event.release.body }}" >> $GITHUB_OUTPUT
+            echo "BODYEOF" >> $GITHUB_OUTPUT
+            echo "ASSETS_URL=${{ github.event.release.assets_url }}" >> $GITHUB_OUTPUT
+            echo "TIMESTAMP=${{ github.event.release.published_at }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=${{ github.event.inputs.test_version }}" >> $GITHUB_OUTPUT
+            echo "RELEASE_NAME=${{ github.event.inputs.test_version }}" >> $GITHUB_OUTPUT
+            echo "RELEASE_URL=https://github.com/3iiik/Forca/releases" >> $GITHUB_OUTPUT
+            echo "RELEASE_BODY=${{ github.event.inputs.test_body }}" >> $GITHUB_OUTPUT
+            echo "ASSETS_URL=" >> $GITHUB_OUTPUT
+            echo "TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-version:refname | head -n2 | tail -n1)
+          CURR_TAG="${{ steps.vars.outputs.VERSION }}"
+          echo "Generating changelog from $PREV_TAG to $CURR_TAG"
+          node scripts/generate-changelog.mjs --from "$PREV_TAG" --to "$CURR_TAG" > /tmp/changelog.json
+
+      - name: Fetch download assets
+        id: downloads
+        run: |
+          ASSETS_URL="${{ steps.vars.outputs.ASSETS_URL }}"
+          if [ -n "$ASSETS_URL" ]; then
+            curl -s "$ASSETS_URL" | jq -r '[.[] | {name: .name, url: .browser_download_url}]' > /tmp/downloads.json
+          else
+            echo '[]' > /tmp/downloads.json
+          fi
+
+      - name: Build Discord embed
+        id: embed
+        run: |
+          VERSION="${{ steps.vars.outputs.VERSION }}"
+          RELEASE_NAME="${{ steps.vars.outputs.RELEASE_NAME }}"
+          RELEASE_URL="${{ steps.vars.outputs.RELEASE_URL }}"
+          RELEASE_BODY="${{ steps.vars.outputs.RELEASE_BODY }}"
+          TIMESTAMP="${{ steps.vars.outputs.TIMESTAMP }}"
+
+          jq -n \
+            --arg version "$VERSION" \
+            --arg releaseName "$RELEASE_NAME" \
+            --arg releaseUrl "$RELEASE_URL" \
+            --arg releaseBody "$RELEASE_BODY" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              version: $version,
+              releaseName: $releaseName,
+              releaseUrl: $releaseUrl,
+              releaseBody: $releaseBody,
+              timestamp: $timestamp,
+              downloads: [],
+              changelog: null
+            }' > /tmp/embed-input.json
+
+          # Merge downloads
+          DL_COUNT=$(jq 'length' /tmp/downloads.json)
+          if [ "$DL_COUNT" -gt 0 ]; then
+            jq --slurpfile dl /tmp/downloads.json '.downloads = $dl[0]' /tmp/embed-input.json > /tmp/embed-input2.json
+            mv /tmp/embed-input2.json /tmp/embed-input.json
+          fi
+
+          # Merge changelog
+          if [ -f /tmp/changelog.json ] && [ -s /tmp/changelog.json ]; then
+            jq --slurpfile cl /tmp/changelog.json '.changelog = $cl[0]' /tmp/embed-input.json > /tmp/embed-input2.json
+            mv /tmp/embed-input2.json /tmp/embed-input.json
+          fi
+
+          node scripts/discord-embed.mjs < /tmp/embed-input.json > /tmp/discord-payload.json
+          echo "Payload generated"
+
       - name: Send Discord webhook
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          EVENT_NAME: ${{ github.event_name }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-          RELEASE_NAME: ${{ github.event.release.name }}
-          RELEASE_URL: ${{ github.event.release.html_url }}
-          RELEASE_BODY: ${{ github.event.release.body }}
-          ASSETS_URL: ${{ github.event.release.assets_url }}
-          INPUT_VERSION: ${{ github.event.inputs.test_version }}
-          INPUT_BODY: ${{ github.event.inputs.test_body }}
         run: |
           if [ -z "$DISCORD_WEBHOOK_URL" ]; then
             echo "DISCORD_WEBHOOK_URL not set, skipping"
             exit 0
           fi
 
-          if [ "$EVENT_NAME" = "release" ]; then
-            VERSION="$RELEASE_TAG"
-            RNAME="${RELEASE_NAME:-$RELEASE_TAG}"
-            RURL="$RELEASE_URL"
-            BODY="$RELEASE_BODY"
-            AURL="$ASSETS_URL"
-          else
-            VERSION="$INPUT_VERSION"
-            RNAME="$INPUT_VERSION"
-            RURL="https://github.com/3iiik/Forca/releases"
-            BODY="$INPUT_BODY"
-            AURL=""
-          fi
-
-          VERSION="${VERSION:-unknown}"
-          RNAME="${RNAME:-$VERSION}"
-          RURL="${RURL:-https://github.com/3iiik/Forca/releases}"
-
-          echo "Sending announcement for $VERSION"
-
-          DOWNLOADS="Available on GitHub"
-          if [ -n "$AURL" ]; then
-            DL_JSON=$(curl -s "$AURL" | jq -r '.[:6] | .[] | "\(.name): \(.browser_download_url)"')
-            if [ -n "$DL_JSON" ]; then
-              DOWNLOADS="$DL_JSON"
-            fi
-          fi
-
-          BODY_TRUNC="$BODY"
-          if [ ${#BODY_TRUNC} -gt 3500 ]; then
-            BODY_TRUNC="${BODY_TRUNC:0:3500}
-            ..."
-          fi
-
-          jq -n \
-            --arg version "$VERSION" \
-            --arg rname "$RNAME" \
-            --arg rurl "$RURL" \
-            --arg body "$BODY_TRUNC" \
-            --arg downloads "$DOWNLOADS" \
-            '{
-              content: "@here **Forca \($version)** has been released!",
-              embeds: [{
-                title: "Release \($version)",
-                url: $rurl,
-                color: 1949301,
-                fields: ([
-                  (if $rname != $version then {name: "Release", value: $rname, inline: true} else null end),
-                  {name: "Version", value: $version, inline: true},
-                  (if $body != "" then {name: "What'\''s New", value: $body} else null end),
-                  {name: "Downloads", value: $downloads},
-                  {name: "GitHub Release", value: $rurl}
-                ] | map(select(. != null)))
-              }]
-            }' > /tmp/discord-payload.json
-
+          echo "Sending announcement..."
           curl -s -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d @/tmp/discord-payload.json && echo "Discord webhook sent"
+
+      - name: Validate payload (dry-run)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "=== Generated Payload (preview) ==="
+          jq -r '.content' /tmp/discord-payload.json
+          echo "---"
+          jq -r '.embeds[0].fields[] | "\(.name): \(.value | .[0:80])..."' /tmp/discord-payload.json
+          echo "=== End Payload ==="

@@ -10,6 +10,7 @@ interface StoreSchema {
   currentStreak: number;
   longestStreak: number;
   onboardingComplete: boolean;
+  trayEducationShown: boolean;
 }
 
 const defaults: StoreSchema = {
@@ -66,6 +67,7 @@ const defaults: StoreSchema = {
   currentStreak: 0,
   longestStreak: 0,
   onboardingComplete: false,
+  trayEducationShown: false,
 };
 
 const store = new Store<StoreSchema>({ defaults });

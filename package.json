@@ -1,6 +1,6 @@
 {
   "name": "forca",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Forca — deep focus sessions with calendar integration and smart blocking",
   "author": {
     "name": "3iiik",
@@ -23,7 +23,9 @@
     "test": "echo \"No tests configured yet\" && exit 0",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.json",
     "start": "electron .",
-    "release": "npm run build && electron-builder --publish always"
+    "release": "npm run build && electron-builder --publish always",
+    "changelog": "node scripts/generate-changelog.mjs",
+    "discord-embed": "node scripts/discord-embed.mjs"
   },
   "dependencies": {
     "electron-store": "^8.2.0",
