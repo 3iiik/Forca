@@ -1,0 +1,102 @@
+name: Discord Release Announcement
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord webhook
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          BODY: ${{ github.event.release.body }}
+          DOWNLOAD_URL: ${{ github.event.release.zipball_url }}
+        run: |
+          # Build the download links from release assets
+          ASSETS=$(curl -s "${{ github.event.release.assets_url }}" | jq -r '.[] | "\(.name): \(.browser_download_url)"' | head -10)
+
+          # Format release notes (truncate to keep within Discord's 6000-char embed limit)
+          NOTES=$(echo "$BODY" | head -50 | python3 -c "
+import sys, json
+text = sys.stdin.read()
+if len(text) > 3500:
+    text = text[:3500] + '\n\n...'
+print(json.dumps(text))
+")
+
+          # Build the download links field
+          DL_FIELD=$(echo "$ASSETS" | head -6 | python3 -c "
+import sys, json
+lines = [l.strip() for l in sys.stdin if l.strip()]
+if not lines:
+    print(json.dumps('Available on GitHub'))
+else:
+    text = '\n'.join(lines)
+    print(json.dumps(text))
+")
+
+          python3 -c "
+import json, os
+
+webhook_url = os.environ['DISCORD_WEBHOOK_URL']
+version = os.environ['VERSION']
+release_name = os.environ.get('RELEASE_NAME', '') or version
+release_url = os.environ['RELEASE_URL']
+notes = os.environ.get('NOTES', '')
+download_field = os.environ.get('DL_FIELD', '')
+
+embed = {
+    'title': f'Release {version}',
+    'url': release_url,
+    'color': 0x1D9E75,
+    'fields': []
+}
+
+if release_name and release_name != version:
+    embed['fields'].append({
+        'name': 'Release',
+        'value': release_name,
+        'inline': True
+    })
+
+embed['fields'].append({
+    'name': 'Version',
+    'value': version,
+    'inline': True
+})
+
+if notes:
+    embed['fields'].append({
+        'name': 'What\'s New',
+        'value': notes
+    })
+
+if download_field:
+    embed['fields'].append({
+        'name': 'Downloads',
+        'value': download_field
+    })
+
+embed['fields'].append({
+    'name': 'GitHub Release',
+    'value': release_url
+})
+
+payload = {
+    'content': f'@here **Forca {version}** has been released!',
+    'embeds': [embed]
+}
+
+import urllib.request
+req = urllib.request.Request(
+    webhook_url,
+    data=json.dumps(payload).encode('utf-8'),
+    headers={'Content-Type': 'application/json'}
+)
+urllib.request.urlopen(req)
+"
