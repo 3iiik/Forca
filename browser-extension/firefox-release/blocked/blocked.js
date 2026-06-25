@@ -61,24 +61,24 @@ function applyZoneInfo(data) {
   const stopSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
 
   if (zoneStatus === 'paused') {
-    pauseBtn.innerHTML = playSvg + ' <span class="btn-text">Resume Zone</span>';
+    pauseBtn.innerHTML = playSvg + ' <span>Resume Zone</span>';
     pauseBtn.className = 'btn';
     statusDot.style.background = '#F59E0B';
-    subtitle.textContent = 'Focus Zone — Paused';
+    subtitle.textContent = 'Focus Mode — Paused';
     if (reloadLink) reloadLink.style.display = 'block';
   } else if (zoneStatus === 'active') {
     if (reloadLink) reloadLink.style.display = 'none';
-    pauseBtn.innerHTML = pauseSvg + ' <span class="btn-text">Pause Zone</span>';
+    pauseBtn.innerHTML = pauseSvg + ' <span>Pause Zone</span>';
     pauseBtn.className = 'btn';
     statusDot.style.background = '#1D9E75';
-    subtitle.textContent = "You're in Focus Mode";
+    subtitle.textContent = 'Focus Mode Active';
   } else {
-    pauseBtn.innerHTML = pauseSvg + ' <span class="btn-text">Zone Ended</span>';
+    pauseBtn.innerHTML = pauseSvg + ' <span>Zone Ended</span>';
     pauseBtn.className = 'btn btn-disabled';
     pauseBtn.disabled = true;
     const endBtn = document.getElementById('endBtn');
     endBtn.disabled = true;
-    endBtn.innerHTML = stopSvg + ' <span class="btn-text">Zone Ended</span>';
+    endBtn.innerHTML = stopSvg + ' <span>Zone Ended</span>';
     if (reloadLink) reloadLink.style.display = 'none';
     statusDot.style.background = '#78716C';
     subtitle.textContent = 'Focus session complete';

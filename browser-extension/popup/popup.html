@@ -3,62 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forca Blocker</title>
+  <title>Forca</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="popup">
     <div class="header">
-      <img src="../icons/icon-48.png" alt="Forca" class="logo" onerror="this.style.display='none'">
-      <h1>Forca Blocker</h1>
+      <svg width="24" height="24" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="48" cy="48" r="26" fill="none" stroke="#44403C" stroke-width="3.5"/>
+        <circle cx="48" cy="48" r="26" fill="none" stroke="#1D9E75" stroke-width="3.5" stroke-dasharray="81 163" stroke-dashoffset="41" stroke-linecap="round"/>
+        <circle cx="48" cy="48" r="7" fill="#1D9E75"/>
+        <rect x="46.5" y="18" width="3" height="11" rx="1.5" fill="#78716C"/>
+        <rect x="46.5" y="67" width="3" height="11" rx="1.5" fill="#78716C"/>
+        <rect x="18" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
+        <rect x="67" y="46.5" width="11" height="3" rx="1.5" fill="#78716C"/>
+      </svg>
+      <span class="brand">Forca</span>
     </div>
 
     <div id="statusContainer">
-      <div class="status disconnected" id="statusDisconnected">
-        <div class="status-dot gray"></div>
-        <span>Disconnected</span>
-        <button id="reconnectBtn" class="btn-small">Reconnect</button>
+      <div class="card disconnected" id="statusDisconnected">
+        <div class="card-dot gray"></div>
+        <div class="card-body">
+          <div class="card-label">Disconnected</div>
+          <div class="card-desc">Reconnect to resume</div>
+        </div>
+        <button id="reconnectBtn" class="btn-sm">Reconnect</button>
       </div>
-      <div class="status connecting" id="statusConnecting" style="display:none;">
+      <div class="card connecting" id="statusConnecting" style="display:none;">
         <div class="spinner"></div>
-        <span>Connecting...</span>
-      </div>
-      <div class="status idle" id="statusIdle" style="display:none;">
-        <div class="status-dot blue"></div>
-        <span>No active zone</span>
-      </div>
-      <div class="status active" id="statusActive" style="display:none;">
-        <div class="status-dot green"></div>
-        <div class="status-content">
-          <div class="status-label">Active</div>
-          <div class="zone-name" id="activeZoneName">—</div>
-          <div class="sites-count" id="activeSitesCount">0 sites blocked</div>
-          <div class="time-remaining" id="activeTimeRemaining">—</div>
+        <div class="card-body">
+          <div class="card-label">Connecting</div>
+          <div class="card-desc">Establishing connection...</div>
         </div>
       </div>
-      <div class="status paused" id="statusPaused" style="display:none;">
-        <div class="status-dot yellow"></div>
-        <div class="status-content">
-          <div class="status-label">Paused</div>
+      <div class="card idle" id="statusIdle" style="display:none;">
+        <div class="card-dot gray"></div>
+        <div class="card-body">
+          <div class="card-label">No Active Zone</div>
+          <div class="card-desc">Start a focus session from the desktop app</div>
+        </div>
+      </div>
+      <div class="card active" id="statusActive" style="display:none;">
+        <div class="card-header-row">
+          <div class="card-dot green"></div>
+          <span class="card-pill">Active</span>
+        </div>
+        <div class="card-body">
+          <div class="zone-name" id="activeZoneName">—</div>
+          <div class="timer-display" id="activeTimeRemaining">00:00</div>
+          <div class="sites-count" id="activeSitesCount">0 sites blocked</div>
+        </div>
+      </div>
+      <div class="card paused" id="statusPaused" style="display:none;">
+        <div class="card-header-row">
+          <div class="card-dot yellow"></div>
+          <span class="card-pill yellow">Paused</span>
+        </div>
+        <div class="card-body">
           <div class="zone-name" id="pausedZoneName">—</div>
+          <div class="paused-label">Zone paused</div>
         </div>
       </div>
     </div>
 
     <div class="actions" id="actionsContainer" style="display:none;">
-      <button id="pauseActionBtn" class="btn">
+      <button id="pauseActionBtn" class="btn-primary">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
         Pause Zone
       </button>
-      <button id="endActionBtn" class="btn btn-secondary">
+      <button id="endActionBtn" class="btn-outline">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
         End Zone
       </button>
     </div>
 
     <div class="footer">
-      <button id="settingsBtn" class="btn-text">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <button id="settingsBtn" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Settings
       </button>
     </div>
