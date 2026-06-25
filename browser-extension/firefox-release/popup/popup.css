@@ -148,22 +148,10 @@ body {
   display: flex;
   justify-content: center;
 }
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  color: #A8A29E;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.15s, color 0.15s;
+.footer-version {
+  font-size: 11px;
+  color: #57534E;
 }
-.btn-ghost:hover { background: rgba(255, 255, 255, 0.05); color: #D6D3D1; }
 
 .spinner {
   width: 14px;

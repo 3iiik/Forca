@@ -32,20 +32,20 @@ function addDynamicRules(rules) {
 // ---------------------------------------------------------------------------
 let ws = null;
 let reconnectAttempts = 0;
-let initRetryCount = 0;
-const MAX_RECONNECT_ATTEMPTS = 15;
 const RECONNECT_INTERVAL = 2000;
-const MAX_INIT_RETRIES = 15; // 30 seconds total (15 × 2s)
+const MAX_RECONNECT_INTERVAL = 30000;
 let ruleIdCounter = 1;
 let zoneInfo = { status: 'idle', zoneName: '', sites: [], remaining: 0, startedAt: null };
 let retryTimer = null;
-let initRetryTimer = null;
 
 // ---------------------------------------------------------------------------
 // WebSocket
 // ---------------------------------------------------------------------------
 function connect() {
-  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+  if (ws) {
+    try { ws.close(); } catch (e) {}
+    ws = null;
+  }
 
   console.log('[Forca] connecting to ws://127.0.0.1:7432 ...');
   ws = new WebSocket('ws://127.0.0.1:7432');
@@ -53,7 +53,6 @@ function connect() {
   ws.onopen = () => {
     console.log('[Forca] WebSocket connected, sending handshake');
     reconnectAttempts = 0;
-    initRetryCount = 0;
     ws.send(JSON.stringify({ type: 'handshake', payload: { client: 'forca-extension' } }));
     chrome.storage.local.set({ wsStatus: 'connected' });
   };
@@ -75,44 +74,24 @@ function connect() {
   };
 
   ws.onerror = () => {
-    if (ws) ws.close();
+    try { ws.close(); } catch (e) {}
   };
 }
 
 function scheduleReconnect() {
-  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-    console.log('[Forca] max reconnect attempts reached');
-    return;
-  }
   if (retryTimer) clearTimeout(retryTimer);
+  const backoff = Math.min(RECONNECT_INTERVAL * Math.pow(1.5, reconnectAttempts), MAX_RECONNECT_INTERVAL);
+  reconnectAttempts++;
+  console.log('[Forca] reconnect attempt ' + reconnectAttempts + ' (backoff: ' + backoff + 'ms)');
   retryTimer = setTimeout(() => {
-    reconnectAttempts++;
-    console.log('[Forca] reconnect attempt ' + reconnectAttempts + '/' + MAX_RECONNECT_ATTEMPTS);
     connect();
-  }, RECONNECT_INTERVAL);
+  }, backoff);
 }
 
-function startInitRetryWatchdog() {
-  if (initRetryTimer) clearInterval(initRetryTimer);
-  initRetryCount = 0;
-  initRetryTimer = setInterval(() => {
-    initRetryCount++;
-    const isConnected = ws && ws.readyState === WebSocket.OPEN;
-    if (isConnected) {
-      console.log('[Forca] connected, stopping init watchdog');
-      clearInterval(initRetryTimer);
-      initRetryTimer = null;
-      return;
-    }
-    if (initRetryCount >= MAX_INIT_RETRIES) {
-      console.log('[Forca] init watchdog max retries reached, giving up');
-      clearInterval(initRetryTimer);
-      initRetryTimer = null;
-      return;
-    }
-    console.log('[Forca] init watchdog retry ' + initRetryCount + '/' + MAX_INIT_RETRIES);
-    connect();
-  }, 2000);
+function startReconnectWatcher() {
+  if (retryTimer) clearTimeout(retryTimer);
+  reconnectAttempts = 0;
+  connect();
 }
 
 // ---------------------------------------------------------------------------
@@ -256,8 +235,8 @@ function updateRemainingOnBlockedPages() {
   }
 }
 
-chrome.runtime.onStartup.addListener(() => { connect(); startInitRetryWatchdog(); });
-chrome.runtime.onInstalled.addListener(() => { connect(); startInitRetryWatchdog(); });
+chrome.runtime.onStartup.addListener(() => { connect(); });
+chrome.runtime.onInstalled.addListener(() => { connect(); });
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && zoneInfo.status === 'active') {
     updateRemainingOnBlockedPages();
@@ -269,10 +248,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // ---------------------------------------------------------------------------
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'reconnect') {
-    if (ws) ws.close();
-    reconnectAttempts = 0;
-    connect();
-    startInitRetryWatchdog();
+    startReconnectWatcher();
     return;
   }
 
@@ -296,6 +272,5 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-// Connect immediately with aggressive retry watchdog
+// Connect immediately
 connect();
-startInitRetryWatchdog();

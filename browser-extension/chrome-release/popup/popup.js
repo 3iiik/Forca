@@ -95,7 +95,4 @@ document.getElementById('endActionBtn').addEventListener('click', () => {
   sendToBackground('end-zone');
 });
 
-document.getElementById('settingsBtn').addEventListener('click', () => {
-  chrome.runtime.sendMessage({ type: 'reconnect', source: 'popup' });
-  window.close();
-});
+

@@ -34,6 +34,7 @@ import { registerExtensionIpc } from './ipc/extension.ipc';
 import { registerAnalyticsIpc } from './ipc/analytics.ipc';
 
 let mainWindow: BrowserWindow | null = null;
+let meetingZoneTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Services
 const blockerService = new BlockingService();
@@ -97,8 +98,15 @@ function createWindow() {
 
   mainWindow.on('close', (event) => {
     const settings = store.get('settings');
-    if (settings.general.closeToTray) {
+    if (settings.general?.closeToTray) {
       event.preventDefault();
+      mainWindow?.hide();
+    }
+  });
+
+  mainWindow.on('minimize', () => {
+    const settings = store.get('settings');
+    if (settings.general?.minimizeToTray) {
       mainWindow?.hide();
     }
   });
@@ -164,7 +172,8 @@ function createWindow() {
       );
       if (afterMeetingZone) {
         const delay = afterMeetingZone.trigger.afterMeetingDelay || 0;
-        setTimeout(() => {
+        meetingZoneTimer = setTimeout(() => {
+          meetingZoneTimer = null;
           zoneEngine.startZone(afterMeetingZone.id);
         }, delay * 1000);
       }
@@ -340,6 +349,10 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  if (meetingZoneTimer) {
+    clearTimeout(meetingZoneTimer);
+    meetingZoneTimer = null;
+  }
   zoneEngine.destroy();
   calendarService.destroy();
   blockerService.cleanup();

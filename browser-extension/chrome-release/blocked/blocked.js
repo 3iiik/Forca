@@ -84,6 +84,8 @@ function applyZoneInfo(data) {
     statusDot.style.background = '#1D9E75';
     subtitle.textContent = 'Focus Mode Active';
   } else {
+    stopTick();
+    stopPolling();
     setButtonContent(pauseBtn, pauseSvg, 'Zone Ended');
     pauseBtn.className = 'btn btn-disabled';
     pauseBtn.disabled = true;
@@ -125,12 +127,23 @@ chrome.storage.local.get('zoneInfo').then((data) => {
   }
 });
 
-setInterval(async () => {
-  try {
-    const data = await chrome.storage.local.get('zoneInfo');
-    if (data.zoneInfo) applyZoneInfo(data.zoneInfo);
-  } catch (_) {}
-}, 10000);
+let pollTimer = null;
+function startPolling() {
+  stopPolling();
+  pollTimer = setInterval(async () => {
+    try {
+      const data = await chrome.storage.local.get('zoneInfo');
+      if (data.zoneInfo) applyZoneInfo(data.zoneInfo);
+    } catch (_) {}
+  }, 10000);
+}
+function stopPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+}
+startPolling();
 
 function sendMessageToBackground(actionType) {
   chrome.runtime.sendMessage({ type: actionType, source: 'blocked-page' });

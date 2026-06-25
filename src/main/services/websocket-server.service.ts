@@ -1,6 +1,10 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { logger } from '../utils/logger';
 
+interface AliveWebSocket extends WebSocket {
+  isAlive?: boolean;
+}
+
 export type WsMessageType =
   | 'zone:start'
   | 'zone:end'
@@ -28,6 +32,7 @@ export class WebSocketServerService {
   private wss: WebSocketServer | null = null;
   private clients: Set<WebSocket> = new Set();
   private port: number;
+  private heartbeatTimer: NodeJS.Timeout | null = null;
 
   getActiveZoneState?: () => WsPayload | null;
 
@@ -48,7 +53,13 @@ export class WebSocketServerService {
 
     this.wss.on('connection', (ws: WebSocket) => {
       this.clients.add(ws);
+      const alive = ws as AliveWebSocket;
+      alive.isAlive = true;
       logger.info(`Extension connected (${this.clients.size} total clients)`);
+
+      alive.on('pong', () => {
+        alive.isAlive = true;
+      });
 
       ws.on('message', (data: Buffer) => {
         try {
@@ -98,6 +109,19 @@ export class WebSocketServerService {
     this.wss.on('error', (err) => {
       logger.error('WebSocket server error:', err);
     });
+
+    this.heartbeatTimer = setInterval(() => {
+      for (const client of this.clients) {
+        const alive = client as AliveWebSocket;
+        if (alive.isAlive === false) {
+          this.clients.delete(client);
+          client.terminate();
+        } else {
+          alive.isAlive = false;
+          client.ping();
+        }
+      }
+    }, 30000);
   }
 
   broadcast(type: WsMessageType, payload: WsPayload = {}): void {
@@ -120,6 +144,10 @@ export class WebSocketServerService {
   }
 
   stop(): void {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
     if (this.wss) {
       for (const client of this.clients) {
         client.close();

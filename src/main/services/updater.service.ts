@@ -11,28 +11,6 @@ export class UpdaterService {
 
   init() {
     autoUpdater.autoDownload = false;
-
-    autoUpdater.on('update-available', (info) => {
-      this.window?.webContents.send('update:available', {
-        version: info.version,
-        releaseDate: info.releaseDate,
-      });
-    });
-
-    autoUpdater.on('download-progress', (progress) => {
-      this.window?.webContents.send('update:progress', {
-        percent: progress.percent,
-        bytesPerSecond: progress.bytesPerSecond,
-      });
-    });
-
-    autoUpdater.on('update-downloaded', () => {
-      this.window?.webContents.send('update:downloaded');
-    });
-
-    autoUpdater.on('error', (err) => {
-      logger.error('Update error:', err);
-    });
   }
 
   async checkForUpdates(): Promise<{ available: boolean; version?: string }> {
