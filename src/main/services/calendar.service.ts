@@ -237,8 +237,8 @@ export class CalendarService {
 
       const eventEnd = new Date(event.end);
 
-      // Event that just ended (within last 30 seconds)
-      if (eventEnd <= now && now.getTime() - eventEnd.getTime() < 30000) {
+      // Event that just ended (within last 60 seconds — must be >= poll interval to guarantee detection)
+      if (eventEnd <= now && now.getTime() - eventEnd.getTime() < 60000) {
         const key = event.id;
         if (!this.previousEvents.get(key)) {
           this.previousEvents.set(key, true);
@@ -259,7 +259,7 @@ export class CalendarService {
   startMeetingMonitor(): void {
     this.checkInterval = setInterval(() => {
       this.checkMeetingEnded();
-    }, 300000);
+    }, 30000);
   }
 
   stopMeetingMonitor(): void {

@@ -83,6 +83,7 @@ declare global {
         installUpdate: () => Promise<void>;
         getOnboardingStatus: () => Promise<boolean>;
         completeOnboarding: () => Promise<void>;
+        closeToTray: (dontShowAgain: boolean) => Promise<void>;
       };
       on: (channel: string, callback: (...args: any[]) => void) => () => void;
       removeAllListeners: (channel: string) => void;

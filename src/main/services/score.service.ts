@@ -81,20 +81,19 @@ export class ScoreService {
 
   getStreakData(): StreakData {
     const sessions = store.get('sessions', []);
-    const currentStreak = store.get('currentStreak', 0);
-    const longestStreak = store.get('longestStreak', 0);
-    const streakLastDate = store.get('streakLastDate', '');
     const today = new Date().toISOString().split('T')[0];
-
     const todayCompleted = sessions.some(s => s.date === today);
 
     // Update streak if needed
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const lastDate = store.get('streakLastDate', '');
 
-    if (todayCompleted && streakLastDate !== today) {
-      const newStreak = streakLastDate === yesterdayStr ? currentStreak + 1 : 1;
+    if (todayCompleted && lastDate !== today) {
+      const currentStreak = store.get('currentStreak', 0);
+      const longestStreak = store.get('longestStreak', 0);
+      const newStreak = lastDate === yesterdayStr ? currentStreak + 1 : 1;
       store.set('currentStreak', newStreak);
       store.set('longestStreak', Math.max(longestStreak, newStreak));
       store.set('streakLastDate', today);
@@ -103,7 +102,7 @@ export class ScoreService {
     return {
       currentStreak: store.get('currentStreak', 0),
       longestStreak: store.get('longestStreak', 0),
-      lastSessionDate: streakLastDate || today,
+      lastSessionDate: store.get('streakLastDate', '') || today,
       todayCompleted,
     };
   }

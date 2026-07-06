@@ -17,7 +17,8 @@ export default function SettingsPage() {
     loadSettings();
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-      if (pendingRef.current) window.electronAPI.settings.set(pendingRef.current);
+      const pending = pendingRef.current;
+      if (pending) window.electronAPI.settings.set(pending);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -107,6 +107,7 @@ const api = {
     installUpdate: () => ipcRenderer.invoke('app:install-update'),
     getOnboardingStatus: () => ipcRenderer.invoke('app:get-onboarding-status'),
     completeOnboarding: () => ipcRenderer.invoke('app:complete-onboarding'),
+    closeToTray: (dontShowAgain: boolean) => ipcRenderer.invoke('app:close-to-tray', dontShowAgain),
   },
 
   // Event listeners
@@ -116,6 +117,7 @@ const api = {
       'tray:action', 'update:available', 'update:progress',
       'update:downloaded', 'notification:show',
       'sound:play', 'sound:stop', 'sound:volume', 'sound:fade-out',
+      'show:still-running-dialog',
     ];
     if (validChannels.includes(channel)) {
       const subscription = (_event: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);

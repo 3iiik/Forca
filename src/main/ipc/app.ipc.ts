@@ -1,6 +1,6 @@
 import { ipcMain, app, BrowserWindow } from 'electron';
-import { UpdaterService } from '../services/updater.service';
 import store from '../store/store';
+import { UpdaterService } from '../services/updater.service';
 
 export function registerAppIpc(updaterService: UpdaterService) {
   ipcMain.handle('app:minimize', async () => {
@@ -32,5 +32,13 @@ export function registerAppIpc(updaterService: UpdaterService) {
 
   ipcMain.handle('app:complete-onboarding', async () => {
     store.set('onboardingComplete', true);
+  });
+
+  ipcMain.handle('app:close-to-tray', async (event, dontShowAgain: boolean) => {
+    if (dontShowAgain) {
+      store.set('trayEducationShown', true);
+    }
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.hide();
   });
 }

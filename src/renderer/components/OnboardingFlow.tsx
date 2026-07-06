@@ -3,6 +3,12 @@ import { useAppStore } from '../stores/appStore';
 import { ZoneProfile } from '../types';
 import { logger } from '../utils/logger';
 import { Target, Search, Monitor, Settings, FolderOpen, PartyPopper, CheckCircle } from 'lucide-react';
+import firefoxIcon from '../assets/browser-icons/firefox.svg';
+import waterfoxIcon from '../assets/browser-icons/waterfox.svg';
+import librewolfIcon from '../assets/browser-icons/librewolf.svg';
+import chromeIcon from '../assets/browser-icons/chrome.svg';
+import edgeIcon from '../assets/browser-icons/edge.svg';
+import braveIcon from '../assets/browser-icons/brave.svg';
 
 type ChromiumPhase =
   | 'idle'
@@ -402,13 +408,13 @@ export default function OnboardingFlow() {
                     </span>
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="w-[28px] h-[28px] flex items-center justify-center rounded-md bg-gradient-to-br from-orange-500 to-orange-600 shadow-md" title="Firefox">
-                        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]"><circle cx="12" cy="12" r="10" fill="#fff"/><path d="M12 5C8.5 5 5.5 7.5 5 11c.5-1 1.5-1.5 2.5-1.5C9 9.5 10 10.5 10 12s-1 2.5-2.5 2.5c-.7 0-1.3-.2-1.8-.6C7 16 9.5 18 12.5 18 16 18 19 15.5 19 12s-3-7-7-7z" fill="#FF7139"/><circle cx="9.5" cy="11" r="1.5" fill="#fff"/><circle cx="14.5" cy="11" r="1.5" fill="#fff"/></svg>
+                        <img src={firefoxIcon} alt="Firefox" className="w-[18px] h-[18px]" />
                       </div>
                       <div className="w-[28px] h-[28px] flex items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-blue-600 shadow-md" title="Waterfox">
-                        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]"><path d="M12 3L5 14c-1 1.5-1 3.5 0 5s2.5 2 4 2h6c1.5 0 3-.5 4-2s1-3.5 0-5L12 3z" fill="#fff" opacity="0.95"/></svg>
+                        <img src={waterfoxIcon} alt="Waterfox" className="w-[18px] h-[18px]" />
                       </div>
                       <div className="w-[28px] h-[28px] flex items-center justify-center rounded-md bg-gradient-to-br from-zinc-400 to-zinc-500 shadow-md" title="LibreWolf">
-                        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]"><path d="M12 3L3 9v6l9 6 9-6V9l-9-6z" fill="#fff"/><circle cx="12" cy="12" r="3" fill="#18181b"/></svg>
+                        <img src={librewolfIcon} alt="LibreWolf" className="w-[18px] h-[18px]" />
                       </div>
                     </div>
                     <div className="text-sm font-medium text-zinc-200">Firefox • Waterfox • LibreWolf</div>
@@ -427,13 +433,13 @@ export default function OnboardingFlow() {
                     </span>
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="w-[28px] h-[28px] flex items-center justify-center rounded-md bg-gradient-to-br from-red-500 via-yellow-500 to-green-500 shadow-md" title="Chrome">
-                        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]"><circle cx="12" cy="12" r="10" fill="#fff"/><circle cx="12" cy="12" r="4" fill="#4285F4"/><path d="M12 2C8 2 4.5 4.5 3 8l4.5 8c1-1.5 2.5-2.5 4.5-2.5s3.5 1 4.5 2.5L21 8c-1.5-3.5-5-6-9-6z" fill="#EA4335" opacity="0.9"/><path d="M12 22c4 0 7.5-2.5 9-6l-4.5-8c-1 1.5-2.5 2.5-4.5 2.5s-3.5-1-4.5-2.5L3 16c1.5 3.5 5 6 9 6z" fill="#34A853" opacity="0.9"/></svg>
+                        <img src={chromeIcon} alt="Chrome" className="w-[18px] h-[18px]" />
                       </div>
                       <div className="w-[28px] h-[28px] flex items-center justify-center rounded-md bg-gradient-to-br from-blue-600 to-blue-700 shadow-md" title="Edge">
-                        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]"><path d="M4 16c1 2 3 3 5 3 3 0 5.5-2 5.5-5S12 9 9 9c-2 0-3.5 1-4.5 2" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none"/><path d="M9 9c3 0 5.5-2 5.5-5S12 2 9 2 3.5 4 3.5 7" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none"/><path d="M15 12c3 0 5.5 1.5 5.5 4s-2.5 4-5.5 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none"/></svg>
+                        <img src={edgeIcon} alt="Edge" className="w-[18px] h-[18px]" />
                       </div>
                       <div className="w-[28px] h-[28px] flex items-center justify-center rounded-md bg-gradient-to-br from-orange-600 to-orange-700 shadow-md" title="Brave">
-                        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]"><path d="M12 3L8 5 4 4l1 5-1 4c0 5 4 8 8 8s8-3 8-8l-1-4 1-5-4 1-4-2z" fill="#fff" opacity="0.95"/><circle cx="12" cy="11" r="2" fill="#FB542B"/></svg>
+                        <img src={braveIcon} alt="Brave" className="w-[18px] h-[18px]" />
                       </div>
                     </div>
                     <div className="text-sm font-medium text-zinc-200">Chrome, Edge, Brave &amp; More</div>

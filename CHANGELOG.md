@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.3.0] — 2026-07-06
+
+### Fixed
+
+- **Onboarding close behavior** — the "Forca is still running" dialog now appears correctly when closing the onboarding wizard, sharing the same close/minimize logic as the main application window.
+- **Tray Exit no longer shows dialog** — choosing Exit from the tray menu immediately quits the app without showing the "still running" dialog or hiding to tray.
+- **Meeting auto-detection for Focus Zones** — fixed a timing mismatch in calendar polling (5-minute interval vs 30-second detection window) that guaranteed every meeting was missed. Poll interval reduced to 30 seconds with a 60-second detection window, making auto-trigger zones actually work.
+- **Launch minimized setting** — was stored and toggleable in the UI but never applied at startup. The window now respects this setting.
+- **Settings persistence** — fixed an edge case where the cleanup handler could overwrite settings with `null` on unmount.
+- **Streak calculation** — `getStreakData()` was returning stale values due to reading before writing. Now reads from store after updates.
+- **Shutdown cleanup** — removed duplicate `blocker.cleanup()` and `tray.destroy()` calls in `before-quit` that were already handled by `zoneEngine.destroy()`.
+- **Startup waste** — removed a duplicate auto-update check that ran an unnecessary HTTP request on every startup.
+
+### Added
+
+- **Custom "Forca is still running" dialog** — replaces the native Windows message box with a dark-themed, animated dialog that matches the Forca design system. Includes fade-in/scale animation, ESC/ENTER/TAB keyboard support, persistent "Don't show again" checkbox, and proper focus management.
+- **Onboarding close integration** — the `StillRunningDialog` component is now always mounted at the application root, so it works during both onboarding and normal app usage.
+
+### Changed
+
+- Calendar meeting monitor polling interval reduced from 5 minutes to 30 seconds for reliable meeting detection.
+- Preload IPC bridge now includes `closeToTray` method and `show:still-running-dialog` event channel.
+
 ## [v1.1.0] — 2026-06-06
 
 ### Fixed

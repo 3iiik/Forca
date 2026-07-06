@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, Menu, Notification } from 'electron';
+import { app, BrowserWindow, Menu, Notification } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
 import { autoUpdater } from 'electron-updater';
@@ -35,6 +35,7 @@ import { registerAnalyticsIpc } from './ipc/analytics.ipc';
 
 let mainWindow: BrowserWindow | null = null;
 let meetingZoneTimer: ReturnType<typeof setTimeout> | null = null;
+let isQuitting = false;
 
 // Services
 const blockerService = new BlockingService();
@@ -70,8 +71,6 @@ function createWindow() {
     },
   });
 
-  Menu.setApplicationMenu(null);
-
   mainWindow.setMenuBarVisibility(false);
   mainWindow.autoHideMenuBar = true;
 
@@ -85,7 +84,10 @@ function createWindow() {
   }
 
   mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
+    const settings = store.get('settings');
+    if (!settings.general?.launchMinimized) {
+      mainWindow?.show();
+    }
   });
 
   // Lower power when hidden
@@ -96,26 +98,15 @@ function createWindow() {
     mainWindow?.webContents.setBackgroundThrottling(false);
   });
 
-  mainWindow.on('close', async (event) => {
+  mainWindow.on('close', (event) => {
+    if (isQuitting) return;
+
     const settings = store.get('settings');
     if (settings.general?.closeToTray) {
-      if (!store.get('trayEducationShown') && mainWindow) {
-        event.preventDefault();
-        const result = await dialog.showMessageBox(mainWindow, {
-          type: 'info',
-          title: 'Forca is still running',
-          message: 'Forca will continue running in the background',
-          detail: 'You can access Forca from the system tray. Close this window anytime — your focus sessions will keep running.',
-          checkboxLabel: 'Don\'t show this message again',
-          checkboxChecked: false,
-          buttons: ['Got it'],
-        });
-        if (result.checkboxChecked) {
-          store.set('trayEducationShown', true);
-        }
-        mainWindow?.hide();
+      event.preventDefault();
+      if (!store.get('trayEducationShown')) {
+        mainWindow?.webContents.send('show:still-running-dialog');
       } else {
-        event.preventDefault();
         mainWindow?.hide();
       }
     }
@@ -269,7 +260,6 @@ function createWindow() {
   updaterService.init();
   setTimeout(() => {
     autoUpdater.checkForUpdatesAndNotify();
-    updaterService.checkForUpdates();
   }, 30000);
 
   // Setup auto-launch
@@ -301,6 +291,7 @@ function setupTray() {
       mainWindow?.webContents.send('tray:action', 'open-settings');
     },
     onQuit: () => {
+      isQuitting = true;
       app.quit();
     },
   });
@@ -372,8 +363,6 @@ app.on('before-quit', () => {
   }
   zoneEngine.destroy();
   calendarService.destroy();
-  blockerService.cleanup();
-  trayService.destroy();
   syncService.destroy();
   wsServer.stop();
 });

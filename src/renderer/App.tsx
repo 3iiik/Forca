@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import { useAppStore } from './stores/appStore';
 import Layout from './components/Layout';
 import OnboardingFlow from './components/OnboardingFlow';
+import StillRunningDialog from './components/StillRunningDialog';
 import { useAudio } from './hooks/useAudio';
 import { logger } from './utils/logger';
 
@@ -20,6 +21,7 @@ function App() {
     darkMode, setDarkMode, onboardingComplete, setOnboardingComplete,
   } = useAppStore();
   const [onboardingLoading, setOnboardingLoading] = useState(true);
+  const [stillRunningVisible, setStillRunningVisible] = useState(false);
   const notifyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -99,17 +101,31 @@ function App() {
       }
     });
 
+    const unsubStillRunning = api.on('show:still-running-dialog', () => {
+      setStillRunningVisible(true);
+    });
+
     return () => {
       unsubZone();
       unsubBreak();
       unsubNotify();
       unsubUpdate();
       unsubTray();
+      unsubStillRunning();
       if (notifyTimeoutRef.current) clearTimeout(notifyTimeoutRef.current);
       api.removeAllListeners('zone:updated');
       api.removeAllListeners('break:update');
     };
   }, [setActiveZone, setBreakTimer, setCurrentView, setDarkMode, setNotification, setProfiles, setSettings, setUpdateAvailable, setZones]);
+
+  const handleStillRunningClose = useCallback(async (dontShowAgain: boolean) => {
+    setStillRunningVisible(false);
+    try {
+      await window.electronAPI.app.closeToTray(dontShowAgain);
+    } catch {
+      logger.error('[still-running] failed to close to tray');
+    }
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -123,21 +139,27 @@ function App() {
     );
   }
 
-  if (!onboardingComplete) {
-    return <OnboardingFlow />;
-  }
-
   return (
-    <Layout>
-      <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" /></div>}>
-        {currentView === 'today' && <TodayView />}
-        {currentView === 'calendar' && <CalendarView />}
-        {currentView === 'block-rules' && <BlockRules />}
-        {currentView === 'stats' && <StatsPage />}
-        {currentView === 'settings' && <SettingsPage />}
-        {currentView === 'profiles' && <ZoneProfiles />}
-      </Suspense>
-    </Layout>
+    <>
+      {!onboardingComplete ? (
+        <OnboardingFlow />
+      ) : (
+        <Layout>
+          <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" /></div>}>
+            {currentView === 'today' && <TodayView />}
+            {currentView === 'calendar' && <CalendarView />}
+            {currentView === 'block-rules' && <BlockRules />}
+            {currentView === 'stats' && <StatsPage />}
+            {currentView === 'settings' && <SettingsPage />}
+            {currentView === 'profiles' && <ZoneProfiles />}
+          </Suspense>
+        </Layout>
+      )}
+      <StillRunningDialog
+        visible={stillRunningVisible}
+        onClose={handleStillRunningClose}
+      />
+    </>
   );
 }
 
