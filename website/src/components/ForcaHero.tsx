@@ -108,7 +108,7 @@ export function ForcaHero() {
                         </svg>
                       </div>
                     )}
-                    {i % 2 === 0 && i < steps.length - 2 && (
+                    {i < steps.length - 2 && (
                       <div className="hidden lg:block absolute -bottom-[13px] left-1/2 -translate-x-1/2 z-10 text-zinc-600 rotate-90">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="5" y1="12" x2="19" y2="12" />
