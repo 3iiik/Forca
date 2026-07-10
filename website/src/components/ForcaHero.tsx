@@ -87,20 +87,24 @@ export function ForcaHero() {
               {steps.map((step, i) => {
                 const StepIcon = step.icon;
                 const isActive = i === activeStep;
+                const gridPos = i === 0 ? 'col-start-1 row-start-1' :
+                  i === 1 ? 'col-start-2 row-start-1' :
+                  i === 2 ? 'col-start-2 row-start-2' :
+                  'col-start-1 row-start-2';
                 return (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1, duration: 0.4 }}
-                    className={`relative rounded-2xl border p-4 md:p-5 ${
+                    className={`relative rounded-2xl border p-4 md:p-5 ${gridPos} ${
                       isActive
                         ? 'border-emerald-500/60 bg-emerald-500/10 shadow-lg shadow-emerald-600/15'
                         : 'border-[#27272a] bg-[#18181b]'
                     }`}
                     style={{ willChange: 'transform' }}
                   >
-                    {i < steps.length - 1 && i % 2 === 0 && (
+                    {i === 0 && (
                       <div className="hidden lg:block absolute -right-[13px] top-1/2 -translate-y-1/2 z-10 text-zinc-600">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="5" y1="12" x2="19" y2="12" />
@@ -108,8 +112,16 @@ export function ForcaHero() {
                         </svg>
                       </div>
                     )}
-                    {i < steps.length - 2 && i % 2 !== 0 && (
-                      <div className="hidden lg:block absolute -bottom-[13px] left-[-8px] z-10 text-zinc-600 rotate-[135deg]">
+                    {i === 1 && (
+                      <div className="hidden lg:block absolute -bottom-[13px] left-1/2 -translate-x-1/2 z-10 text-zinc-600 rotate-90">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                      </div>
+                    )}
+                    {i === 2 && (
+                      <div className="hidden lg:block absolute -left-[13px] top-1/2 -translate-y-1/2 z-10 text-zinc-600 -scale-x-100">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="5" y1="12" x2="19" y2="12" />
                           <polyline points="12 5 19 12 12 19" />
