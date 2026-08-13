@@ -17,7 +17,7 @@ const AccordionItem = forwardRef<
 AccordionItem.displayName = 'AccordionItem';
 
 const AccordionTrigger = forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Header>,
+  React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex">

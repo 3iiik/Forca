@@ -25,11 +25,11 @@ export function WhyForca() {
 
         <div className="max-w-3xl mx-auto">
           <div className="grid grid-cols-[1fr_auto_1fr] gap-x-6 md:gap-x-10 gap-y-0">
-            <div className="text-left pb-3 mb-1 border-b border-[#27272a]">
-              <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">Traditional Blockers</span>
+            <div className="text-left pb-3 mb-1 border-b border-border">
+              <span className="text-xs font-semibold text-error uppercase tracking-wider">Traditional Blockers</span>
             </div>
-            <div className="pb-3 mb-1 border-b border-[#27272a]" />
-            <div className="text-right pb-3 mb-1 border-b border-[#27272a]">
+            <div className="pb-3 mb-1 border-b border-border" />
+            <div className="text-right pb-3 mb-1 border-b border-border">
               <span className="text-xs font-semibold text-accent uppercase tracking-wider">Forca</span>
             </div>
 
@@ -43,7 +43,7 @@ export function WhyForca() {
                   className="text-left py-3 md:py-4 flex items-center gap-2"
                   style={{ willChange: 'transform' }}
                 >
-                  <span className="text-red-400 shrink-0"><Icons.X size={14} /></span>
+                  <span className="text-error shrink-0"><Icons.X size={14} /></span>
                   <span className="text-xs sm:text-sm text-muted-foreground">{c.blocker}</span>
                 </motion.div>
 
@@ -60,7 +60,7 @@ export function WhyForca() {
                   style={{ willChange: 'transform' }}
                 >
                   <span className="text-xs sm:text-sm font-medium text-foreground">{c.forca}</span>
-                  <span className="text-green-500 shrink-0"><Icons.Check size={14} /></span>
+                  <span className="text-success shrink-0"><Icons.Check size={14} /></span>
                 </motion.div>
               </React.Fragment>
             ))}

@@ -64,7 +64,7 @@ export default function TailarkFAQ() {
               <AccordionItem
                 key={item.id}
                 value={item.id}
-                className="border-dotted border-white/10"
+                className="border-dotted border-border"
               >
                 <AccordionTrigger className="cursor-pointer text-base hover:no-underline data-[state=open]:text-accent">
                   {item.question}

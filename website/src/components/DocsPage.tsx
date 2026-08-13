@@ -2,6 +2,65 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { DownloadCTAButton } from './ui/DownloadCTAButton';
 
+type DocCode = { type: 'code'; text: string };
+type DocBold = { type: 'bold'; text: string };
+type DocLink = { type: 'link'; href: string; text: string };
+type DocLinkExt = { type: 'link-ext'; href: string; text: string };
+type DocNested = { type: 'nested'; items: [string, DocInline[][]] };
+type DocInline = string | DocCode | DocBold | DocLink | DocLinkExt | DocNested;
+
+type DocTroubleshootingItem =
+  | string
+  | { text: string; link?: { href: string; text: string }; code?: string; suffix?: string };
+type DocTroubleshootingGroup = { title: string; items: DocTroubleshootingItem[] };
+
+const desktopInstallSteps: DocInline[][] = [
+  ['Download the latest installer from the', { type: 'link', href: '/download/', text: 'download page' }, '.'],
+  ['Run ', { type: 'code', text: 'Forca-Setup-x64.exe' }, ' and follow the setup wizard.'],
+  ['Launch Forca. The onboarding wizard will guide you through the rest.'],
+];
+
+const firefoxSteps: DocInline[][] = [
+  ['Visit the ', { type: 'link-ext', href: 'https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/', text: 'Forca page on Firefox Add-ons' }, '.'],
+  ['Click ', { type: 'bold', text: 'Add to Firefox' }, '.'],
+  ['Grant the required permissions when prompted.'],
+  ['Launch Forca. The app will detect and connect to the extension automatically.'],
+];
+
+const chromiumSteps: DocInline[][] = [
+  ['Install the Forca desktop app.'],
+  [{ type: 'nested', items: ['Open your browser\'s extensions page:', [
+    ['Chrome: ', { type: 'code', text: 'chrome://extensions' }],
+    ['Edge: ', { type: 'code', text: 'edge://extensions' }],
+    ['Brave: ', { type: 'code', text: 'brave://extensions' }],
+    ['Arc: ', { type: 'code', text: 'chrome://extensions' }],
+    ['Vivaldi: ', { type: 'code', text: 'vivaldi://extensions' }],
+    ['Opera: ', { type: 'code', text: 'opera://extensions' }],
+  ]] }],
+  ['Toggle ', { type: 'bold', text: 'Developer mode' }, ' in the top-right corner.'],
+  ['In Forca (Settings \u2192 Extension), click ', { type: 'bold', text: 'Open Extension Folder' }, '.'],
+  ['On the extensions page, click ', { type: 'bold', text: 'Load unpacked' }, ' and select the opened folder.'],
+];
+
+const troubleshootingGroups: DocTroubleshootingGroup[] = [
+  {
+    title: 'Extension not connecting',
+    items: ['Make sure the Forca desktop app is running.', 'Reload the extension on your browser\'s extensions page.', 'In Forca, go to Settings \u2192 Extension and click Reconnect.', 'Restart both the desktop app and your browser.'],
+  },
+  {
+    title: 'Websites not being blocked',
+    items: ['Verify the extension is installed and enabled.', 'Check that the site is in your zone\'s blocked list.', 'Make sure the zone is active (not paused or ended).'],
+  },
+  {
+    title: 'Calendar not detected',
+    items: ['Go to Settings \u2192 Calendar and configure your provider.', 'For Google Calendar, click "Connect Google Calendar" and authorize access.', 'For iCal, paste your iCal URL in the settings.'],
+  },
+  {
+    title: 'App won\'t start',
+    items: ['Ensure you\'re on Windows 10 or later.', { text: 'Try reinstalling the latest version from the ', link: { href: '/download/', text: 'download page' }, suffix: '.' }, { text: 'Check the logs at ', code: '%APPDATA%/forca/logs/', suffix: '.' }],
+  },
+];
+
 const sections = [
   {
     title: 'Installation',
@@ -20,7 +79,7 @@ const sections = [
             '~50 MB disk space',
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0"><path d="M20 6L9 17l-5-5" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-success"><path d="M20 6L9 17l-5-5" /></svg>
               {item}
             </li>
           ))}
@@ -28,17 +87,13 @@ const sections = [
 
         <h3 className="text-sm font-semibold text-foreground mb-2">Desktop app</h3>
         <ol className="space-y-2">
-          {[
-            ['Download the latest installer from the', { type: 'link', href: '/download/', text: 'download page' }, '.'],
-            ['Run ', { type: 'code', text: 'Forca-Setup-x64.exe' }, ' and follow the setup wizard.'],
-            ['Launch Forca. The onboarding wizard will guide you through the rest.'],
-          ].map((parts, i) => (
+          {desktopInstallSteps.map((parts, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">{i + 1}</span>
               <span>{parts.map((part, j) => {
                 if (typeof part === 'string') return part;
                 if (part.type === 'link') return <a key={j} href={part.href} className="text-accent hover:text-accent-hover underline underline-offset-2">{part.text}</a>;
-                if (part.type === 'code') return <code key={j} className="bg-[#27272a] px-1.5 py-0.5 rounded text-[13px]">{part.text}</code>;
+                if (part.type === 'code') return <code key={j} className="bg-muted px-1.5 py-0.5 rounded text-[13px]">{part.text}</code>;
                 return null;
               })}</span>
             </li>
@@ -58,12 +113,7 @@ const sections = [
       <div>
         <h3 className="text-sm font-semibold text-foreground mb-2">Firefox</h3>
         <ol className="space-y-2 mb-6">
-          {[
-            ['Visit the ', { type: 'link-ext', href: 'https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/', text: 'Forca page on Firefox Add-ons' }, '.'],
-            ['Click ', { type: 'bold', text: 'Add to Firefox' }, '.'],
-            ['Grant the required permissions when prompted.'],
-            ['Launch Forca. The app will detect and connect to the extension automatically.'],
-          ].map((parts, i) => (
+          {firefoxSteps.map((parts, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">{i + 1}</span>
               <span>{parts.map((part, j) => {
@@ -79,34 +129,21 @@ const sections = [
         <h3 className="text-sm font-semibold text-foreground mb-2">Chromium browsers</h3>
         <p className="text-sm text-muted-foreground leading-relaxed mb-3">Forca supports Chrome, Edge, Brave, Arc, Vivaldi, and Opera via Developer Mode loading.</p>
         <ol className="space-y-2">
-          {[
-            ['Install the Forca desktop app.'],
-            [{ type: 'nested', items: ['Open your browser\'s extensions page:', [
-              ['Chrome: ', { type: 'code', text: 'chrome://extensions' }],
-              ['Edge: ', { type: 'code', text: 'edge://extensions' }],
-              ['Brave: ', { type: 'code', text: 'brave://extensions' }],
-              ['Arc: ', { type: 'code', text: 'chrome://extensions' }],
-              ['Vivaldi: ', { type: 'code', text: 'vivaldi://extensions' }],
-              ['Opera: ', { type: 'code', text: 'opera://extensions' }],
-            ]] }],
-            ['Toggle ', { type: 'bold', text: 'Developer mode' }, ' in the top-right corner.'],
-            ['In Forca (Settings \u2192 Extension), click ', { type: 'bold', text: 'Open Extension Folder' }, '.'],
-            ['On the extensions page, click ', { type: 'bold', text: 'Load unpacked' }, ' and select the opened folder.'],
-          ].map((parts, i) => (
+          {chromiumSteps.map((parts, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="flex items-center justify-center w-5 h-5 rounded bg-accent/20 text-accent text-[10px] font-bold shrink-0 mt-0.5">{i + 1}</span>
               <span>{parts.map((part, j) => {
                 if (typeof part === 'string') return part;
                 if (part.type === 'bold') return <strong key={j} className="text-foreground">{part.text}</strong>;
-                if (part.type === 'code') return <code key={j} className="bg-[#27272a] px-1.5 py-0.5 rounded text-[13px]">{part.text}</code>;
+                if (part.type === 'code') return <code key={j} className="bg-muted px-1.5 py-0.5 rounded text-[13px]">{part.text}</code>;
                 if (part.type === 'nested') {
                   return <span key={j} className="block">{part.items[0]}
                     <span className="block mt-1 space-y-0.5">
-                      {part.items[1].map((row: (string | { type: string; text: string })[], ri: number) => (
+                      {part.items[1].map((row, ri) => (
                         <span key={ri} className="block text-xs">
-                          {row.map((cell: string | { type: string; text: string }, cj: number) => {
+                          {row.map((cell, cj) => {
                             if (typeof cell === 'string') return cell;
-                            if (cell.type === 'code') return <code key={cj} className="bg-[#27272a] px-1.5 py-0.5 rounded">{cell.text}</code>;
+                            if (cell.type === 'code') return <code key={cj} className="bg-muted px-1.5 py-0.5 rounded">{cell.text}</code>;
                             return null;
                           })}
                         </span>
@@ -131,35 +168,18 @@ const sections = [
     ),
     content: (
       <div className="space-y-5">
-        {[
-          {
-            title: 'Extension not connecting',
-            items: ['Make sure the Forca desktop app is running.', 'Reload the extension on your browser\'s extensions page.', 'In Forca, go to Settings \u2192 Extension and click Reconnect.', 'Restart both the desktop app and your browser.'],
-          },
-          {
-            title: 'Websites not being blocked',
-            items: ['Verify the extension is installed and enabled.', 'Check that the site is in your zone\'s blocked list.', 'Make sure the zone is active (not paused or ended).'],
-          },
-          {
-            title: 'Calendar not detected',
-            items: ['Go to Settings \u2192 Calendar and configure your provider.', 'For Google Calendar, click "Connect Google Calendar" and authorize access.', 'For iCal, paste your iCal URL in the settings.'],
-          },
-          {
-            title: 'App won\'t start',
-            items: ['Ensure you\'re on Windows 10 or later.', { text: 'Try reinstalling the latest version from the ', link: { href: '/download/', text: 'download page' }, suffix: '.' }, { text: 'Check the logs at ', code: '%APPDATA%/forca/logs/', suffix: '.' }],
-          },
-        ].map((group, gi) => (
+        {troubleshootingGroups.map((group, gi) => (
           <div key={gi}>
             <h3 className="text-sm font-semibold text-foreground mb-2">{group.title}</h3>
             <ul className="space-y-1.5">
-              {group.items.map((item: any, ii: number) => (
+              {group.items.map((item, ii) => (
                 <li key={ii} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-hover"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
                   {typeof item === 'string' ? item : (
                     <span>
                       {item.text}
                       {item.link && <a href={item.link.href} className="text-accent hover:text-accent-hover underline underline-offset-2">{item.link.text}</a>}
-                      {item.code && <code className="bg-[#27272a] px-1.5 py-0.5 rounded text-[13px]">{item.code}</code>}
+                      {item.code && <code className="bg-muted px-1.5 py-0.5 rounded text-[13px]">{item.code}</code>}
                       {item.suffix}
                     </span>
                   )}
@@ -179,7 +199,7 @@ const sections = [
       </svg>
     ),
     content: (
-      <div className="divide-y divide-[#27272a]">
+      <div className="divide-y divide-border">
         {[
           { q: 'Is Forca free?', a: 'Yes. Forca is completely free and open source under the MIT License.' },
           { q: 'Do I need an account?', a: 'No. Forca is local-first. Everything runs on your machine with no account required.' },
@@ -201,7 +221,7 @@ const sections = [
 
 export function DocsPage() {
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-emerald-900/15 via-background to-background selectable">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-glow/15 via-background to-background selectable">
       <section className="pt-16 md:pt-24 pb-12 md:pb-16 text-center">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -225,7 +245,7 @@ export function DocsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: i * 0.08, duration: 0.4 }}
-                className="rounded-xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6"
+                className="rounded-xl border border-border bg-gradient-to-b from-surface-top to-surface-bottom p-5 md:p-6"
                 style={{ willChange: 'transform' }}
               >
                 <div className="flex items-center gap-2.5 mb-4">

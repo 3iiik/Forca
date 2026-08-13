@@ -1,6 +1,7 @@
 ---
 const { title, description, structuredData } = Astro.props;
 import '../styles/globals.css';
+import { Sun, Moon } from 'lucide-react';
 import pkg from '../../../package.json';
 ---
 
@@ -11,6 +12,22 @@ import pkg from '../../../package.json';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href={import.meta.env.BASE_URL + 'icon.png'} />
     <meta name="theme-color" content="#09090b" />
+
+    <!-- Apply theme before first paint to avoid FOUC -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('forca-theme');
+          var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+          var theme = stored || (prefersLight ? 'light' : 'dark');
+          document.documentElement.setAttribute('data-theme', theme);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', theme === 'light' ? '#fafafa' : '#09090b');
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
 
     <!-- SEO -->
     <title>{title} · Forca</title>
@@ -47,20 +64,6 @@ import pkg from '../../../package.json';
       :root {
         --font-heading: 'Josefin Sans', sans-serif;
         --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        --bg: #09090b;
-        --bg-card: #18181b;
-        --bg-hover: #27272a;
-        --border: #27272a;
-        --text: #f4f4f5;
-        --text-muted: #a1a1aa;
-        --text-dim: #8a8a94;
-        --primary: #064e3b;
-        --primary-hover: #065f46;
-        --primary-text: #d1fae5;
-        --accent: #1D9E75;
-        --accent-hover: #34d399;
-        --success: #22c55e;
-        --radius: 12px;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
@@ -114,14 +117,20 @@ import pkg from '../../../package.json';
         font-weight: 600; font-size: 13px;
       }
       nav .links a.nav-cta:hover { background: var(--accent-hover); color: #fff; }
-      nav .links a.nav-icon {
+      nav .links a.nav-icon, nav .links button.nav-icon {
         display: inline-flex; align-items: center; justify-content: center;
         width: 32px; height: 32px; border-radius: 8px;
         border: 1px solid transparent;
         color: var(--text-muted); transition: all .2s;
       }
-      nav .links a.nav-icon:hover { color: var(--accent); background: rgba(29,158,117,0.1); border-color: rgba(29,158,117,0.2); }
-      nav .links a.nav-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      nav .links a.nav-icon:hover, nav .links button.nav-icon:hover { color: var(--accent); background: rgba(29,158,117,0.1); border-color: rgba(29,158,117,0.2); }
+      nav .links a.nav-icon:focus-visible, nav .links button.nav-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      nav .links button.nav-icon { background: none; cursor: pointer; padding: 0; }
+      nav .links button.nav-icon .icon-light { display: none; }
+      nav .links button.nav-icon .icon-dark,
+      nav .links button.nav-icon .icon-light { animation: theme-icon-in .3s ease; }
+      [data-theme="light"] nav .links button.nav-icon .icon-light { display: block; }
+      [data-theme="light"] nav .links button.nav-icon .icon-dark { display: none; }
 
       .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; flex-direction: column; gap: 5px; }
       .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
@@ -142,7 +151,25 @@ import pkg from '../../../package.json';
       .drawer-body a:hover { color: var(--text); background: rgba(29,158,117,0.08); }
       .drawer-body hr { border: none; border-top: 1px solid var(--border); margin: 8px 12px; }
       .drawer-body .drawer-icon-link { gap: 10px; }
+      .drawer-body button.drawer-icon-link { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 16px; font-size: 15px; font-weight: 500; color: var(--text-muted); border-radius: 10px; transition: all .2s; min-height: 44px; background: none; border: none; cursor: pointer; text-align: left; }
+      .drawer-body button.drawer-icon-link:hover { color: var(--text); background: rgba(29,158,117,0.08); }
       .drawer-body .drawer-icon-link svg { width: 18px; height: 18px; }
+      .drawer-body .drawer-icon-link .icon-light { display: none; }
+      [data-theme="light"] .drawer-body .drawer-icon-link .icon-light { display: inline-block; }
+      [data-theme="light"] .drawer-body .drawer-icon-link .icon-dark { display: none; }
+      .drawer-body .drawer-icon-link .icon-dark,
+      .drawer-body .drawer-icon-link .icon-light { animation: theme-icon-in .3s ease; }
+
+      @keyframes theme-icon-in {
+        from { opacity: 0; transform: scale(.7) rotate(-40deg); }
+        to { opacity: 1; transform: scale(1) rotate(0deg); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        nav .links button.nav-icon .icon-dark,
+        nav .links button.nav-icon .icon-light,
+        .drawer-body .drawer-icon-link .icon-dark,
+        .drawer-body .drawer-icon-link .icon-light { animation: none; }
+      }
 
       h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 16px; }
 
@@ -176,9 +203,9 @@ import pkg from '../../../package.json';
       footer .footer-bottom a { color: var(--text-muted); }
       footer .footer-bottom a:hover { color: var(--text); }
 
-      .page-bg {
+.page-bg {
         position: relative;
-        background: linear-gradient(180deg, rgba(6,78,59,0.18) 0%, rgba(29,158,117,0.06) 120px, transparent 450px);
+        background: var(--page-bg-gradient);
         min-height: 100vh;
         user-select: none;
       }
@@ -195,9 +222,8 @@ import pkg from '../../../package.json';
 
 
       .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-      .badge-green { background: #14532d; color: #86efac; }
-      .badge-green { background: rgba(29, 158, 117, 0.15); color: #34d399; }
-      .badge-yellow { background: #422006; color: #fde68a; }
+      .badge-green { background: rgb(29 158 117 / 0.15); color: #34d399; }
+      .badge-yellow { background: var(--badge-yellow-bg); color: var(--badge-yellow-text); }
 
       .page-header { padding: 64px 0 32px; }
       .page-header h1 { font-size: 36px; }
@@ -205,7 +231,7 @@ import pkg from '../../../package.json';
 
       pre, code { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; }
       code { background: var(--bg-hover); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-      pre { background: #0f0f11; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; overflow-x: auto; margin: 12px 0; }
+      pre { background: rgb(var(--code-bg)); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; overflow-x: auto; margin: 12px 0; }
       pre code { background: none; padding: 0; }
 
       .page-content { padding-bottom: 80px; }
@@ -243,6 +269,10 @@ import pkg from '../../../package.json';
         <a href={import.meta.env.BASE_URL + 'download/'}>Download</a>
         <a href={import.meta.env.BASE_URL + 'docs/'}>Docs</a>
         <a href={import.meta.env.BASE_URL + 'privacy/'}>Privacy</a>
+        <button type="button" class="nav-icon" id="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
+          <Sun className="icon-dark" size={16} strokeWidth={2} aria-hidden="true" />
+          <Moon className="icon-light" size={16} strokeWidth={2} aria-hidden="true" />
+        </button>
         <a href="https://discord.gg/3dP5xxkPg6" target="_blank" rel="noopener noreferrer" class="nav-icon" aria-label="Discord" title="Discord">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.0371 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.1776-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" /></svg>
         </a>
@@ -280,6 +310,11 @@ import pkg from '../../../package.json';
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" /></svg>
           GitHub Repository
         </a>
+        <button type="button" id="drawer-theme-toggle" class="drawer-icon-link">
+          <Sun className="icon-dark" size={18} strokeWidth={2} aria-hidden="true" />
+          <Moon className="icon-light" size={18} strokeWidth={2} aria-hidden="true" />
+          <span id="drawer-theme-label">Light Theme</span>
+        </button>
       </div>
     </div>
 
@@ -338,7 +373,32 @@ import pkg from '../../../package.json';
   const overlay = document.getElementById('drawer-overlay');
   const closeBtn = document.getElementById('drawer-close');
   const drawerLinks = drawer.querySelectorAll('a');
+  const themeToggle = document.getElementById('theme-toggle');
+  const drawerThemeToggle = document.getElementById('drawer-theme-toggle');
+  const drawerThemeLabel = document.getElementById('drawer-theme-label');
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
   const body = document.body;
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem('forca-theme', theme); } catch (e) {}
+    if (themeColorMeta) themeColorMeta.setAttribute('content', theme === 'light' ? '#fafafa' : '#09090b');
+    if (themeToggle) themeToggle.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    if (themeToggle) themeToggle.setAttribute('title', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    if (drawerThemeLabel) drawerThemeLabel.textContent = theme === 'light' ? 'Dark Theme' : 'Light Theme';
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+  });
+
+  drawerThemeToggle.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+  });
+
+  applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
 
   function openDrawer() {
     drawer.classList.add('open');

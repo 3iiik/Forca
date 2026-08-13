@@ -2,18 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   THEME TOKENS
+   Dark theme (default) is defined on :root.
+   Light theme overrides are defined on [data-theme="light"].
+   Tokens are space-separated RGB triplets so Tailwind opacity
+   modifiers (bg-accent/10, ring-accent/20, ...) keep working
+   via `rgb(var(--x) / <alpha-value>)`.
+   ============================================================ */
+
 @layer base {
   :root {
-    --background: #09090b;
-    --foreground: #f4f4f5;
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-    --border: #27272a;
-    --accent: #1D9E75;
-    --accent-foreground: #d1fae5;
-    --card: #18181b;
-    --card-foreground: #f4f4f5;
+    color-scheme: dark;
+
+    --background: 9 9 11;            /* #09090b */
+    --foreground: 244 244 245;       /* #f4f4f5 */
+    --muted: 39 39 42;               /* #27272a */
+    --muted-foreground: 161 161 170; /* #a1a1aa */
+    --border: 39 39 42;              /* #27272a */
+    --accent: 29 158 117;            /* #1D9E75 */
+    --accent-foreground: 209 250 229; /* #d1fae5 */
+    --accent-hover: 52 211 153;      /* #34d399 */
+    --card: 24 24 27;                /* #18181b */
+    --card-foreground: 244 244 245;  /* #f4f4f5 */
+    --surface-top: 28 28 31;         /* #1c1c1f */
+    --surface-bottom: 24 24 27;      /* #18181b */
+    --indicator: 82 82 91;           /* #52525b (zinc-600) */
+    --glow: 6 78 59;                 /* #064e3b (emerald-900) */
+    --success: 34 197 94;            /* #22c55e */
+    --error: 248 113 113;            /* #f87171 */
+    --code-bg: 15 15 17;             /* #0f0f11 */
+
+    /* Layout palette (used by BaseLayout plain CSS) */
+    --bg: #09090b;
+    --bg-card: #18181b;
+    --bg-hover: #27272a;
+    --text: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --text-dim: #8a8a94;
+    --primary: #064e3b;
+    --primary-hover: #065f46;
+    --primary-text: #d1fae5;
+    --badge-yellow-bg: #422006;
+    --badge-yellow-text: #fde68a;
+    --page-bg-gradient: linear-gradient(180deg, rgb(6 78 59 / 0.18) 0%, rgb(29 158 117 / 0.06) 120px, transparent 450px);
+
     --radius: 12px;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+
+    --background: 250 250 250;       /* #fafafa */
+    --foreground: 24 24 27;          /* #18181b */
+    --muted: 244 244 245;            /* #f4f4f5 */
+    --muted-foreground: 82 82 91;    /* #52525b */
+    --border: 228 228 231;           /* #e4e4e7 */
+    --accent: 29 158 117;            /* #1D9E75 (unchanged) */
+    --accent-foreground: 6 10 8;     /* near-black on accent */
+    --accent-hover: 13 121 90;       /* darker green for contrast */
+    --card: 255 255 255;             /* #ffffff */
+    --card-foreground: 24 24 27;     /* #18181b */
+    --surface-top: 255 255 255;      /* #ffffff */
+    --surface-bottom: 250 250 250;   /* #fafafa */
+    --indicator: 161 161 170;        /* #a1a1aa (zinc-400) */
+    --glow: 29 158 117;              /* #1D9E75 */
+    --success: 22 163 74;            /* #16a34a (green-600) */
+    --error: 220 38 38;              /* #dc2626 (red-600) */
+    --code-bg: 244 244 245;          /* #f4f4f5 */
+
+    --bg: #fafafa;
+    --bg-card: #ffffff;
+    --bg-hover: #e4e4e7;
+    --text: #18181b;
+    --text-muted: #52525b;
+    --text-dim: #71717a;
+    --primary: #0f8f6a;
+    --primary-hover: #0d946c;
+    --primary-text: #ffffff;
+    --badge-yellow-bg: #fef3c7;
+    --badge-yellow-text: #92400e;
+    --page-bg-gradient: linear-gradient(180deg, rgb(29 158 117 / 0.10) 0%, rgb(29 158 117 / 0.04) 120px, transparent 450px);
   }
 }
 

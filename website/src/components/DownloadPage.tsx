@@ -66,7 +66,7 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.15, duration: 0.5 }}
-      className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-8 transition-transform duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-600/15"
+      className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-surface-top to-surface-bottom p-6 md:p-8 transition-transform duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-600/15"
       style={{ willChange: 'transform' }}
     >
       {platform.recommended && (
@@ -88,7 +88,7 @@ function PlatformCard({ platform, index, version }: { platform: Platform; index:
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-[10px] font-medium text-accent">
             v{version}
           </span>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-800/80 text-[10px] font-medium text-muted-foreground">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted/80 text-[10px] font-medium text-muted-foreground">
             {platform.arch}
           </span>
         </div>
@@ -141,7 +141,7 @@ export function DownloadPage({ fallbackVersion }: { fallbackVersion: string }) {
   const version = release?.tag_name?.replace(/^v/, '') || fallbackVersion;
 
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-emerald-900/15 via-background to-background">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-glow/15 via-background to-background">
       <section className="pt-20 pb-12 text-center">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <motion.div
@@ -180,7 +180,7 @@ export function DownloadPage({ fallbackVersion }: { fallbackVersion: string }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5 }}
-            className="rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left"
+            className="rounded-2xl border border-border bg-gradient-to-b from-surface-top to-surface-bottom p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left"
             style={{ willChange: 'transform' }}
           >
             <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/20">

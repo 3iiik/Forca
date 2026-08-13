@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
-  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -9,21 +8,30 @@ export default {
         body: ['DM Sans', 'sans-serif'],
       },
       colors: {
-        background: '#09090b',
-        foreground: '#f4f4f5',
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
         muted: {
-          DEFAULT: '#27272a',
-          foreground: '#a1a1aa',
+          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
         },
-        border: '#27272a',
+        border: 'rgb(var(--border) / <alpha-value>)',
         accent: {
-          DEFAULT: '#1D9E75',
-          foreground: '#d1fae5',
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          foreground: 'rgb(var(--accent-foreground) / <alpha-value>)',
+          hover: 'rgb(var(--accent-hover) / <alpha-value>)',
         },
         card: {
-          DEFAULT: '#18181b',
-          foreground: '#f4f4f5',
+          DEFAULT: 'rgb(var(--card) / <alpha-value>)',
+          foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
         },
+        surface: {
+          top: 'rgb(var(--surface-top) / <alpha-value>)',
+          bottom: 'rgb(var(--surface-bottom) / <alpha-value>)',
+        },
+        indicator: 'rgb(var(--indicator) / <alpha-value>)',
+        glow: 'rgb(var(--glow) / <alpha-value>)',
+        success: 'rgb(var(--success) / <alpha-value>)',
+        error: 'rgb(var(--error) / <alpha-value>)',
       },
       maxWidth: {
         '7xl': '1400px',

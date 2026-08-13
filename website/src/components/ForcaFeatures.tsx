@@ -56,7 +56,7 @@ function FeatureCard({ feature, index }: { feature: (typeof features)[0]; index:
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.08, duration: 0.4 }}
-      className="group rounded-2xl border border-[#27272a] bg-gradient-to-b from-[#1c1c1f] to-[#18181b] p-5 md:p-6 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-emerald-500/60 hover:shadow-xl hover:shadow-emerald-600/20 hover:ring-1 hover:ring-emerald-500/10 transform-gpu"
+      className="group rounded-2xl border border-border bg-gradient-to-b from-surface-top to-surface-bottom p-5 md:p-6 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-emerald-500/60 hover:shadow-xl hover:shadow-emerald-600/20 hover:ring-1 hover:ring-emerald-500/10 transform-gpu"
     >
       <div className="flex items-center gap-3 mb-4">
         <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent/10 ring-1 ring-accent/20 shadow-sm shadow-accent/5 text-accent group-hover:bg-accent/15 group-hover:ring-accent/30 transition-all duration-300">
