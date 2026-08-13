@@ -35,8 +35,11 @@ export class SyncService {
     }
 
     try {
+      const rawSettings = store.get('settings');
+      // Strip OAuth tokens before uploading — these are device-specific secrets
+      const safeCalendar = { ...rawSettings.calendar, googleAccessToken: '', googleRefreshToken: '' };
       const payload: SyncPayload = {
-        settings: store.get('settings'),
+        settings: { ...rawSettings, calendar: safeCalendar },
         sessions: store.get('sessions', []),
         profiles: store.get('profiles', []),
         streaks: {

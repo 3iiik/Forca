@@ -69,6 +69,18 @@ function connect() {
   ws.onclose = () => {
     console.log('[Forca] WebSocket disconnected' + (reconnectAttempts > 0 ? ' (attempt ' + reconnectAttempts + ')' : ''));
     chrome.storage.local.set({ wsStatus: 'disconnected' });
+
+    // If a zone was active, the app likely quit — clean up blocking rules
+    if (zoneInfo.status === 'active' || zoneInfo.status === 'paused') {
+      console.log('[Forca] cleaning up active zone on disconnect');
+      zoneInfo = { status: 'idle', zoneName: '', sites: [], remaining: 0, startedAt: null };
+      chrome.storage.local.set({ zoneInfo });
+      removeAllDynamicRules().catch(err =>
+        console.error('[Forca] removeAllDynamicRules failed:', err)
+      );
+      closeBlockedTabs();
+    }
+
     ws = null;
     scheduleReconnect();
   };

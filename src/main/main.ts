@@ -36,6 +36,7 @@ import { registerAnalyticsIpc } from './ipc/analytics.ipc';
 let mainWindow: BrowserWindow | null = null;
 let meetingZoneTimer: ReturnType<typeof setTimeout> | null = null;
 let isQuitting = false;
+let servicesInitialized = false;
 
 // Services
 const blockerService = new BlockingService();
@@ -188,82 +189,87 @@ function createWindow() {
     },
   });
 
-  // Register all IPC handlers
-  registerCalendarIpc(calendarService);
-  registerZoneIpc(zoneEngine);
-  registerBlockerIpc(blockerService);
-  registerTrayIpc(trayService);
-  registerSettingsIpc();
-  registerStatsIpc(scoreService, suggestionService, calendarService);
-  registerSoundIpc(soundService);
-  registerDndIpc(dndService);
-  registerSessionsIpc();
-  registerProfilesIpc();
-  registerSyncIpc(syncService);
-  registerAppIpc(updaterService);
-  registerExtensionIpc(wsServer);
-  registerAnalyticsIpc();
+  // ── One-time service initialization ──────────
+  if (!servicesInitialized) {
+    servicesInitialized = true;
 
-  // Setup tray
-  setupTray();
+    // Register all IPC handlers
+    registerCalendarIpc(calendarService);
+    registerZoneIpc(zoneEngine);
+    registerBlockerIpc(blockerService);
+    registerTrayIpc(trayService);
+    registerSettingsIpc();
+    registerStatsIpc(scoreService, suggestionService, calendarService);
+    registerSoundIpc(soundService);
+    registerDndIpc(dndService);
+    registerSessionsIpc();
+    registerProfilesIpc();
+    registerSyncIpc(syncService);
+    registerAppIpc(updaterService);
+    registerExtensionIpc(wsServer);
+    registerAnalyticsIpc();
 
-  // Start meeting monitor
-  calendarService.startMeetingMonitor();
+    // Setup tray
+    setupTray();
 
-  // ── Auto-updater ──────────────────────────────
-  autoUpdater.autoDownload = false;
+    // Start meeting monitor
+    calendarService.startMeetingMonitor();
 
-  const isProd = process.env.NODE_ENV === 'production' && !process.env.VITE_DEV_SERVER_URL;
+    // ── Auto-updater ──────────────────────────────
+    autoUpdater.autoDownload = false;
 
-  autoUpdater.on('checking-for-update', () => {
-    if (!isProd) logger.info('[updater] checking for updates');
-  });
+    const isProd = process.env.NODE_ENV === 'production' && !process.env.VITE_DEV_SERVER_URL;
 
-  autoUpdater.on('update-available', (info) => {
-    if (!isProd) logger.info(`[updater] update available: v${info.version}`);
-    mainWindow?.webContents.send('update:available', {
-      version: info.version,
-      releaseDate: info.releaseDate,
+    autoUpdater.on('checking-for-update', () => {
+      if (!isProd) logger.info('[updater] checking for updates');
     });
-  });
 
-  autoUpdater.on('update-not-available', () => {
-    if (!isProd) logger.info('[updater] no update available');
-  });
-
-  autoUpdater.on('download-progress', (progress) => {
-    mainWindow?.webContents.send('update:progress', {
-      percent: progress.percent,
-      bytesPerSecond: progress.bytesPerSecond,
+    autoUpdater.on('update-available', (info) => {
+      if (!isProd) logger.info(`[updater] update available: v${info.version}`);
+      mainWindow?.webContents.send('update:available', {
+        version: info.version,
+        releaseDate: info.releaseDate,
+      });
     });
-  });
 
-  autoUpdater.on('update-downloaded', () => {
-    if (!isProd) logger.info('[updater] update downloaded');
-    mainWindow?.webContents.send('update:downloaded');
-
-    // Show native notification prompting restart
-    const notif = new Notification({
-      title: 'Forca Update Ready',
-      body: 'A new version has been downloaded. Restart Forca to install it.',
+    autoUpdater.on('update-not-available', () => {
+      if (!isProd) logger.info('[updater] no update available');
     });
-    notif.on('click', () => {
-      autoUpdater.quitAndInstall();
+
+    autoUpdater.on('download-progress', (progress) => {
+      mainWindow?.webContents.send('update:progress', {
+        percent: progress.percent,
+        bytesPerSecond: progress.bytesPerSecond,
+      });
     });
-    notif.show();
-  });
 
-  autoUpdater.on('error', (err) => {
-    logger.error('[updater] error:', err.message);
-  });
+    autoUpdater.on('update-downloaded', () => {
+      if (!isProd) logger.info('[updater] update downloaded');
+      mainWindow?.webContents.send('update:downloaded');
 
-  updaterService.init();
-  setTimeout(() => {
-    autoUpdater.checkForUpdatesAndNotify();
-  }, 30000);
+      // Show native notification prompting restart
+      const notif = new Notification({
+        title: 'Forca Update Ready',
+        body: 'A new version has been downloaded. Restart Forca to install it.',
+      });
+      notif.on('click', () => {
+        autoUpdater.quitAndInstall();
+      });
+      notif.show();
+    });
 
-  // Setup auto-launch
-  setupAutoLaunch();
+    autoUpdater.on('error', (err) => {
+      logger.error('[updater] error:', err.message);
+    });
+
+    updaterService.init();
+    setTimeout(() => {
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 30000);
+
+    // Setup auto-launch
+    setupAutoLaunch();
+  }
 }
 
 function setupTray() {

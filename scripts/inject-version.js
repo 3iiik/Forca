@@ -53,11 +53,36 @@ function updateJsonFile(filePath, version) {
 }
 
 function main() {
-  const version = getVersion();
-  console.log('[inject-version] version:', version);
-  updateJsonFile('package.json', version);
-  updateJsonFile('browser-extension/chrome-release/manifest.json', version);
-  updateJsonFile('browser-extension/firefox-release/manifest.json', version);
+  const tagVersion = getVersion();
+  console.log('[inject-version] tag version:', tagVersion);
+
+  // Read current package.json version
+  const pkgPath = path.join(ROOT, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+  const currentVersion = pkg.version;
+  console.log('[inject-version] current version:', currentVersion);
+
+  // Only inject if the tag version is a strict superset (tag >= current).
+  // This prevents downgrading a manually bumped version (e.g. 2.3.1)
+  // when the latest git tag is still v2.3.0.
+  const tagClean = tagVersion.split('-')[0].split('.').map(Number);
+  const curClean = currentVersion.split('-')[0].split('.').map(Number);
+  const tagIsHigher =
+    tagClean[0] > curClean[0] ||
+    (tagClean[0] === curClean[0] && tagClean[1] > curClean[1]) ||
+    (tagClean[0] === curClean[0] && tagClean[1] === curClean[1] && tagClean[2] > curClean[2]);
+  const tagIsSame = tagClean[0] === curClean[0] && tagClean[1] === curClean[1] && tagClean[2] === curClean[2];
+
+  if (tagIsHigher) {
+    console.log('[inject-version] tag is newer, updating files');
+    updateJsonFile('package.json', tagVersion);
+    updateJsonFile('browser-extension/chrome-release/manifest.json', tagVersion);
+    updateJsonFile('browser-extension/firefox-release/manifest.json', tagVersion);
+  } else if (tagIsSame) {
+    console.log('[inject-version] tag matches current, no change needed');
+  } else {
+    console.log('[inject-version] current version is newer than tag, keeping:', currentVersion);
+  }
 }
 
 main();

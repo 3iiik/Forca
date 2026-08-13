@@ -26,6 +26,9 @@ export class ZoneEngine {
   private breakRemaining = 0;
   private breakTotal = 0;
 
+  // Pause tracking for wall-clock drift compensation
+  private pausedAt: Date = new Date();
+
   constructor(
     blocker: BlockingService,
     tray: TrayService,
@@ -104,6 +107,9 @@ export class ZoneEngine {
     if (this.activeZone) {
       await this.stopZone();
     }
+
+    // Cancel any running break timer
+    this.endBreakTimer();
 
     const zones = store.get('zones', []);
     const zone = zones.find(z => z.id === zoneId);
@@ -255,6 +261,7 @@ export class ZoneEngine {
   async pauseZone(): Promise<void> {
     if (!this.activeZone || this.activeZone.status !== 'running') return;
     this.activeZone.status = 'paused';
+    this.pausedAt = new Date();
     this.stopTimer();
 
     this.wsServer.broadcast('zone:pause', {
@@ -271,6 +278,11 @@ export class ZoneEngine {
 
   async resumeZone(): Promise<void> {
     if (!this.activeZone || this.activeZone.status !== 'paused') return;
+
+    // Shift endTime forward by the paused duration so wall-clock countdown stays correct
+    const pausedDuration = Date.now() - this.pausedAt.getTime();
+    this.activeZone.endTime = new Date(this.activeZone.endTime.getTime() + pausedDuration);
+
     this.activeZone.status = 'running';
 
     const zones = store.get('zones', []);
@@ -304,9 +316,13 @@ export class ZoneEngine {
       if (!this.activeZone) return;
 
       if (this.activeZone.status === 'running') {
-        this.activeZone.remaining--;
+        // Compute remaining from wall clock to avoid drift on sleep/throttle
+        const now = Date.now();
+        const endMs = this.activeZone.endTime.getTime();
+        const remaining = Math.max(0, Math.ceil((endMs - now) / 1000));
+        this.activeZone.remaining = remaining;
 
-        if (this.activeZone.remaining <= 0) {
+        if (remaining <= 0) {
           this.stopZone();
           return;
         }
@@ -315,7 +331,7 @@ export class ZoneEngine {
         const settings = store.get('settings');
         if (settings.breakReminder.enabled) {
           const elapsed = Math.floor(
-            (Date.now() - this.activeZone.startTime.getTime()) / 60000
+            (now - this.activeZone.startTime.getTime()) / 60000
           );
           if (elapsed > 0 && elapsed % settings.breakReminder.focusDuration === 0) {
             this.window?.webContents?.send('notification:show', {

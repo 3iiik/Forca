@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.3.1] — 2026-08-13
+
+### Fixed
+
+- **macOS double-init crash** — on macOS, clicking the dock icon after closing the window called `createWindow()` again, re-registering all IPC handlers, auto-updater listeners, and starting a second calendar meeting monitor. A `servicesInitialized` flag now ensures one-time setup runs only once.
+- **Extension blocks sites forever after app quit** — when the desktop app quit during an active zone, the browser extension kept DNR blocking rules installed permanently. On WebSocket disconnect, the extension now auto-removes all blocking rules and resets zone state.
+- **Zone timer drift on sleep/throttle** — the countdown timer used a tick-based decrement that drifted if the OS suspended or throttled the app. Remaining time is now computed from the `endTime` wall clock, and `resumeZone()` shifts `endTime` forward by the paused duration.
+- **Break timer not cancelled on zone start** — starting a new focus zone while a break timer was running left the old break interval ticking. `startZone()` now calls `endBreakTimer()` first.
+- **OAuth tokens leaked in sync payload** — `googleAccessToken` and `googleRefreshToken` were included in the Firestore sync upload. These device-specific secrets are now stripped before upload.
+- **inject-version.js downgrades version** — the build script always overwrote `package.json` version with the latest git tag, which downgraded manually bumped versions when the tag hadn't been created yet. Now only injects when the tag version is strictly newer.
+
+### Removed
+
+- Unused `open` and `react-router-dom` dependencies from `package.json`
+- Unused `vite-plugin-electron` dev dependency
+
 ## [v2.3.0] — 2026-07-06
 
 ### Fixed
