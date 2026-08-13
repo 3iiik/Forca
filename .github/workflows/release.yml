@@ -1,135 +1,152 @@
-name: Release
+name: Build and Release
 
 on:
   push:
     tags:
-      - 'v*'
-  workflow_dispatch:
+      - "v*"
 
 permissions:
   contents: write
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  # Job 1: Build, lint, test
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  build-and-test:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Compile TypeScript & build renderer
-        run: node ./scripts/inject-version.js && tsc -p tsconfig.node.json && npx vite build
+      - name: Run lint
+        run: npm run lint
 
-      - name: Build Windows artifacts
-        run: npx electron-builder --win --publish never
+      - name: Run tests
+        run: npm test
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: windows-artifacts
-          path: |
-            release/Forca-Setup-x64.exe
-            release/Forca-Portable-x64.exe
-          if-no-files-found: error
+      - name: Build React app
+        run: npm run build
 
-  build-macos:
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  # Job 2: macOS release
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  release-mac:
     runs-on: macos-latest
+    needs: build-and-test
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Compile TypeScript & build renderer
-        run: node ./scripts/inject-version.js && tsc -p tsconfig.node.json && npx vite build
+      - name: Build React app
+        run: npm run build
 
       - name: Build macOS artifacts
         run: npx electron-builder --mac --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload macOS artifacts
+        uses: softprops/action-gh-release@v1
         with:
-          name: macos-artifacts
-          path: |
+          files: |
             release/*.dmg
             release/*.zip
-          if-no-files-found: error
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-  build-linux:
-    runs-on: ubuntu-latest
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  # Job 3: Windows release
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  release-windows:
+    runs-on: windows-latest
+    needs: build-and-test
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - run: sudo apt-get update && sudo apt-get install -y rpm
+      - name: Install dependencies
+        run: npm ci
 
-      - run: npm ci
+      - name: Build React app
+        run: npm run build
 
-      - name: Compile TypeScript & build renderer
-        run: node ./scripts/inject-version.js && tsc -p tsconfig.node.json && npx vite build
+      - name: Build Windows artifacts
+        run: npx electron-builder --win --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: List release folder
+        run: Get-ChildItem -Recurse release/
+        shell: powershell
+
+      - name: Upload Windows artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  # Job 4: Linux release
+  # ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  release-linux:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build React app
+        run: npm run build
 
       - name: Build Linux artifacts
         run: npx electron-builder --linux --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - name: List dist folder
+        run: ls -la dist/
+
+      - name: Upload Linux artifacts
+        uses: softprops/action-gh-release@v1
         with:
-          name: linux-artifacts
-          path: |
+          files: |
             release/*.AppImage
             release/*.deb
             release/*.rpm
-          if-no-files-found: error
-
-  release:
-    needs: [build-windows, build-macos, build-linux]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          merge-multiple: true
-
-      - name: List release artifacts
-        run: ls -lhR artifacts/
-
-      - name: Determine version tag
-        id: version
-        run: |
-          TAG="${{ github.ref_name }}"
-          # Fallback: if triggered via workflow_dispatch, find latest tag
-          if [ "$TAG" = "main" ] || [ "$TAG" = "master" ] || [ -z "$TAG" ]; then
-            TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          fi
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Create GitHub Release
-        if: steps.version.outputs.tag != ''
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create "${{ steps.version.outputs.tag }}" \
-            --repo "${{ github.repository }}" \
-            --title "${{ steps.version.outputs.tag }}" \
-            --generate-notes \
-            artifacts/*
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
