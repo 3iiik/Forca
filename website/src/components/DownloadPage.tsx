@@ -173,35 +173,95 @@ export function DownloadPage({ fallbackVersion }: { fallbackVersion: string }) {
         </div>
       </section>
 
+      {/* Browser Extensions */}
       <section className="mt-16 md:mt-20">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5 }}
-            className="rounded-2xl border border-border bg-gradient-to-b from-surface-top to-surface-bottom p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left"
-            style={{ willChange: 'transform' }}
+            className="text-center mb-8"
           >
-            <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/20">
-              <Icons.Firefox size={36} />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg md:text-xl font-bold text-foreground mb-1">Need the browser extension?</h3>
-              <p className="text-xs md:text-sm text-muted-foreground max-w-md">
-                Forca's Firefox extension blocks distractions during focus sessions. Install directly from Mozilla Add-ons.
-              </p>
-            </div>
-            <a
-              href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white text-sm font-semibold transition-all duration-300 hover:from-orange-500 hover:to-orange-400 hover:shadow-lg hover:shadow-orange-500/30 hover:-translate-y-0.5 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-              Install Firefox Extension
-            </a>
+            <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">Browser Extensions</h2>
+            <p className="text-sm text-muted-foreground max-w-lg mx-auto">
+              The extension is required to block websites. It communicates with the desktop app over a local connection.
+            </p>
           </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+            {/* Firefox */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-surface-top to-surface-bottom p-6 md:p-8 transition-transform duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-600/15"
+            >
+              <div className="flex flex-col items-center text-center mb-5">
+                <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-500/10 ring-1 ring-orange-500/20 mb-3 text-orange-500 transition-all duration-300 group-hover:ring-orange-500/40 group-hover:bg-orange-500/15">
+                  <Icons.Firefox size={32} />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-0.5">Firefox</h3>
+                <p className="text-xs text-muted-foreground">Direct install from Firefox Add-ons</p>
+              </div>
+              <ul className="space-y-2 mb-6 flex-1">
+                {[
+                  'No Developer Mode required',
+                  'Install directly from the Add-ons store',
+                  'Auto-updates through Firefox',
+                ].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <Icons.Check size={14} />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="https://addons.mozilla.org/en-US/firefox/addon/forca-focus-mode-blocker/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white text-sm font-semibold transition-all duration-300 hover:from-orange-500 hover:to-orange-400 hover:shadow-lg hover:shadow-orange-500/30 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                Add to Firefox
+              </a>
+            </motion.div>
+
+            {/* Chromium */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="group relative flex flex-col rounded-2xl border border-border/50 bg-gradient-to-b from-surface-top to-surface-bottom p-6 md:p-8 transition-transform duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-600/15"
+            >
+              <div className="flex flex-col items-center text-center mb-5">
+                <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/20 mb-3 text-blue-500 transition-all duration-300 group-hover:ring-blue-500/40 group-hover:bg-blue-500/15">
+                  <Icons.Chrome size={32} />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-0.5">Chromium Browsers</h3>
+                <p className="text-xs text-muted-foreground">Chrome, Edge, Brave, Arc, Vivaldi, Opera</p>
+              </div>
+              <ul className="space-y-2 mb-6 flex-1">
+                {[
+                  'Load unpacked via Developer Mode',
+                  'Included with the desktop app',
+                  'Persists across browser restarts',
+                ].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <Icons.Check size={14} />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="/docs/"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold transition-all duration-300 hover:from-blue-500 hover:to-blue-400 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                Installation Guide
+              </a>
+            </motion.div>
+          </div>
         </div>
       </section>
 
