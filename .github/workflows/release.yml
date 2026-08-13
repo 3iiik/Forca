@@ -24,6 +24,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Compile TypeScript & build renderer
+        run: node ./scripts/inject-version.js && tsc -p tsconfig.node.json && npx vite build
+
       - name: Build Windows artifacts
         run: npx electron-builder --win --publish never
 
@@ -49,6 +52,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Compile TypeScript & build renderer
+        run: node ./scripts/inject-version.js && tsc -p tsconfig.node.json && npx vite build
+
       - name: Build macOS artifacts
         run: npx electron-builder --mac --publish never
 
@@ -72,7 +78,12 @@ jobs:
           node-version: 20
           cache: npm
 
+      - run: sudo apt-get update && sudo apt-get install -y rpm
+
       - run: npm ci
+
+      - name: Compile TypeScript & build renderer
+        run: node ./scripts/inject-version.js && tsc -p tsconfig.node.json && npx vite build
 
       - name: Build Linux artifacts
         run: npx electron-builder --linux --publish never
@@ -91,6 +102,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/download-artifact@v4
         with:
@@ -100,12 +113,23 @@ jobs:
       - name: List release artifacts
         run: ls -lhR artifacts/
 
+      - name: Determine version tag
+        id: version
+        run: |
+          TAG="${{ github.ref_name }}"
+          # Fallback: if triggered via workflow_dispatch, find latest tag
+          if [ "$TAG" = "main" ] || [ "$TAG" = "master" ] || [ -z "$TAG" ]; then
+            TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release
+        if: steps.version.outputs.tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ github.ref_name }}" \
+          gh release create "${{ steps.version.outputs.tag }}" \
             --repo "${{ github.repository }}" \
-            --title "${{ github.ref_name }}" \
+            --title "${{ steps.version.outputs.tag }}" \
             --generate-notes \
             artifacts/*
